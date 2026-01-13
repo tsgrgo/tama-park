@@ -1,7 +1,6 @@
 package com.nttdocomo.device;
 
 public class IrRemoteControlFrame {
-    public IrRemoteControlFrame(byte[] data) {}
 
     public void setFrameData(byte[] aE, int i) {
     }

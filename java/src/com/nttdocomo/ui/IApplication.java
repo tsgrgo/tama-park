@@ -13,4 +13,12 @@ public abstract class IApplication {
     public void stop() {}
     public void resume() {}
     public void suspend() {}
+
+    protected String getSourceURL() {
+        return "";
+    }
+
+    protected String[] getArgs() {
+        return new String[0];
+    }
 }

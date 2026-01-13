@@ -20,4 +20,8 @@ public abstract class Canvas {
 
     public void setSoftLabel(int i, String var1) {
     }
+
+    public int getKeypadState() {
+        return 0;
+    }
 }

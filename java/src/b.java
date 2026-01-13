@@ -3258,7 +3258,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
     public static void ao() {
         aq[6] = ar();
-        aq[7] = do();
+        aq[7] = dorr();
         aq[8] = dp();
         ag(4, true);
         ah(0);
@@ -3686,7 +3686,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         return aw[0];
     }
 
-    public static int do() {
+    public static int dorr() {
         return aw[1];
     }
 

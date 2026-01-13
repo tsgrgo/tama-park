@@ -2,8 +2,8 @@ package com.nttdocomo.ui;
 
 public class Font {
 
-    public static Font getFont(int face, int style, int size) {
-        return new Font();
+    public static Font getFont(int i) {
+        return null;
     }
 
     public int getHeight() {
