@@ -52,8 +52,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static long totalMemory;
     public static long[] aQ;
     public static int aR;
-    public static AudioPresenter[] l;
-    public static MediaSound[] o;
+    public static AudioPresenter[] audioPresenters;
+    public static MediaSound[] mediaSounds;
     public static int a;
     public static int aS;
     public static int aT;
@@ -149,7 +149,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         totalMemory = Runtime.getRuntime().totalMemory();
         aQ = new long[240];
         aR = 0;
-        l = new AudioPresenter[2];
+        audioPresenters = new AudioPresenter[2];
         a = -1;
         aS = 0;
         aT = -1;
@@ -210,7 +210,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bc = "";
         bd = "";
         aE = new byte[16];
-        aF = dW(1);
+        aF = createIrRemoteControlFrames(1);
         aD = IrRemoteControl.getIrRemoteControl();
         aC = new int[6];
         aI = new int[]{120, 144, 170, 28, 15, 2, 120, 176, 170, 28, 94, 2, 120, 208, 170, 28, 95, 2};
@@ -219,7 +219,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public GameApp() {
         mediaListener = this;
-        String[] var1 = this.getArgs();
+        String[] args = this.getArgs();
         this.e();
 
         try {
@@ -265,102 +265,102 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void f(String var0) {
-        System.out.println(var0);
+    public static void log(String str) {
+        System.out.println(str);
     }
 
-    public static String h(int var0) {
-        String var2 = "";
-        if (var0 < 0) {
-            var0 += 256;
+    public static String byteToHex(int b) {
+        String res = "";
+        if (b < 0) {
+            b += 256;
         }
 
-        for(int var1 = 0; var1 < 2; ++var1) {
-            var2 = g(var0 % 16) + var2;
-            var0 /= 16;
+        for(int i = 0; i < 2; ++i) {
+            res = hexDigitToString(b % 16) + res;
+            b /= 16;
         }
 
-        return var2;
+        return res;
     }
 
-    public static String g(int var0) {
-        String var1 = "";
-        if (var0 < 10) {
-            var1 = "" + var0;
+    public static String hexDigitToString(int digit) {
+        String res = "";
+        if (digit < 10) {
+            res = "" + digit;
         } else {
-            switch(var0) {
+            switch(digit) {
                 case 10:
-                    var1 = "A";
+                    res = "A";
                     break;
                 case 11:
-                    var1 = "B";
+                    res = "B";
                     break;
                 case 12:
-                    var1 = "C";
+                    res = "C";
                     break;
                 case 13:
-                    var1 = "D";
+                    res = "D";
                     break;
                 case 14:
-                    var1 = "E";
+                    res = "E";
                     break;
                 case 15:
-                    var1 = "F";
+                    res = "F";
             }
         }
 
-        return var1;
+        return res;
     }
 
-    public static void i() {
-        l[0] = AudioPresenter.getAudioPresenter(0);
-        l[0].setAttribute(133, 0);
-        l[0].setMediaListener(mediaListener);
-        l[1] = AudioPresenter.getAudioPresenter(1);
-        l[1].setAttribute(133, 1);
+    public static void initAudioPresenters() {
+        audioPresenters[0] = AudioPresenter.getAudioPresenter(0);
+        audioPresenters[0].setAttribute(133, 0);
+        audioPresenters[0].setMediaListener(mediaListener);
+        audioPresenters[1] = AudioPresenter.getAudioPresenter(1);
+        audioPresenters[1].setAttribute(133, 1);
     }
 
-    public static void k(int var0, int var1, boolean var2) {
-        j(var1);
+    public static void playSoundInternal(int soundIdx, int presenterIdx, boolean var2) {
+        stopSound(presenterIdx);
 
         try {
             if (n[3] == 0) {
-                l[var1].setSound(o[var0]);
+                audioPresenters[presenterIdx].setSound(mediaSounds[soundIdx]);
                 if (var2) {
                 }
 
-                l[var1].play();
+                audioPresenters[presenterIdx].play();
             }
-        } catch (Exception var4) {
-            f("playsound:" + var0 + " " + var4);
+        } catch (Exception ex) {
+            log("playsound:" + soundIdx + " " + ex);
         }
 
     }
 
-    public static void l(int var0, boolean var1) {
-        k(var0, var1 ? 0 : 1, var1);
+    public static void playSound(int soundIdx, boolean var1) {
+        playSoundInternal(soundIdx, var1 ? 0 : 1, var1);
     }
 
-    public static void j(int var0) {
+    public static void stopSound(int presenterIdx) {
         try {
             Thread.sleep(100L);
-            l[var0].stop();
+            audioPresenters[presenterIdx].stop();
         } catch (Exception var2) {
         }
 
     }
 
     public static void m() {
-        for(int var0 = 0; var0 < l.length; ++var0) {
-            j(var0);
+        for(int var0 = 0; var0 < audioPresenters.length; ++var0) {
+            stopSound(var0);
         }
 
     }
 
     public static void StackMap(int var0, boolean var1) {
         if (n[3] == 0 && var0 >= 0) {
-            j(0);
-            k(var0, 0, var1);
+            stopSound(0);
+            playSoundInternal(var0, 0, var1);
         }
 
         a = var0;
@@ -399,7 +399,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         boolean var1;
         try {
-            o = new MediaSound[7];
+            mediaSounds = new MediaSound[7];
             int[] var3 = q(128);
             int var4 = 0;
 
@@ -417,17 +417,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 for(int var6 = 0; var6 < var5.length; ++var6) {
                 }
 
-                o[var18] = MediaManager.getSound(var5);
-                o[var18].use();
-                f("loadsound:" + var18);
+                mediaSounds[var18] = MediaManager.getSound(var5);
+                mediaSounds[var18].use();
+                log("loadsound:" + var18);
                 Object var19 = null;
                 System.gc();
             }
 
-            i();
+            initAudioPresenters();
             var1 = true;
         } catch (Exception var16) {
-            f("loadsounderr i:" + var2);
+            log("loadsounderr i:" + var2);
             var1 = false;
         } finally {
             if (var0 != null) {
@@ -765,7 +765,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         for(var4 = 0; var4 < var1; ++var4) {
             var5 = var0.indexOf(var3, var5);
             if (var5 == -1) {
-                f("subStringLine:Invalid line selection");
+                log("subStringLine:Invalid line selection");
                 return "";
             }
 
@@ -1380,7 +1380,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aL(3);
             }
         } catch (Exception var12) {
-            f("e:" + var12);
+            log("e:" + var12);
             aY(O, 2, 1, aC(92));
         } finally {
             if (var0 != null) {
@@ -1390,7 +1390,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
             }
 
-            l(6, false);
+            playSound(6, false);
         }
 
     }
@@ -1780,7 +1780,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 bC(3);
             }
         } catch (Exception var14) {
-            f("e:" + var14);
+            log("e:" + var14);
             aY(O, 2, 1, aC(92));
         } finally {
             if (var0 != null) {
@@ -1790,7 +1790,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
             }
 
-            l(6, false);
+            playSound(6, false);
         }
 
     }
@@ -2171,7 +2171,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cd(3);
             }
         } catch (Exception var14) {
-            f("e:" + var14);
+            log("e:" + var14);
             aY(O, 2, 1, aC(92));
         } finally {
             if (var0 != null) {
@@ -2181,7 +2181,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
             }
 
-            l(6, false);
+            playSound(6, false);
         }
 
     }
@@ -2230,7 +2230,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cl() {
         if (30 < ab[3]) {
-            l(6, false);
+            playSound(6, false);
             cd(7);
         }
 
@@ -2551,7 +2551,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cy(3);
             }
         } catch (Exception var12) {
-            f("e:" + var12);
+            log("e:" + var12);
             aY(O, 2, 1, aC(92));
         } finally {
             if (var0 != null) {
@@ -2561,7 +2561,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
             }
 
-            l(6, false);
+            playSound(6, false);
         }
 
     }
@@ -2843,7 +2843,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cR() {
         if (10 < al[2]) {
-            l(6, false);
+            playSound(6, false);
             cN(3);
         }
 
@@ -2856,19 +2856,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             al[4] = al[3];
             if (s(65536L)) {
-                l(4, false);
+                playSound(4, false);
                 al[3] = cM(al[3], 2);
             } else if (s(131072L)) {
-                l(4, false);
+                playSound(4, false);
                 al[3] = cM(al[3], 3);
             } else if (s(262144L)) {
-                l(4, false);
+                playSound(4, false);
                 al[3] = cM(al[3], 4);
             } else if (s(524288L)) {
-                l(4, false);
+                playSound(4, false);
                 al[3] = cM(al[3], 5);
             } else if (s(1048576L)) {
-                l(5, false);
+                playSound(5, false);
                 cN(4);
             }
 
@@ -2911,7 +2911,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cN(6);
             }
         } catch (Exception var13) {
-            f("e:" + var13);
+            log("e:" + var13);
             aY(O, 4, 1, aC(92));
         } finally {
             if (var0 != null) {
@@ -2921,7 +2921,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
             }
 
-            l(6, false);
+            playSound(6, false);
         }
 
     }
@@ -3639,7 +3639,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (aw[13] != 0) {
             var3 = ar();
             aw[13] = 0;
-            l(5, false);
+            playSound(5, false);
         } else if (var0) {
             aw[13] = 1;
             StackMap = true;
@@ -3673,7 +3673,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             if (var4) {
-                l(4, false);
+                playSound(4, false);
             }
 
             aw[13] = 0;
@@ -3931,7 +3931,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var6 = ax[4];
         boolean var7 = false;
         if (var4) {
-            l(5, false);
+            playSound(5, false);
             dQ(var6, (bR(var6) + 1) % 10);
         } else if (var1) {
             ++var6;
@@ -3966,7 +3966,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             bB(var6);
         } else if (0 <= var5) {
-            l(5, false);
+            playSound(5, false);
             dQ(var6, var5);
             ++var6;
             if (10 <= var6) {
@@ -4130,7 +4130,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static DataInputStream dU(byte[] var0, int var1) throws Exception {
         String var2 = dV(var0, var1);
         String var3 = "http://tamapark.gs.keitaiarchive.org/cgi-bin/iaserver.cgi?uid=NULLGWDOCOMO&data=" + var2;
-        f("senddata:" + var3);
+        log("senddata:" + var3);
         DataInputStream var4 = null;
         HttpConnection var5 = null;
         DataOutputStream var6 = null;
@@ -4151,7 +4151,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     var9 = var7.length;
                 }
 
-                f("dlsize:" + var8 + " writeSize:" + var9);
+                log("dlsize:" + var8 + " writeSize:" + var9);
                 var4.read(var7, 0, var9);
                 var6.write(var7, 0, var9);
             }
@@ -4262,14 +4262,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var2 = var0.indexOf(39, var2);
             if (var2 == -1) {
                 if (var1) {
-                    f("Dialogue error: missing closing tag");
+                    log("Dialogue error: missing closing tag");
                 }
 
-                f("wordsCnt:" + var3);
+                log("wordsCnt:" + var3);
                 return var3;
             }
 
-            f("numindex:" + var2);
+            log("numindex:" + var2);
             if (var1) {
                 ++var3;
                 var1 = false;
@@ -4317,14 +4317,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void aW(DataInputStream var0) throws Exception {
     }
 
-    public static IrRemoteControlFrame[] dW(int var0) {
-        IrRemoteControlFrame[] var1 = new IrRemoteControlFrame[var0];
+    public static IrRemoteControlFrame[] createIrRemoteControlFrames(int n) {
+        IrRemoteControlFrame[] res = new IrRemoteControlFrame[n];
 
-        for(int var2 = 0; var2 < var0; ++var2) {
-            var1[var2] = new IrRemoteControlFrame();
+        for(int i = 0; i < n; ++i) {
+            res[i] = new IrRemoteControlFrame();
         }
 
-        return var1;
+        return res;
     }
 
     public static void aO(int var0, int var1, int var2, int var3) {
@@ -4466,7 +4466,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             if (750L < (new Date()).getTime() - aG) {
                 aD.stop();
-                l(6, false);
+                playSound(6, false);
                 dX(3);
             }
 
@@ -4763,7 +4763,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     di(g, i, j);
             }
         } catch (Exception var2) {
-            f("disp error" + var2.toString());
+            log("disp error" + var2.toString());
         }
 
     }
