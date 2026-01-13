@@ -3,9 +3,11 @@ package com.nttdocomo.ui;
 public class Graphics {
 
     public static Object getColorOfName(int i) {
+        return null;
     }
 
     public static int getColorOfRGB(int r, int g, int b) {
+        return r;
     }
 
     public void lock() {}
