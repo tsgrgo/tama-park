@@ -75,7 +75,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int C;
     public static String[] D;
     public static int w;
-    public static Image[] x;
+    public static Image[] images;
     public static int[] F;
     public static int[] G;
     public static int[] H;
@@ -168,7 +168,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         B = 6;
         C = 6;
         D = new String[]{"Start", "Menu", "Close", "Back", "Title", "Help", ""};
-        x = new Image[93];
+        images = new Image[93];
         G = new int[5];
         H = new int[]{120, 176, 186, 26, 26, 25, 2, 120, 208, 186, 26, 16, 15, 2};
         aY = new int[]{120, 86, 120, 34, 53, 2, 120, 140, 108, 34, 9, 2};
@@ -616,29 +616,29 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var4;
     }
 
-    public static void A(Graphics var0, int var1, int var2, int var3, int var4) {
-        z(var0, x[var1], var2, var3, var4);
+    public static void drawSprite(Graphics g, int idx, int x, int y, int var4) {
+        drawImage(g, images[idx], x, y, var4);
     }
 
-    public static void z(Graphics var0, Image var1, int var2, int var3, int var4) {
+    public static void drawImage(Graphics g, Image img, int x, int y, int var4) {
         if (var4 == 2) {
-            var2 -= var1.getWidth() / 2;
+            x -= img.getWidth() / 2;
         } else if (var4 == 1) {
-            var2 -= var1.getWidth();
+            x -= img.getWidth();
         } else if (var4 == 3) {
-            var2 -= var1.getWidth() / 2;
-            var3 -= var1.getHeight() / 2;
+            x -= img.getWidth() / 2;
+            y -= img.getHeight() / 2;
         }
 
-        var0.drawImage(var1, var2, var3);
+        g.drawImage(img, x, y);
     }
 
-    public static int B(int var0) {
-        return x[var0].getWidth();
+    public static int getSpriteWidth(int idx) {
+        return images[idx].getWidth();
     }
 
-    public static int C(int var0) {
-        return x[var0].getHeight();
+    public static int getSpriteHeight(int idx) {
+        return images[idx].getHeight();
     }
 
     public static void setColorOfRGB(Graphics graphics, int r, int g, int b) {
@@ -888,7 +888,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 var6.read(var3);
                 MediaImage var7 = MediaManager.getImage(var3);
                 var7.use();
-                x[var5] = var7.getImage();
+                images[var5] = var7.getImage();
                 Object var12 = null;
                 ++w;
                 var0 += var4[var5];
@@ -910,7 +910,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void Y(int var0) throws Exception {
-        if (x[var0] == null) {
+        if (images[var0] == null) {
             short var1 = 128;
             int var4 = var1 + (F.length + 1) * 2;
 
@@ -920,15 +920,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             MediaImage var3 = MediaManager.getImage("scratchpad:///0;pos=" + var4);
             var3.use();
-            x[var0] = var3.getImage();
+            images[var0] = var3.getImage();
         }
 
     }
 
     public static void aa(int var0) {
-        if (x[var0] != null) {
-            x[var0].dispose();
-            x[var0] = null;
+        if (images[var0] != null) {
+            images[var0].dispose();
+            images[var0] = null;
         }
 
     }
@@ -964,7 +964,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void af(Graphics g, String str, int x, int y) {
+    public static void showError(Graphics g, String str, int x, int y) {
         setColorOfRGBInt(g, 0);
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16777215);
@@ -1060,46 +1060,46 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void as(Graphics var0, int var1, int var2) {
-        int var3 = (g - B(72)) / 2;
+        int var3 = (g - getSpriteWidth(72)) / 2;
         int var4 = var2 + 54;
         int var5 = -48 + G[2] * 8;
         setColorOfRGBInt(var0, 6728679);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 23, var1, var2 + var5, 0);
-        A(var0, 6, var1, var2 + 116, 0);
-        A(var0, 6, var1 + 120, var2 + 116, 0);
+        drawSprite(var0, 23, var1, var2 + var5, 0);
+        drawSprite(var0, 6, var1, var2 + 116, 0);
+        drawSprite(var0, 6, var1 + 120, var2 + 116, 0);
         setColorOfRGBInt(var0, 7456538);
         var0.fillRect(var1, var2 + 158, 240, 82);
-        A(var0, 72, var3, var4, 0);
-        A(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+        drawSprite(var0, 72, var3, var4, 0);
+        drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
     }
 
     public static void at(Graphics var0, int var1, int var2) {
-        int var3 = (g - B(72)) / 2;
+        int var3 = (g - getSpriteWidth(72)) / 2;
         int var4 = var2 + 54;
         int var5;
         if (I) {
             setColorOfRGBInt(var0, 6728679);
             var0.fillRect(var1, var2, 240, 240);
-            A(var0, 23, var1, var2, 0);
+            drawSprite(var0, 23, var1, var2, 0);
             av(var0, 6, G[3], var1, var2 + 116, 240);
             setColorOfRGBInt(var0, 7456538);
             var0.fillRect(var1, var2 + 158, 240, 82);
-            A(var0, 9, g / 2, var2 + 158, 2);
-            A(var0, 72, var3, var4, 0);
-            A(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+            drawSprite(var0, 9, g / 2, var2 + 158, 2);
+            drawSprite(var0, 72, var3, var4, 0);
+            drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
             for(var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, H, 0);
             }
         } else {
             setColorOfRGBInt(var0, 7456538);
-            var0.fillRect(var1, var2 + 158 + C(9), 240, 240 - (158 + C(9)));
+            var0.fillRect(var1, var2 + 158 + getSpriteHeight(9), 240, 240 - (158 + getSpriteHeight(9)));
             setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 116, 240, C(6));
+            var0.fillRect(var1, var2 + 116, 240, getSpriteHeight(6));
             av(var0, 6, G[3], var1, var2 + 116, 240);
-            A(var0, 72, var3, var4, 0);
-            A(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+            drawSprite(var0, 72, var3, var4, 0);
+            drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
             for(var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, H, 0);
@@ -1109,18 +1109,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         var5 = ax(H, ar(), 1);
         var5 += ax(H, ar(), 3) / 2;
         var5 -= 10;
-        A(var0, 75, var1 + 2, var2 + var5, 0);
-        A(var0, 75, var1 + 240 - (B(75) - 10), var2 + var5, 0);
+        drawSprite(var0, 75, var1 + 2, var2 + var5, 0);
+        drawSprite(var0, 75, var1 + 240 - (getSpriteWidth(75) - 10), var2 + var5, 0);
     }
 
     public static void av(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
         while(0 < var2) {
-            var2 -= B(var1);
+            var2 -= getSpriteWidth(var1);
         }
 
         while(var2 < var5) {
-            A(var0, var1, var3 + var2, var4, 0);
-            var2 += B(var1);
+            drawSprite(var0, var1, var3 + var2, var4, 0);
+            var2 += getSpriteWidth(var1);
         }
 
     }
@@ -1179,9 +1179,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
             setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 78, 240, C(6));
-            A(var0, 6, var1, var2 + 78, 0);
-            A(var0, 6, var1 + 120, var2 + 78, 0);
+            var0.fillRect(var1, var2 + 78, 240, getSpriteHeight(6));
+            drawSprite(var0, 6, var1, var2 + 78, 0);
+            drawSprite(var0, 6, var1 + 120, var2 + 78, 0);
             H(var0, var1 + 3, var2 + 3, var4, var3 + 4, 0, 16056665);
             setColorOfRGBInt(var0, 16777215);
             drawString(var0, aC(29), var1 + 3 + 2, var2 + 3 + 2, 0);
@@ -1199,10 +1199,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         var5 -= 10;
         int var6 = ax(L, ar(), 1) + var2;
         var6 += ax(L, ar(), 3) / 2;
-        aD(var0, 64, g / 2, var6, (var5 - B(64)) * 2, K[2]);
+        aD(var0, 64, g / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (I) {
-            A(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
-            A(var0, 89, var1 + 240 + 2 - B(89), var2 + 54, 0);
+            drawSprite(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
+            drawSprite(var0, 89, var1 + 240 + 2 - getSpriteWidth(89), var2 + 54, 0);
             aE(var0);
         }
 
@@ -1259,9 +1259,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
             setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 78, 240, C(6));
-            A(var0, 6, var1, var2 + 78, 0);
-            A(var0, 6, var1 + 120, var2 + 78, 0);
+            var0.fillRect(var1, var2 + 78, 240, getSpriteHeight(6));
+            drawSprite(var0, 6, var1, var2 + 78, 0);
+            drawSprite(var0, 6, var1 + 120, var2 + 78, 0);
             H(var0, var1 + 3, var2 + 3, var4, var3 + 8, 0, 16056665);
             setColorOfRGBInt(var0, 16777215);
             drawString(var0, aC(40), var1 + 3 + 6, var2 + 3 + 4, 0);
@@ -1279,10 +1279,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         var5 -= 10;
         int var6 = ax(N, ar(), 1) + var2;
         var6 += ax(N, ar(), 3) / 2;
-        aD(var0, 64, g / 2, var6, (var5 - B(64)) * 2, M[2]);
+        aD(var0, 64, g / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
         if (I) {
-            A(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
-            A(var0, 57, var1 + 240 - B(57) - 2, var2 + 68, 0);
+            drawSprite(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
+            drawSprite(var0, 57, var1 + 240 - getSpriteWidth(57) - 2, var2 + 68, 0);
         }
 
     }
@@ -1493,13 +1493,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void bf(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         setColorOfRGBInt(var0, 6728679);
-        var0.fillRect(var1, var2 + 110, 240, C(6));
-        A(var0, 6, var1, var2 + 110, 0);
-        A(var0, 6, var1 + 120, var2 + 110, 0);
+        var0.fillRect(var1, var2 + 110, 240, getSpriteHeight(6));
+        drawSprite(var0, 6, var1, var2 + 110, 0);
+        drawSprite(var0, 6, var1 + 120, var2 + 110, 0);
         bj(var0, aC(76), g / 2, var2 + 2, 200, 2);
-        A(var0, 76, g / 2, var2 + 100, 2);
+        drawSprite(var0, 76, g / 2, var2 + 100, 2);
     }
 
     public static void bg(Graphics var0, int var1, int var2) {
@@ -1509,10 +1509,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bj(var0, aC(79), g / 2, var2 + 3, currentFont.stringWidth(aC(79)) + 8, 2);
         } else {
             setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + C(0)));
+            var0.fillRect(var1, var2 + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + getSpriteHeight(0)));
         }
 
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, aC(64), var2 + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
         int var3 = var2 + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
@@ -1548,16 +1548,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bp(Graphics var0, int var1, int var2, int var3, int var4, boolean var5) {
-        A(var0, 32, var1 - (var3 + 6), var2 + 18, 0);
-        A(var0, (!var5 ? 77 : 78) + var4 % 3 * 2, var1 - (var3 + 5), var2, 0);
-        A(var0, 33, var1 + (var3 - 3), var2 + 20, 0);
-        A(var0, (var5 ? 83 : 84) + var4 % 3 * 2, var1 + (var3 - 3), var2, 0);
+        drawSprite(var0, 32, var1 - (var3 + 6), var2 + 18, 0);
+        drawSprite(var0, (!var5 ? 77 : 78) + var4 % 3 * 2, var1 - (var3 + 5), var2, 0);
+        drawSprite(var0, 33, var1 + (var3 - 3), var2 + 20, 0);
+        drawSprite(var0, (var5 ? 83 : 84) + var4 % 3 * 2, var1 + (var3 - 3), var2, 0);
     }
 
     public static void bq(Graphics var0, int var1, int var2, int var3, int var4, boolean var5, int var6) {
         setColorOfRGBInt(var0, var6);
-        var0.fillRect(var1 - (var3 + 6), var2, B(32), 18 + C(32));
-        var0.fillRect(var1 + (var3 - 3), var2, B(33), 20 + C(33));
+        var0.fillRect(var1 - (var3 + 6), var2, getSpriteWidth(32), 18 + getSpriteHeight(32));
+        var0.fillRect(var1 + (var3 - 3), var2, getSpriteWidth(33), 20 + getSpriteHeight(33));
         bp(var0, var1, var2, var3, var4, var5);
     }
 
@@ -1610,8 +1610,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bn(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6) {
-        A(var0, var1 + (var6 & -(var5 >> 2 & 1)), var2 - var4 / 2 - B(var1) - 2 - 2, var3 - C(var1) / 2, 0);
-        A(var0, var1 + (var6 & -((var5 >> 2) + 1 & 1)), var2 + var4 / 2 + 2 + 2, var3 - C(var1) / 2, 0);
+        drawSprite(var0, var1 + (var6 & -(var5 >> 2 & 1)), var2 - var4 / 2 - getSpriteWidth(var1) - 2 - 2, var3 - getSpriteHeight(var1) / 2, 0);
+        drawSprite(var0, var1 + (var6 & -((var5 >> 2) + 1 & 1)), var2 + var4 / 2 + 2 + 2, var3 - getSpriteHeight(var1) / 2, 0);
     }
 
     public static void br(Graphics var0, int var1, int var2, int var3, boolean var4, boolean var5) {
@@ -1886,11 +1886,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var4 = var2 + 240 - 42;
         if (I) {
             setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240 - C(0));
+            var0.fillRect(var1, var2, 240, 240 - getSpriteHeight(0));
             bj(var0, aC(17), g / 2, var2 + 3, 232, 2);
         }
 
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, aC(65), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
         int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 4 + 20;
         boolean var6 = 0 == ar() & (U[6] & 4) != 0;
@@ -1910,12 +1910,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void bV(Graphics var0, int var1, int var2) {
         ac(var0, var1, var2, 8, 0);
-        A(var0, 24, var1 + 126, var2 + 100, 0);
-        int var3 = B(24);
+        drawSprite(var0, 24, var1 + 126, var2 + 100, 0);
+        int var3 = getSpriteWidth(24);
 
         for(int var4 = 0; var4 < 3; ++var4) {
-            A(var0, 7, var1 + 126 - 6 * var4, var2 + 118, 0);
-            A(var0, 8, var1 + 126 + var3 + 6 * var4, var2 + 118, 0);
+            drawSprite(var0, 7, var1 + 126 - 6 * var4, var2 + 118, 0);
+            drawSprite(var0, 8, var1 + 126 + var3 + 6 * var4, var2 + 118, 0);
         }
 
     }
@@ -1926,8 +1926,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = var2 + 4;
         bj(var0, aC(23), g / 2, var3, currentFont.stringWidth(aC(23)) + 8, 2);
         int var4 = var3 + currentFontHeight + 8 + 6;
-        A(var0, 58, var1, var4, 0);
-        z(var0, V[U[6] >> 3 & 1], var1 + 144, var4, 0);
+        drawSprite(var0, 58, var1, var4, 0);
+        drawImage(var0, V[U[6] >> 3 & 1], var1 + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (g - 232) / 2;
         bt(var0, X, var6, var5, 232, U[3], 12, 16777215, 16056665);
@@ -1948,12 +1948,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         cb(var0, 0, aC(var7), g / 2, var2 + 240 - 36, 160, 28, 2, 0);
-        A(var0, 27, var1 + 1, var2 + 1, 0);
-        A(var0, 28, var1 + 240 - 1 - B(28), var2 + 1, 0);
-        A(var0, 37 + (U[6] >> 1 & 1), var1 + 240 - 44, var2 + var4 + 1, 0);
-        A(var0, 12, var1 + 240 - 38, var4 + 9, 0);
-        A(var0, 92, var1 + 140, var5 - 16, 0);
-        aD(var0, 55, g / 2, var2 + 240 - 36 + C(55) / 2, 160, U[6]);
+        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
+        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
+        drawSprite(var0, 37 + (U[6] >> 1 & 1), var1 + 240 - 44, var2 + var4 + 1, 0);
+        drawSprite(var0, 12, var1 + 240 - 38, var4 + 9, 0);
+        drawSprite(var0, 92, var1 + 140, var5 - 16, 0);
+        aD(var0, 55, g / 2, var2 + 240 - 36 + getSpriteHeight(55) / 2, 160, U[6]);
     }
 
     public static void bX(Graphics var0, int var1, int var2) {
@@ -1964,10 +1964,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bj(var0, aC(67), g / 2, var2 + 3, currentFont.stringWidth(aC(67)) + 8, 2);
         } else {
             setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + C(0)));
+            var0.fillRect(var1, var2 + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + getSpriteHeight(0)));
         }
 
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, aC(66), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
         int var4 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
         ca(var0, g / 2, var4, false);
@@ -1998,9 +1998,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void ac(Graphics var0, int var1, int var2, int var3, int var4) {
         setColorOfRGBInt(var0, 11367);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 1, var1, var2 + 240 - C(1), 0);
+        drawSprite(var0, 1, var1, var2 + 240 - getSpriteHeight(1), 0);
         byte var5 = 0;
-        A(var0, 3, var1 + 240 + var5, var2 + 10, 1);
+        drawSprite(var0, 3, var1 + 240 + var5, var2 + 10, 1);
         cc(var0, var1 + 50, var2 + 108, 12, -8, 5, var4, var3);
     }
 
@@ -2296,11 +2296,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = bu(aC(30));
         if (I) {
             setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240 - C(0));
+            var0.fillRect(var1, var2, 240, 240 - getSpriteHeight(0));
             bj(var0, aC(30), g / 2, var2 + 2, 230, 2);
         }
 
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, aC(68), var2 + 2 + var3 + 2, ab[3], 12, 16056665, 16777215);
         boolean var4 = 0 == ar() & (ab[3] & 4) != 0;
         int var5 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
@@ -2316,7 +2316,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (1 == ar()) {
-            aD(var0, 39, g / 2, var2 + 240 - 42 + C(39) / 2, 100, ab[3]);
+            aD(var0, 39, g / 2, var2 + 240 - 42 + getSpriteHeight(39) / 2, 100, ab[3]);
         }
 
     }
@@ -2345,20 +2345,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var5 -= var6 * 6 / 20;
         }
 
-        A(var0, 6, var1, var3 + 76, 0);
-        A(var0, 6, var1 + 120, var3 + 76, 0);
-        A(var0, 66, g / 2, var3, 2);
+        drawSprite(var0, 6, var1, var3 + 76, 0);
+        drawSprite(var0, 6, var1 + 120, var3 + 76, 0);
+        drawSprite(var0, 66, g / 2, var3, 2);
         H(var0, (g - 36) / 2, var3 + 21, 36, 8, 3805255, 16315136);
         H(var0, (g - 36) / 2, var5, 36, 8, 3805255, 16315136);
         if (ab[1] == 3) {
             cb(var0, 0, aC(75), g / 2, var2 + 240 - 44, 100, 28, 2, 0);
-            aD(var0, 39, g / 2, var2 + 240 - 44 + C(39) / 2, 100, ab[3]);
+            aD(var0, 39, g / 2, var2 + 240 - 44 + getSpriteHeight(39) / 2, 100, ab[3]);
         }
 
-        A(var0, 27, var1 + 1, var2 + 1, 0);
-        A(var0, 28, var1 + 240 - 1 - B(28), var2 + 1, 0);
-        A(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var3 + 2, 0);
-        A(var0, 12, var1 + 240 - 38, var3 + 10, 0);
+        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
+        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
+        drawSprite(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var3 + 2, 0);
+        drawSprite(var0, 12, var1 + 240 - 38, var3 + 10, 0);
     }
 
     public static void ct(Graphics var0, int var1, int var2) {
@@ -2368,26 +2368,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bj(var0, aC(31), g / 2, var3, 200, 2);
         int var4 = var2 + 68;
         int var5 = ab[4];
-        z(var0, ac[var5], var1 + 0, var4, 0);
+        drawImage(var0, ac[var5], var1 + 0, var4, 0);
         cb(var0, 0, aC(32), g / 2, var2 + 240 - 44, 160, 28, 2, 0);
-        A(var0, 27, var1 + 1, var2 + 1, 0);
-        A(var0, 28, var1 + 240 - 1 - B(28), var2 + 1, 0);
-        A(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var4 + 2, 0);
-        A(var0, 12, var1 + 240 - 38, var4 + 10, 0);
-        aD(var0, 39, g / 2, var2 + 240 - 44 + C(39) / 2, 160, ab[3]);
+        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
+        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
+        drawSprite(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var4 + 2, 0);
+        drawSprite(var0, 12, var1 + 240 - 38, var4 + 10, 0);
+        aD(var0, 39, g / 2, var2 + 240 - 44 + getSpriteHeight(39) / 2, 160, ab[3]);
     }
 
     public static void cu(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bj(var0, aC(77), g / 2, var2 + 2, 200, 2);
         byte var3 = 16;
         byte var4 = 6;
         byte var5 = 11;
         int var6 = var4 + var3 * (var5 - 1);
         cc(var0, (g - var6) / 2, var2 + 68, var3, 0, var4, ab[3], var5);
-        A(var0, 34, g / 2, var2 + 90, 2);
+        drawSprite(var0, 34, g / 2, var2 + 90, 2);
     }
 
     public static void cv(Graphics var0, int var1, int var2) {
@@ -2400,12 +2400,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             var4 = var2 + bm(ae, 0, 1);
             var4 += bm(ae, 0, 3) / 2;
-            var4 -= C(39) / 2;
+            var4 -= getSpriteHeight(39) / 2;
             setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var4, 240, 240 - (var4 + C(39) / 2));
+            var0.fillRect(var1, var4, 240, 240 - (var4 + getSpriteHeight(39) / 2));
         }
 
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, aC(70), var2 + 3 + var3 + 3, ab[3], 12, 16056665, 16777215);
 
         for(var4 = 0; var4 < 2; ++var4) {
@@ -2661,12 +2661,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void cI(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         int var3 = var2 + 4;
         bj(var0, aC(37), g / 2, var2 + 2, 200, 2);
         setColorOfRGBInt(var0, 16770939);
         var0.fillRect(var1, var2 + 46, 240, 108);
-        A(var0, 60, g / 2, var2 + 46, 2);
+        drawSprite(var0, 60, g / 2, var2 + 46, 2);
         byte var4 = 16;
         byte var5 = 6;
         byte var6 = 11;
@@ -2678,7 +2678,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = currentFontHeight;
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         int var4 = currentFont.stringWidth(ah[0]) + 8;
         if (var4 < ag.getWidth()) {
             var4 = ag.getWidth();
@@ -2686,7 +2686,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         bj(var0, ah[0], g / 2, var2 + 2, var4, 2);
         var4 = currentFontHeight;
-        z(var0, ag, g / 2, var2 + 2 + var3 + 4 + 4, 2);
+        drawImage(var0, ag, g / 2, var2 + 2 + var3 + 4 + 4, 2);
         bl(var0, var1, ah[1], var2 + 2 + var3 + 4 + 4 + ag.getHeight() + 7, af[2], 12, 16056665, 16777215);
 
         for(int var5 = 0; var5 < 2; ++var5) {
@@ -3054,9 +3054,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void db(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bj(var0, aC(73), g / 2, var2 + 2, currentFont.stringWidth(aC(73)) + 8, 2);
-        A(var0, 59, g / 2, var2 + 50, 2);
+        drawSprite(var0, 59, g / 2, var2 + 50, 2);
         short var3 = 176;
         cc(var0, (g - var3) / 2, var2 + 160, 16, 0, 6, al[2], 11);
     }
@@ -3068,7 +3068,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (I) {
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            A(var0, 71, var1, var2 + 240 - C(71), 0);
+            drawSprite(var0, 71, var1, var2 + 240 - getSpriteHeight(71), 0);
             bj(var0, aC(6), g / 2, var2 + 3, currentFont.stringWidth(aC(6)) + 8, 2);
             bl(var0, var1, aC(74), var2 + 3 + bu(aC(6)) + 3, al[2], 12, 16056665, 16777215);
             bj(var0, aC(cM(al[3], 6)), var1 + 3, var4, 110, 0);
@@ -3079,26 +3079,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     ++var6;
                 }
 
-                A(var0, var6, var3 + cM(var5, 0), var4 + cM(var5, 1), 0);
+                drawSprite(var0, var6, var3 + cM(var5, 0), var4 + cM(var5, 1), 0);
             }
         } else {
             bl(var0, var1, aC(74), var2 + 3 + bu(aC(6)) + 3, al[2], 12, 16056665, 16777215);
             if (al[4] != al[3]) {
                 bj(var0, aC(cM(al[3], 6)), var1 + 3, var4, 110, 0);
-                A(var0, cM(al[4], 7), var3 + cM(al[4], 0), var4 + cM(al[4], 1), 0);
+                drawSprite(var0, cM(al[4], 7), var3 + cM(al[4], 0), var4 + cM(al[4], 1), 0);
                 var5 = cM(al[3], 7);
                 if ((al[2] & 4) != 0) {
                     ++var5;
                 }
 
-                A(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
+                drawSprite(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
             } else if ((al[2] & 3) == 0) {
                 var5 = cM(al[3], 7);
                 if ((al[2] & 4) != 0) {
                     ++var5;
                 }
 
-                A(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
+                drawSprite(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
             }
         }
 
@@ -3107,40 +3107,40 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void dd(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         setColorOfRGBInt(var0, 6728679);
-        var0.fillRect(var1, var2 + 114, 240, C(6));
-        A(var0, 6, var1, var2 + 114, 0);
-        A(var0, 6, var1 + 120, var2 + 114, 0);
+        var0.fillRect(var1, var2 + 114, 240, getSpriteHeight(6));
+        drawSprite(var0, 6, var1, var2 + 114, 0);
+        drawSprite(var0, 6, var1 + 120, var2 + 114, 0);
         bj(var0, aC(43), g / 2, var2 + 2, currentFont.stringWidth(aC(43)) + 8, 2);
-        A(var0, 76, g / 2, var2 + 102, 2);
+        drawSprite(var0, 76, g / 2, var2 + 102, 2);
     }
 
     public static void de(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bj(var0, aC(89), g / 2, var2 + 2, currentFont.stringWidth(aC(89)) + 8, 2);
         int var3 = var2 + 62;
-        A(var0, 4, var1 + 0, var3, 0);
-        A(var0, 4, var1 + 120, var3, 0);
-        z(var0, am[0], g / 2, var3 - 12, 2);
+        drawSprite(var0, 4, var1 + 0, var3, 0);
+        drawSprite(var0, 4, var1 + 120, var3, 0);
+        drawImage(var0, am[0], g / 2, var3 - 12, 2);
         int var4 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var5 = var2 + 240 - (var4 + 4) - 2;
         cb(var0, 0, aC(88), g / 2, var5 - 44, 100, 28, 2, 0);
         H(var0, (g - 232) / 2, var5, 232, var4 + 4, 16056665, 16056665);
         setColorOfRGBInt(var0, 16777215);
         drawString(var0, aC(90), g / 2, var5 + 2, 2);
-        aD(var0, 30, g / 2, var5 - 44 + C(30) / 2, 100, al[2]);
+        aD(var0, 30, g / 2, var5 - 44 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
     public static void df(Graphics var0, int var1, int var2) {
         setColorOfRGBInt(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
-        A(var0, 0, var1, var2 + 240 - C(0), 0);
+        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bj(var0, aC(48), g / 2, var2 + 2, currentFont.stringWidth(aC(48)) + 8, 2);
-        z(var0, am[0], var1 + 0, var2 + 42, 0);
-        z(var0, am[1], var1 + 120, var2 + 42, 0);
+        drawImage(var0, am[0], var1 + 0, var2 + 42, 0);
+        drawImage(var0, am[1], var1 + 120, var2 + 42, 0);
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var4 = var2 + 240 - (var3 + 4) - 2;
         cb(var0, 0, aC(18), g / 2, var4 - 38, 100, 28, 2, 0);
@@ -3149,7 +3149,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawString(var0, an[0], g / 2, var4 + 2, 2);
         drawString(var0, an[1], g / 2, var4 + 2 + currentFontHeight + 1, 2);
         drawString(var0, an[2], g / 2, var4 + 2 + (currentFontHeight + 1) * 2, 2);
-        aD(var0, 30, g / 2, var4 - 38 + C(30) / 2, 100, al[2]);
+        aD(var0, 30, g / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
     public static void dg(Graphics var0, int var1, int var2) {
@@ -3214,7 +3214,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (dm()) {
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            A(var0, 0, var1, var2 + 240 - C(0), 0);
+            drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
             int var3 = var1 + 4;
             int var4 = var2 + (240 - (currentFontHeight + 1) * 7) / 2;
             H(var0, var1 + 2, var4 - 1, 236, (currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
@@ -3475,7 +3475,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         for(int var6 = 0; var6 < 3; var5 += var3) {
             int var7 = 69 + (var6 + (var4 >> 2) & 1);
-            A(var0, var7, var5 - B(var7) / 2, var2, 0);
+            drawSprite(var0, var7, var5 - getSpriteWidth(var7) / 2, var2, 0);
             ++var6;
         }
 
@@ -3551,7 +3551,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (dG()) {
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            A(var0, 0, var1, var2 + 240 - C(0), 0);
+            drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
             int var3 = N(as, "\n");
             int var4 = (var3 - 1) * (currentFontHeight + 1) + currentFontHeight + 4;
             int var5 = var2 + (240 - (var4 + 4 + 8)) / 2;
@@ -3807,7 +3807,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var3 += 2;
         }
 
-        A(var0, var1, var2 + var4 / 2, var3 + (var5 - C(var1)) / 2, 2);
+        drawSprite(var0, var1, var2 + var4 / 2, var3 + (var5 - getSpriteHeight(var1)) / 2, 2);
     }
 
     public static void dO(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7, boolean var8) {
@@ -3849,7 +3849,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var3 += 2;
         }
 
-        A(var0, var1, var2 + var4 / 2, var3 + (var5 - C(var1)) / 2, 2);
+        drawSprite(var0, var1, var2 + var4 / 2, var3 + (var5 - getSpriteHeight(var1)) / 2, 2);
     }
 
     public static void dP(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7, boolean var8) {
@@ -4509,7 +4509,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (bc()) {
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            A(var0, 0, var1, var2 + 240 - C(0), 0);
+            drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
             switch(aC[0]) {
                 case 2:
                     eg(var0, var1, var2);
@@ -4529,14 +4529,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void eg(Graphics var0, int var1, int var2) {
         bj(var0, aC(98), g / 2, var2 + 5, currentFont.stringWidth(aC(98)) + 8, 2);
-        A(var0, 67, g / 2 + (aC[1] * 8 - 60), var2 + 50, 2);
-        cb(var0, 0, aC(38), g / 2, var2 + 50 + C(67) + 10, currentFont.stringWidth(aC(38)) + 8, currentFontHeight + 4, 2, 0);
-        aD(var0, aC[5], g / 2, var2 + 50 + C(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
+        drawSprite(var0, 67, g / 2 + (aC[1] * 8 - 60), var2 + 50, 2);
+        cb(var0, 0, aC(38), g / 2, var2 + 50 + getSpriteHeight(67) + 10, currentFont.stringWidth(aC(38)) + 8, currentFontHeight + 4, 2, 0);
+        aD(var0, aC[5], g / 2, var2 + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
     }
 
     public static void eh(Graphics var0, int var1, int var2) {
         bj(var0, aC(99), g / 2, var2 + 5, currentFont.stringWidth(aC(99)) + 8, 2);
-        A(var0, 68, g / 2, var2 + 50, 2);
+        drawSprite(var0, 68, g / 2, var2 + 50, 2);
         int[] var3;
         if (aC[2] == 7) {
             var3 = aH;
@@ -4562,9 +4562,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ek(Graphics var0, int var1, int var2) {
-        A(var0, 29, g / 2, var2 + 50, 2);
-        cb(var0, 0, aC(18), g / 2, var2 + 50 + C(29) + 10, currentFont.stringWidth(aC(18)) + 8, currentFontHeight + 4, 2, 0);
-        aD(var0, aC[5], g / 2, var2 + 50 + C(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
+        drawSprite(var0, 29, g / 2, var2 + 50, 2);
+        cb(var0, 0, aC(18), g / 2, var2 + 50 + getSpriteHeight(29) + 10, currentFont.stringWidth(aC(18)) + 8, currentFontHeight + 4, 2, 0);
+        aD(var0, aC[5], g / 2, var2 + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
     }
 
     public static void dx() {
@@ -4721,13 +4721,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             switch(O) {
                 case -3:
-                    af(g, "Authenticating", i, j);
+                    showError(g, "Authenticating", i, j);
                     break;
                 case -2:
-                    af(g, "Communicating", i, j);
+                    showError(g, "Communicating", i, j);
                     break;
                 case -1:
-                    af(g, "Preparing", i, j);
+                    showError(g, "Preparing", i, j);
                 case 0:
                 case 1:
                 default:
