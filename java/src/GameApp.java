@@ -21,7 +21,7 @@ import java.io.DataOutputStream;
 import java.util.Date;
 import javax.microedition.io.Connector;
 
-public class b extends IApplication implements TimerListener, MediaListener {
+public class GameApp extends IApplication implements TimerListener, MediaListener {
     public static boolean aL;
     public static int Code;
     public static boolean e;
@@ -32,15 +32,15 @@ public class b extends IApplication implements TimerListener, MediaListener {
     public static boolean StackMap;
     public static int aJ;
     public static Timer b;
-    public static b m;
+    public static GameApp mediaListener;
     public static Canvas f;
     public static int g;
     public static int h;
     public static int i;
     public static int j;
-    public static Font J;
+    public static Font currentFont;
     public static int aM;
-    public static int y;
+    public static int currentFontHeight;
     public static int d;
     public static int E;
     public static boolean k;
@@ -65,7 +65,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     public static int u;
     public static int[] v;
     public static int[] n;
-    public static int z;
+    public static int currentFontIdx;
     public static int A;
     public static short[] aU;
     public static int[] aV;
@@ -217,8 +217,8 @@ public class b extends IApplication implements TimerListener, MediaListener {
         aH = new int[]{120, 144, 170, 28, 16, 2, 120, 176, 170, 28, 94, 2, 120, 208, 170, 28, 95, 2};
     }
 
-    public b() {
-        m = this;
+    public GameApp() {
+        mediaListener = this;
         String[] var1 = this.getArgs();
         this.e();
 
@@ -227,7 +227,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         } catch (Exception var3) {
         }
 
-        L(2);
+        setCurrentFont(2);
         aK = 8;
         b = new Timer();
         b.setRepeat(true);
@@ -315,7 +315,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     public static void i() {
         l[0] = AudioPresenter.getAudioPresenter(0);
         l[0].setAttribute(133, 0);
-        l[0].setMediaListener(m);
+        l[0].setMediaListener(mediaListener);
         l[1] = AudioPresenter.getAudioPresenter(1);
         l[1].setAttribute(133, 1);
     }
@@ -454,7 +454,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         try {
             if (0 == var0) {
                 s[0] = (long)(f.getKeypadState() & Integer.MAX_VALUE);
-                int var10002 = s[4]++;
+                s[4]++;
             }
         } catch (Exception var3) {
         }
@@ -566,7 +566,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         var2 += n[1] * 10240;
 
         for(int var7 = n[1]; var7 < (var1 - 1) / 10240 + 1; ++var7) {
-            HttpConnection var3 = (HttpConnection)Connector.open(m.getSourceURL() + var0 + var7 + ".bin", 1, true);
+            HttpConnection var3 = (HttpConnection)Connector.open(mediaListener.getSourceURL() + var0 + var7 + ".bin", 1, true);
             var3.setRequestMethod("GET");
             var3.connect();
             System.gc();
@@ -650,7 +650,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void G(Graphics var0, String var1, int var2, int var3, int var4) {
-        F(var0, var1, var2, var3, J.getHeight() + 1, var4);
+        F(var0, var1, var2, var3, currentFont.getHeight() + 1, var4);
     }
 
     public static void F(Graphics var0, String var1, int var2, int var3, int var4, int var5) {
@@ -658,7 +658,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         int var7 = 0;
         boolean var9 = true;
 
-        for(var3 += J.getHeight(); var9; var3 += var4) {
+        for(var3 += currentFont.getHeight(); var9; var3 += var4) {
             int var10 = var1.indexOf("\n", var7);
             if (var10 == -1) {
                 var10 = var1.length();
@@ -667,12 +667,12 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
             int var8 = var2;
             if (var5 == 2) {
-                var8 = var2 - J.stringWidth(var1.substring(var7, var10)) / 2;
+                var8 = var2 - currentFont.stringWidth(var1.substring(var7, var10)) / 2;
             } else if (var5 == 1) {
-                var8 = var2 - J.stringWidth(var1.substring(var7, var10));
+                var8 = var2 - currentFont.stringWidth(var1.substring(var7, var10));
             }
 
-            var0.drawString(var1.substring(var7, var10), var8, var3 - J.getDescent());
+            var0.drawString(var1.substring(var7, var10), var8, var3 - currentFont.getDescent());
             var7 = var10 + 1;
         }
 
@@ -705,23 +705,23 @@ public class b extends IApplication implements TimerListener, MediaListener {
         Object var10 = null;
     }
 
-    public static void L(int var0) {
-        switch(var0) {
+    public static void setCurrentFont(int i) {
+        switch(i) {
             case 0:
-                J = Font.getFont(1895826432);
+                currentFont = Font.getFont(1895826432);
                 break;
             case 1:
-                J = Font.getFont(1895825664);
+                currentFont = Font.getFont(1895825664);
                 break;
             case 2:
-                J = Font.getFont(1895825920);
+                currentFont = Font.getFont(1895825920);
                 break;
             case 3:
-                J = Font.getFont(1896940032);
+                currentFont = Font.getFont(1896940032);
         }
 
-        y = J.getHeight();
-        z = var0;
+        currentFontHeight = currentFont.getHeight();
+        currentFontIdx = i;
     }
 
     public static int c(int var0) {
@@ -940,7 +940,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         var0.fillRect(var1, var2, 240, 240);
         E(var0, 16763955);
         var0.drawRect(var3, var4, 200, 40);
-        G(var0, "Downloading", g / 2, var4 - y - 4, 2);
+        G(var0, "Downloading", g / 2, var4 - currentFontHeight - 4, 2);
         int var5 = 200 * w / 8;
         var0.fillRect(var3, var4, var5, 40);
     }
@@ -969,8 +969,8 @@ public class b extends IApplication implements TimerListener, MediaListener {
         var0.fillRect(var2, var3, 240, 240);
         E(var0, 16777215);
         G(var0, var1, g / 2, var3 + 30, 2);
-        G(var0, "An error has occured", g / 2, var3 + 31 + y, 2);
-        G(var0, "Confirm:Exit", g / 2, var3 + 240 - 10 - y, 2);
+        G(var0, "An error has occured", g / 2, var3 + 31 + currentFontHeight, 2);
+        G(var0, "Confirm:Exit", g / 2, var3 + 240 - 10 - currentFontHeight, 2);
     }
 
     public static void ak() {
@@ -1172,7 +1172,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void aF(Graphics var0, int var1, int var2) {
-        int var3 = (y + 1) * 2 + y;
+        int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 184;
         int var5;
         if (I) {
@@ -1252,7 +1252,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void aK(Graphics var0, int var1, int var2) {
-        int var3 = (y + 1) * 2 + y;
+        int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 192;
         int var5;
         if (I) {
@@ -1456,7 +1456,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         if (I) {
             E(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            bj(var0, aC(2), g / 2, var2 + 2, J.stringWidth(aC(2)) + 8, 2);
+            bj(var0, aC(2), g / 2, var2 + 2, currentFont.stringWidth(aC(2)) + 8, 2);
         }
 
         int var4;
@@ -1506,15 +1506,15 @@ public class b extends IApplication implements TimerListener, MediaListener {
         if (I) {
             E(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            bj(var0, aC(79), g / 2, var2 + 3, J.stringWidth(aC(79)) + 8, 2);
+            bj(var0, aC(79), g / 2, var2 + 3, currentFont.stringWidth(aC(79)) + 8, 2);
         } else {
             E(var0, 16763955);
             var0.fillRect(var1, var2 + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + C(0)));
         }
 
         A(var0, 0, var1, var2 + 240 - C(0), 0);
-        bl(var0, var1, aC(64), var2 + 3 + y + 12, P[2], 12, 16056665, 16777215);
-        int var3 = var2 + 3 + y + 12 + y + 4;
+        bl(var0, var1, aC(64), var2 + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
+        int var3 = var2 + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
             bo(var0, g / 2, var3, 2, 0, 16770972, 16750748, 16770972);
             bp(var0, g / 2, var3 + 10, 56, P[2] >> 1, false);
@@ -1541,9 +1541,9 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
     public static void bt(Graphics var0, String var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) {
         E(var0, var8);
-        var0.fillRect(var2, var3, var4, y);
+        var0.fillRect(var2, var3, var4, currentFontHeight);
         E(var0, var7);
-        int var9 = J.stringWidth(var1);
+        int var9 = currentFont.stringWidth(var1);
         G(var0, var1, var2 + var4 - var5 * var6 % (var4 + var9), var3, 0);
     }
 
@@ -1578,7 +1578,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static int bu(String var0) {
-        return (y + 1) * (N(var0, "\n") - 1) + y + 4;
+        return (currentFontHeight + 1) * (N(var0, "\n") - 1) + currentFontHeight + 4;
     }
 
     public static void bo(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
@@ -1824,7 +1824,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
                 }
             }
         } else {
-            int var0 = J.stringWidth(X);
+            int var0 = currentFont.stringWidth(X);
             if (var0 + 232 <= U[3] * 12) {
                 U[3] = 0;
             }
@@ -1892,7 +1892,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
         A(var0, 0, var1, var2 + 240 - C(0), 0);
         bl(var0, var1, aC(65), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
-        int var5 = var2 + 3 + var3 + 3 + y + 4 + 20;
+        int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 4 + 20;
         boolean var6 = 0 == ar() & (U[6] & 4) != 0;
         ca(var0, g / 2, var5, var6);
         cb(var0, 1, aC(18), g / 2, var4, 100, 28, 2, 0);
@@ -1924,22 +1924,22 @@ public class b extends IApplication implements TimerListener, MediaListener {
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         int var3 = var2 + 4;
-        bj(var0, aC(23), g / 2, var3, J.stringWidth(aC(23)) + 8, 2);
-        int var4 = var3 + y + 8 + 6;
+        bj(var0, aC(23), g / 2, var3, currentFont.stringWidth(aC(23)) + 8, 2);
+        int var4 = var3 + currentFontHeight + 8 + 6;
         A(var0, 58, var1, var4, 0);
         z(var0, V[U[6] >> 3 & 1], var1 + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (g - 232) / 2;
         bt(var0, X, var6, var5, 232, U[3], 12, 16777215, 16056665);
         E(var0, 0);
-        var0.drawRect(var6, var5 - 1, 231, y + 1);
+        var0.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
         E(var0, 16763955);
-        var0.fillRect(var1, var5, 4, y);
+        var0.fillRect(var1, var5, 4, currentFontHeight);
         var0.fillRect(var6, var5 - 1, 1, 1);
-        var0.fillRect(var6, var5 + y, 1, 1);
-        var0.fillRect(var6 + 232, var5, 4, y);
+        var0.fillRect(var6, var5 + currentFontHeight, 1, 1);
+        var0.fillRect(var6 + 232, var5, 4, currentFontHeight);
         var0.fillRect(var6 - 1, var5 - 1, 1, 1);
-        var0.fillRect(var6 + 232 - 1, var5 + y, 1, 1);
+        var0.fillRect(var6 + 232 - 1, var5 + currentFontHeight, 1, 1);
         byte var7;
         if (U[5] - 1 <= U[4]) {
             var7 = 22;
@@ -1961,7 +1961,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         if (I) {
             E(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            bj(var0, aC(67), g / 2, var2 + 3, J.stringWidth(aC(67)) + 8, 2);
+            bj(var0, aC(67), g / 2, var2 + 3, currentFont.stringWidth(aC(67)) + 8, 2);
         } else {
             E(var0, 16763955);
             var0.fillRect(var1, var2 + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + C(0)));
@@ -1969,7 +1969,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
         A(var0, 0, var1, var2 + 240 - C(0), 0);
         bl(var0, var1, aC(66), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
-        int var4 = var2 + 3 + var3 + 3 + y + 12;
+        int var4 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
         ca(var0, g / 2, var4, false);
 
         for(int var5 = 0; var5 < 2; ++var5) {
@@ -2303,7 +2303,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         A(var0, 0, var1, var2 + 240 - C(0), 0);
         bl(var0, var1, aC(68), var2 + 2 + var3 + 2, ab[3], 12, 16056665, 16777215);
         boolean var4 = 0 == ar() & (ab[3] & 4) != 0;
-        int var5 = var2 + 2 + var3 + 2 + y + 3;
+        int var5 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
         ca(var0, g / 2, var5, var4);
         cb(var0, 1, aC(18), g / 2, var2 + 240 - 42, 100, 28, 2, 0);
         if (I) {
@@ -2396,7 +2396,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         if (I) {
             E(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
-            bj(var0, aC(69), g / 2, var2 + 3, J.stringWidth(aC(69)) + 8, 2);
+            bj(var0, aC(69), g / 2, var2 + 3, currentFont.stringWidth(aC(69)) + 8, 2);
         } else {
             var4 = var2 + bm(ae, 0, 1);
             var4 += bm(ae, 0, 3) / 2;
@@ -2412,7 +2412,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
             bk(var0, var4, ae, 0);
         }
 
-        int var5 = var2 + 3 + var3 + 3 + y + 12;
+        int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
         if (I) {
             bo(var0, g / 2, var5, 2, 0, 16756418, 13722050, 16756418);
             bp(var0, g / 2, var5 + 10, 56, ab[3] >> 1, false);
@@ -2625,7 +2625,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
     public static void cH(Graphics var0, int var1, int var2) {
         int var3 = bu(aC(36));
-        int var4 = var2 + 2 + var3 + 2 + y + 3;
+        int var4 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (I) {
@@ -2675,17 +2675,17 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void cJ(Graphics var0, int var1, int var2) {
-        int var3 = y;
+        int var3 = currentFontHeight;
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         A(var0, 0, var1, var2 + 240 - C(0), 0);
-        int var4 = J.stringWidth(ah[0]) + 8;
+        int var4 = currentFont.stringWidth(ah[0]) + 8;
         if (var4 < ag.getWidth()) {
             var4 = ag.getWidth();
         }
 
         bj(var0, ah[0], g / 2, var2 + 2, var4, 2);
-        var4 = y;
+        var4 = currentFontHeight;
         z(var0, ag, g / 2, var2 + 2 + var3 + 4 + 4, 2);
         bl(var0, var1, ah[1], var2 + 2 + var3 + 4 + 4 + ag.getHeight() + 7, af[2], 12, 16056665, 16777215);
 
@@ -3022,7 +3022,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
 
     public static void da(Graphics var0, int var1, int var2) {
         int var3 = bu(aC(41));
-        int var4 = var2 + 2 + var3 + 2 + y + 3;
+        int var4 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (I) {
@@ -3055,7 +3055,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         A(var0, 0, var1, var2 + 240 - C(0), 0);
-        bj(var0, aC(73), g / 2, var2 + 2, J.stringWidth(aC(73)) + 8, 2);
+        bj(var0, aC(73), g / 2, var2 + 2, currentFont.stringWidth(aC(73)) + 8, 2);
         A(var0, 59, g / 2, var2 + 50, 2);
         short var3 = 176;
         cc(var0, (g - var3) / 2, var2 + 160, 16, 0, 6, al[2], 11);
@@ -3069,7 +3069,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
             E(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
             A(var0, 71, var1, var2 + 240 - C(71), 0);
-            bj(var0, aC(6), g / 2, var2 + 3, J.stringWidth(aC(6)) + 8, 2);
+            bj(var0, aC(6), g / 2, var2 + 3, currentFont.stringWidth(aC(6)) + 8, 2);
             bl(var0, var1, aC(74), var2 + 3 + bu(aC(6)) + 3, al[2], 12, 16056665, 16777215);
             bj(var0, aC(cM(al[3], 6)), var1 + 3, var4, 110, 0);
 
@@ -3112,7 +3112,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         var0.fillRect(var1, var2 + 114, 240, C(6));
         A(var0, 6, var1, var2 + 114, 0);
         A(var0, 6, var1 + 120, var2 + 114, 0);
-        bj(var0, aC(43), g / 2, var2 + 2, J.stringWidth(aC(43)) + 8, 2);
+        bj(var0, aC(43), g / 2, var2 + 2, currentFont.stringWidth(aC(43)) + 8, 2);
         A(var0, 76, g / 2, var2 + 102, 2);
     }
 
@@ -3120,12 +3120,12 @@ public class b extends IApplication implements TimerListener, MediaListener {
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         A(var0, 0, var1, var2 + 240 - C(0), 0);
-        bj(var0, aC(89), g / 2, var2 + 2, J.stringWidth(aC(89)) + 8, 2);
+        bj(var0, aC(89), g / 2, var2 + 2, currentFont.stringWidth(aC(89)) + 8, 2);
         int var3 = var2 + 62;
         A(var0, 4, var1 + 0, var3, 0);
         A(var0, 4, var1 + 120, var3, 0);
         z(var0, am[0], g / 2, var3 - 12, 2);
-        int var4 = (y + 1) * 2 + y;
+        int var4 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var5 = var2 + 240 - (var4 + 4) - 2;
         cb(var0, 0, aC(88), g / 2, var5 - 44, 100, 28, 2, 0);
         H(var0, (g - 232) / 2, var5, 232, var4 + 4, 16056665, 16056665);
@@ -3138,17 +3138,17 @@ public class b extends IApplication implements TimerListener, MediaListener {
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         A(var0, 0, var1, var2 + 240 - C(0), 0);
-        bj(var0, aC(48), g / 2, var2 + 2, J.stringWidth(aC(48)) + 8, 2);
+        bj(var0, aC(48), g / 2, var2 + 2, currentFont.stringWidth(aC(48)) + 8, 2);
         z(var0, am[0], var1 + 0, var2 + 42, 0);
         z(var0, am[1], var1 + 120, var2 + 42, 0);
-        int var3 = (y + 1) * 2 + y;
+        int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var4 = var2 + 240 - (var3 + 4) - 2;
         cb(var0, 0, aC(18), g / 2, var4 - 38, 100, 28, 2, 0);
         H(var0, (g - 232) / 2, var4, 232, var3 + 4, 16056665, 16056665);
         E(var0, 16777215);
         G(var0, an[0], g / 2, var4 + 2, 2);
-        G(var0, an[1], g / 2, var4 + 2 + y + 1, 2);
-        G(var0, an[2], g / 2, var4 + 2 + (y + 1) * 2, 2);
+        G(var0, an[1], g / 2, var4 + 2 + currentFontHeight + 1, 2);
+        G(var0, an[2], g / 2, var4 + 2 + (currentFontHeight + 1) * 2, 2);
         aD(var0, 30, g / 2, var4 - 38 + C(30) / 2, 100, al[2]);
     }
 
@@ -3156,14 +3156,14 @@ public class b extends IApplication implements TimerListener, MediaListener {
         E(var0, 16763955);
         var0.fillRect(var1, var2, 240, 240);
         int var3 = bu(aC(51));
-        bj(var0, aC(51), g / 2, var2 + 2, J.stringWidth(aC(51)) + 8, 2);
+        bj(var0, aC(51), g / 2, var2 + 2, currentFont.stringWidth(aC(51)) + 8, 2);
         bl(var0, var1, aC(91), var2 + 2 + var3 + 2, al[2], 12, 16056665, 16777215);
 
         for(int var4 = 0; var4 < 2; ++var4) {
             bk(var0, var4, ao, 0);
         }
 
-        int var5 = var2 + 3 + var3 + 3 + y + 12;
+        int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
         bv(var0, var1, var5, 0, 16777215, 16730112, 16751616, 7786961);
         br(var0, g / 2, var5 + 4, 62, false, true);
         bp(var0, g / 2, var5 + 10, 56, al[2] >> 1, false);
@@ -3216,8 +3216,8 @@ public class b extends IApplication implements TimerListener, MediaListener {
             var0.fillRect(var1, var2, 240, 240);
             A(var0, 0, var1, var2 + 240 - C(0), 0);
             int var3 = var1 + 4;
-            int var4 = var2 + (240 - (y + 1) * 7) / 2;
-            H(var0, var1 + 2, var4 - 1, 236, (y + 1) * 7 + 2, 16056665, 16056665);
+            int var4 = var2 + (240 - (currentFontHeight + 1) * 7) / 2;
+            H(var0, var1 + 2, var4 - 1, 236, (currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
             String var5 = aC(ap[0] + ap[2]);
             int var6 = N(var5, "\n");
             E(var0, 16777215);
@@ -3233,7 +3233,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
                     do {
                         String var11 = var8.substring(0, var9);
                         G(var0, var11, var10, var4, 0);
-                        var10 += J.stringWidth(var11);
+                        var10 += currentFont.stringWidth(var11);
                         if (var8.length() - 1 <= var9) {
                             break;
                         }
@@ -3250,7 +3250,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
                     G(var0, var8, var10, var4, 0);
                 }
 
-                var4 += y + 1;
+                var4 += currentFontHeight + 1;
             }
 
         }
@@ -3424,12 +3424,12 @@ public class b extends IApplication implements TimerListener, MediaListener {
         int var3 = var1 + 120;
         int var4 = var2 + 5;
         var0.fillRect(var1, var2, 240, 240);
-        bj(var0, aC(54), var3, var4, J.stringWidth(aC(54)) + 8, 2);
-        dC(var0, aC(55), 0, var4 + 2 + (y + 6) * 2);
-        dC(var0, aC(56), 1, var4 + 2 + (y + 6) * 3);
-        dC(var0, aC(57), 2, var4 + 2 + (y + 6) * 4);
-        dC(var0, aC(58 + n[3]), 3, var4 + 2 + (y + 6) * 5);
-        dD(var0, g / 2, var4 + 2 + y + 6 + 2, 86, aq[5]);
+        bj(var0, aC(54), var3, var4, currentFont.stringWidth(aC(54)) + 8, 2);
+        dC(var0, aC(55), 0, var4 + 2 + (currentFontHeight + 6) * 2);
+        dC(var0, aC(56), 1, var4 + 2 + (currentFontHeight + 6) * 3);
+        dC(var0, aC(57), 2, var4 + 2 + (currentFontHeight + 6) * 4);
+        dC(var0, aC(58 + n[3]), 3, var4 + 2 + (currentFontHeight + 6) * 5);
+        dD(var0, g / 2, var4 + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
     public static void dz(Graphics var0, int var1, int var2) {
@@ -3437,10 +3437,10 @@ public class b extends IApplication implements TimerListener, MediaListener {
         int var3 = var1 + 120;
         int var4 = var2 + 5;
         var0.fillRect(var1, var2, 240, 240);
-        bj(var0, aC(60), var3, var4, J.stringWidth(aC(60)) + 4, 2);
-        dC(var0, aC(62), 0, var4 + 2 + (y + 6) * 2);
-        dC(var0, aC(63), 1, var4 + 2 + (y + 6) * 3);
-        dD(var0, g / 2, var4 + 2 + y + 6 + 2, 86, aq[5]);
+        bj(var0, aC(60), var3, var4, currentFont.stringWidth(aC(60)) + 4, 2);
+        dC(var0, aC(62), 0, var4 + 2 + (currentFontHeight + 6) * 2);
+        dC(var0, aC(63), 1, var4 + 2 + (currentFontHeight + 6) * 3);
+        dD(var0, g / 2, var4 + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
     public static void dA(Graphics var0, int var1, int var2) {
@@ -3448,10 +3448,10 @@ public class b extends IApplication implements TimerListener, MediaListener {
         int var3 = var1 + 120;
         int var4 = var2 + 5;
         var0.fillRect(var1, var2, 240, 240);
-        bj(var0, aC(61), var3, var4, J.stringWidth(aC(61)) + 8, 2);
-        dC(var0, aC(62), 0, var4 + 2 + (y + 6) * 2);
-        dC(var0, aC(63), 1, var4 + 2 + (y + 6) * 3);
-        dD(var0, g / 2, var4 + 2 + y + 6 + 2, 86, aq[5]);
+        bj(var0, aC(61), var3, var4, currentFont.stringWidth(aC(61)) + 8, 2);
+        dC(var0, aC(62), 0, var4 + 2 + (currentFontHeight + 6) * 2);
+        dC(var0, aC(63), 1, var4 + 2 + (currentFontHeight + 6) * 3);
+        dD(var0, g / 2, var4 + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
     public static void dC(Graphics var0, String var1, int var2, int var3) {
@@ -3465,7 +3465,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
             var4 = 3096512;
         }
 
-        H(var0, (g - 220) / 2, var3, 220, y + 4, var5, var5);
+        H(var0, (g - 220) / 2, var3, 220, currentFontHeight + 4, var5, var5);
         E(var0, var4);
         G(var0, var1, g / 2, var3 + 2, 2);
     }
@@ -3527,9 +3527,9 @@ public class b extends IApplication implements TimerListener, MediaListener {
     public static void dH() {
         if (dG()) {
             if (s(524288L)) {
-                at -= (y + 1) * 7;
+                at -= (currentFontHeight + 1) * 7;
             } else if (s(131072L)) {
-                at += (y + 1) * 7;
+                at += (currentFontHeight + 1) * 7;
             }
 
             if (s(1L)) {
@@ -3553,7 +3553,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
             var0.fillRect(var1, var2, 240, 240);
             A(var0, 0, var1, var2 + 240 - C(0), 0);
             int var3 = N(as, "\n");
-            int var4 = (var3 - 1) * (y + 1) + y + 4;
+            int var4 = (var3 - 1) * (currentFontHeight + 1) + currentFontHeight + 4;
             int var5 = var2 + (240 - (var4 + 4 + 8)) / 2;
             H(var0, (g - 232) / 2, var5, 232, var4, 16056665, 16056665);
             E(var0, 16777215);
@@ -3796,7 +3796,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         }
 
         int var12 = N(var1, "\n");
-        var12 = y + (var12 - 1) * (y + 1);
+        var12 = currentFontHeight + (var12 - 1) * (currentFontHeight + 1);
         E(var0, var9);
         G(var0, var1, var2 + var4 / 2, var3 + (var5 - var12) / 2, 2);
     }
@@ -3838,7 +3838,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
         }
 
         int var12 = N(var1, "\n");
-        var12 = y + (var12 - 1) * (y + 1);
+        var12 = currentFontHeight + (var12 - 1) * (currentFontHeight + 1);
         E(var0, var9);
         G(var0, var1, var2 + var4 / 2, var3 + (var5 - var12) / 2, 2);
     }
@@ -4528,14 +4528,14 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void eg(Graphics var0, int var1, int var2) {
-        bj(var0, aC(98), g / 2, var2 + 5, J.stringWidth(aC(98)) + 8, 2);
+        bj(var0, aC(98), g / 2, var2 + 5, currentFont.stringWidth(aC(98)) + 8, 2);
         A(var0, 67, g / 2 + (aC[1] * 8 - 60), var2 + 50, 2);
-        cb(var0, 0, aC(38), g / 2, var2 + 50 + C(67) + 10, J.stringWidth(aC(38)) + 8, y + 4, 2, 0);
-        aD(var0, aC[5], g / 2, var2 + 50 + C(67) + 10 + (y + 4) / 2, J.stringWidth(aC(18)) + 20, aC[1]);
+        cb(var0, 0, aC(38), g / 2, var2 + 50 + C(67) + 10, currentFont.stringWidth(aC(38)) + 8, currentFontHeight + 4, 2, 0);
+        aD(var0, aC[5], g / 2, var2 + 50 + C(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
     }
 
     public static void eh(Graphics var0, int var1, int var2) {
-        bj(var0, aC(99), g / 2, var2 + 5, J.stringWidth(aC(99)) + 8, 2);
+        bj(var0, aC(99), g / 2, var2 + 5, currentFont.stringWidth(aC(99)) + 8, 2);
         A(var0, 68, g / 2, var2 + 50, 2);
         int[] var3;
         if (aC[2] == 7) {
@@ -4552,19 +4552,19 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public static void ei(Graphics var0, int var1, int var2) {
-        bj(var0, aC(96), g / 2, var2 + 5, J.stringWidth(aC(96)) + 8, 2);
+        bj(var0, aC(96), g / 2, var2 + 5, currentFont.stringWidth(aC(96)) + 8, 2);
         ek(var0, var1, var2);
     }
 
     public static void ej(Graphics var0, int var1, int var2) {
-        bj(var0, aC(97), g / 2, var2 + 5, J.stringWidth(aC(97)) + 8, 2);
+        bj(var0, aC(97), g / 2, var2 + 5, currentFont.stringWidth(aC(97)) + 8, 2);
         ek(var0, var1, var2);
     }
 
     public static void ek(Graphics var0, int var1, int var2) {
         A(var0, 29, g / 2, var2 + 50, 2);
-        cb(var0, 0, aC(18), g / 2, var2 + 50 + C(29) + 10, J.stringWidth(aC(18)) + 8, y + 4, 2, 0);
-        aD(var0, aC[5], g / 2, var2 + 50 + C(29) + 10 + (y + 4) / 2, J.stringWidth(aC(18)) + 20, aC[1]);
+        cb(var0, 0, aC(18), g / 2, var2 + 50 + C(29) + 10, currentFont.stringWidth(aC(18)) + 8, currentFontHeight + 4, 2, 0);
+        aD(var0, aC[5], g / 2, var2 + 50 + C(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(aC(18)) + 20, aC[1]);
     }
 
     public static void dx() {
@@ -4842,7 +4842,7 @@ public class b extends IApplication implements TimerListener, MediaListener {
     }
 
     public void e() {
-        f = new a(this);
+        f = new GameScreen(this);
         f.setBackground(Graphics.getColorOfName(0));
         g = f.getWidth();
         h = f.getHeight();
