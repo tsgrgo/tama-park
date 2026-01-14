@@ -21,6 +21,12 @@ import java.io.DataOutputStream;
 import java.util.Date;
 import javax.microedition.io.Connector;
 
+enum TextAlign {
+    LEFT,
+    RIGHT,
+    CENTER
+}
+
 public class GameApp extends IApplication implements TimerListener, MediaListener {
     public static boolean aL;
     public static int Code;
@@ -616,16 +622,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return res;
     }
 
-    public static void drawSprite(Graphics g, int idx, int x, int y, int var4) {
-        drawImage(g, images[idx], x, y, var4);
+    public static void drawSprite(Graphics g, int idx, int x, int y, int anchor) {
+        drawImage(g, images[idx], x, y, anchor);
     }
-
-    public static void drawImage(Graphics g, Image img, int x, int y, int var4) {
-        if (var4 == 2) {
+    
+    public static void drawImage(Graphics g, Image img, int x, int y, int anchor) {
+        if (anchor == 2) {
             x -= img.getWidth() / 2;
-        } else if (var4 == 1) {
+        } else if (anchor == 1) {
             x -= img.getWidth();
-        } else if (var4 == 3) {
+        } else if (anchor == 3) {
             x -= img.getWidth() / 2;
             y -= img.getHeight() / 2;
         }
@@ -649,11 +655,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.setColor(Graphics.getColorOfRGB(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255));
     }
 
-    public static void drawString(Graphics g, String str, int x, int y, int var4) {
-        drawStringWithLineHeight(g, str, x, y, currentFont.getHeight() + 1, var4);
+    public static void drawString(Graphics g, String str, int x, int y, TextAlign align) {
+        drawMultilineString(g, str, x, y, currentFont.getHeight() + 1, align);
     }
 
-    public static void drawStringWithLineHeight(Graphics g, String str, int x, int y, int lineHeight, int var5) {
+    public static void drawMultilineString(Graphics g, String str, int x, int y, int lineHeight, TextAlign align) {
         boolean var6 = false;
         int fromIndex = 0;
         boolean hasNewLine = true;
@@ -666,9 +672,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             int newX = x;
-            if (var5 == 2) {
+            if (align == TextAlign.CENTER) {
                 newX = x - currentFont.stringWidth(str.substring(fromIndex, toIndex)) / 2;
-            } else if (var5 == 1) {
+            } else if (align == TextAlign.RIGHT) {
                 newX = x - currentFont.stringWidth(str.substring(fromIndex, toIndex));
             }
 
@@ -940,7 +946,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16763955);
         g.drawRect(var3, var4, 200, 40);
-        drawString(g, "Downloading", GameApp.canvasWidth / 2, var4 - currentFontHeight - 4, 2);
+        drawString(g, "Downloading", GameApp.canvasWidth / 2, var4 - currentFontHeight - 4, TextAlign.CENTER);
         int var5 = 200 * w / 8;
         g.fillRect(var3, var4, var5, 40);
     }
@@ -968,9 +974,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setColorOfRGBInt(g, 0);
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, str, GameApp.canvasWidth / 2, y + 30, 2);
-        drawString(g, "An error has occured", GameApp.canvasWidth / 2, y + 31 + currentFontHeight, 2);
-        drawString(g, "Confirm:Exit", GameApp.canvasWidth / 2, y + 240 - 10 - currentFontHeight, 2);
+        drawString(g, str, GameApp.canvasWidth / 2, y + 30, TextAlign.CENTER);
+        drawString(g, "An error has occured", GameApp.canvasWidth / 2, y + 31 + currentFontHeight, TextAlign.CENTER);
+        drawString(g, "Confirm:Exit", GameApp.canvasWidth / 2, y + 240 - 10 - currentFontHeight, TextAlign.CENTER);
     }
 
     public static void ak() {
@@ -1184,7 +1190,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawSprite(g, 6, x + 120, y + 78, 0);
             drawBeveledRect(g, x + 3, y + 3, var4, var3 + 4, 0, 16056665);
             setColorOfRGBInt(g, 16777215);
-            drawString(g, getText(29), x + 3 + 2, y + 3 + 2, 0);
+            drawString(g, getText(29), x + 3 + 2, y + 3 + 2, TextAlign.LEFT);
 
             for(var5 = 0; var5 < 3; ++var5) {
                 aw(g, var5, L, 0);
@@ -1203,7 +1209,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
             drawSprite(g, 89, x + 240 + 2 - getSpriteWidth(89), y + 54, 0);
-            aE(g);
+            clearOutsideGameArea(g);
         }
 
     }
@@ -1264,7 +1270,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawSprite(var0, 6, var1 + 120, var2 + 78, 0);
             drawBeveledRect(var0, var1 + 3, var2 + 3, var4, var3 + 8, 0, 16056665);
             setColorOfRGBInt(var0, 16777215);
-            drawString(var0, getText(40), var1 + 3 + 6, var2 + 3 + 4, 0);
+            drawString(var0, getText(40), var1 + 3 + 6, var2 + 3 + 4, TextAlign.LEFT);
 
             for(var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, N, 0);
@@ -1502,49 +1508,49 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(var0, 76, canvasWidth / 2, var2 + 100, 2);
     }
 
-    public static void bg(Graphics var0, int var1, int var2) {
+    public static void bg(Graphics g, int x, int y) {
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(79), canvasWidth / 2, var2 + 3, currentFont.stringWidth(getText(79)) + 8, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            bj(g, getText(79), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(79)) + 8, 2);
         } else {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + getSpriteHeight(0)));
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + getSpriteHeight(0)));
         }
 
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bl(var0, var1, getText(64), var2 + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
-        int var3 = var2 + 3 + currentFontHeight + 12 + currentFontHeight + 4;
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        bl(g, x, getText(64), y + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
+        int var3 = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
-            bo(var0, canvasWidth / 2, var3, 2, 0, 16770972, 16750748, 16770972);
-            bp(var0, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false);
+            bo(g, canvasWidth / 2, var3, 2, 0, 16770972, 16750748, 16770972);
+            bp(g, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false);
         } else {
-            bq(var0, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false, 16770972);
+            bq(g, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false, 16770972);
         }
 
-        br(var0, canvasWidth / 2, var3 + 4, 62, false, I);
+        br(g, canvasWidth / 2, var3 + 4, 62, false, I);
 
         for(int var4 = 0; var4 < 3; ++var4) {
-            bk(var0, var4, S, 0);
+            bk(g, var4, S, 0);
         }
 
-        aD(var0, 61, var1 + bm(S, ar(), 0), var2 + bm(S, ar(), 1) + bm(S, ar(), 3) / 2, bm(S, ar(), 2) - 10, P[2]);
+        aD(g, 61, x + bm(S, ar(), 0), y + bm(S, ar(), 1) + bm(S, ar(), 3) / 2, bm(S, ar(), 2) - 10, P[2]);
     }
 
-    public static void bh(Graphics var0, int var1, int var2) {
-        bs(var0, var1, var2);
+    public static void bh(Graphics g, int x, int y) {
+        bs(g, x, y);
     }
 
-    public static void bl(Graphics var0, int var1, String var2, int var3, int var4, int var5, int var6, int var7) {
-        bt(var0, var2, var1, var3, 240, var4, var5, var6, var7);
+    public static void bl(Graphics g, int var1, String var2, int var3, int var4, int var5, int var6, int var7) {
+        bt(g, var2, var1, var3, 240, var4, var5, var6, var7);
     }
 
-    public static void bt(Graphics var0, String var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) {
-        setColorOfRGBInt(var0, var8);
-        var0.fillRect(var2, var3, var4, currentFontHeight);
-        setColorOfRGBInt(var0, var7);
-        int var9 = currentFont.stringWidth(var1);
-        drawString(var0, var1, var2 + var4 - var5 * var6 % (var4 + var9), var3, 0);
+    public static void bt(Graphics g, String text, int var2, int var3, int var4, int var5, int var6, int textColor, int var8) {
+        setColorOfRGBInt(g, var8);
+        g.fillRect(var2, var3, var4, currentFontHeight);
+        setColorOfRGBInt(g, textColor);
+        int var9 = currentFont.stringWidth(text);
+        drawString(g, text, var2 + var4 - var5 * var6 % (var4 + var9), var3, TextAlign.LEFT);
     }
 
     public static void bp(Graphics var0, int var1, int var2, int var3, int var4, boolean var5) {
@@ -1574,7 +1580,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawBeveledRect(var0, var2, var3, var4, var6, var7, var8);
         setColorOfRGBInt(var0, var9);
-        drawString(var0, var1, var2 + var4 / 2, var3 + 2, 2);
+        drawString(var0, var1, var2 + var4 / 2, var3 + 2, TextAlign.CENTER);
     }
 
     public static int calculateTextHeight(String text) {
@@ -3130,7 +3136,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         cb(g, 0, getText(88), canvasWidth / 2, var5 - 44, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var5, 232, var4 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, getText(90), canvasWidth / 2, var5 + 2, 2);
+        drawString(g, getText(90), canvasWidth / 2, var5 + 2, TextAlign.CENTER);
         aD(g, 30, canvasWidth / 2, var5 - 44 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
@@ -3146,9 +3152,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         cb(g, 0, getText(18), canvasWidth / 2, var4 - 38, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var4, 232, var3 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, an[0], canvasWidth / 2, var4 + 2, 2);
-        drawString(g, an[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, 2);
-        drawString(g, an[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, 2);
+        drawString(g, an[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
+        drawString(g, an[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
+        drawString(g, an[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
         aD(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
@@ -3226,13 +3232,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 String var8 = O(var5, i, 1, "\n");
                 int var9 = var8.indexOf("$");
                 if (var9 == -1) {
-                    drawString(g, var8, var3, var4, 0);
+                    drawString(g, var8, var3, var4, TextAlign.LEFT);
                 } else {
                     int var10 = var3;
 
                     do {
                         String var11 = var8.substring(0, var9);
-                        drawString(g, var11, var10, var4, 0);
+                        drawString(g, var11, var10, var4, TextAlign.LEFT);
                         var10 += currentFont.stringWidth(var11);
                         if (var8.length() - 1 <= var9) {
                             break;
@@ -3247,7 +3253,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         var9 = var8.indexOf("$");
                     } while(var9 != -1);
 
-                    drawString(g, var8, var10, var4, 0);
+                    drawString(g, var8, var10, var4, TextAlign.LEFT);
                 }
 
                 var4 += currentFontHeight + 1;
@@ -3467,7 +3473,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawBeveledRect(var0, (canvasWidth - 220) / 2, var3, 220, currentFontHeight + 4, var5, var5);
         setColorOfRGBInt(var0, var4);
-        drawString(var0, var1, canvasWidth / 2, var3 + 2, 2);
+        drawString(var0, var1, canvasWidth / 2, var3 + 2, TextAlign.CENTER);
     }
 
     public static void dD(Graphics var0, int var1, int var2, int var3, int var4) {
@@ -3557,7 +3563,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int var5 = var2 + (240 - (textHeight + 4 + 8)) / 2;
             drawBeveledRect(var0, (canvasWidth - 232) / 2, var5, 232, textHeight, 16056665, 16056665);
             setColorOfRGBInt(var0, 16777215);
-            drawString(var0, as, canvasWidth / 2, var5 + 2, 2);
+            drawString(var0, as, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
             cb(var0, 0, getText(88), canvasWidth / 2 - 8, var5 + textHeight + 4, 100, 28, 1, 0);
             cb(var0, 1, getText(9), canvasWidth / 2 + 8, var5 + textHeight + 4, 100, 28, 0, 0);
         }
@@ -3798,7 +3804,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int textHeight = splitCount(text, "\n");
         textHeight = currentFontHeight + (textHeight - 1) * (currentFontHeight + 1);
         setColorOfRGBInt(g, var9);
-        drawString(g, text, var2 + var4 / 2, var3 + (var5 - textHeight) / 2, 2);
+        drawString(g, text, var2 + var4 / 2, var3 + (var5 - textHeight) / 2, TextAlign.CENTER);
     }
 
     public static void dM(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9) {
@@ -3840,7 +3846,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int textHeight = splitCount(text, "\n");
         textHeight = currentFontHeight + (textHeight - 1) * (currentFontHeight + 1);
         setColorOfRGBInt(g, var9);
-        drawString(g, text, var2 + var4 / 2, var3 + (var5 - textHeight) / 2, 2);
+        drawString(g, text, var2 + var4 / 2, var3 + (var5 - textHeight) / 2, TextAlign.CENTER);
     }
 
     public static void dN(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9) {
@@ -4027,7 +4033,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var1 -= 75;
         }
 
-        drawString(var0, "" + bR(var4), var1, var2, 0);
+        drawString(var0, "" + bR(var4), var1, var2, TextAlign.LEFT);
     }
 
     public static void cc(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
@@ -4770,7 +4776,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void aE(Graphics g) {
+    public static void clearOutsideGameArea(Graphics g) {
         setColorOfRGB(g, 255, 255, 255);
         if (rootX > 0) {
             g.fillRect(0, 0, rootX, canvasHeight);
