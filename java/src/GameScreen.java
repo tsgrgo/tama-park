@@ -5,10 +5,12 @@ public class GameScreen extends Canvas {
     public GameScreen(GameApp app) {
     }
 
-    public void processEvent(int var1, int var2) {
-        GameApp.Code(var1, var2);
+    @Override
+    public void processEvent(int type, int param) {
+        GameApp.Code(type, param);
     }
 
+    @Override
     public void paint(Graphics g) {
         if (GameApp.Code == 2) {
             GameApp.Code = 3;
