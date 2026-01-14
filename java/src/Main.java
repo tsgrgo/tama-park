@@ -9,16 +9,15 @@ public class Main {
         Connector.setScratchpadFile(new File(""));
 
         GameApp app = new GameApp();
-        GameScreen screen = new GameScreen(app);
 
         // --------------------------
 
         Frame f = new Frame("Game");
-        f.add(screen.unwrap());
+        f.add(GameApp.canvas.unwrap());
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
-        screen.unwrap().requestFocus();
+        GameApp.canvas.unwrap().requestFocus();
 
         f.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
