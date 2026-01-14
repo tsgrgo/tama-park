@@ -6,16 +6,27 @@ import java.awt.event.KeyListener;
 
 public abstract class Canvas {
     // Event type constants
-    public static final int EVENT_KEY_PRESSED  = 0;
-    public static final int EVENT_KEY_RELEASED = 1;
-    public static final int EVENT_KEY_TYPED    = 2;
+    public static final int KEY_PRESSED_EVENT = 0;
+    public static final int KEY_RELEASED_EVENT = 1;
 
-    // Keypad state bitmask flags
-    public static final int KEY_LEFT  = 1 << 0;
-    public static final int KEY_RIGHT = 1 << 1;
-    public static final int KEY_UP    = 1 << 2;
-    public static final int KEY_DOWN  = 1 << 3;
-    public static final int KEY_ENTER = 1 << 4;
+    // Key constants
+    public static final int KEY_0 = 0x00;
+    // to KEY9
+    public static final int KEY_ASTERISK = 0x0A; // '*'
+    public static final int KEY_POUND = 0x0B; // '#'
+
+
+    // Directions / select
+    public static final int KEY_LEFT = 0x10;
+    public static final int KEY_UP = 0x11;
+    public static final int KEY_RIGHT = 0x12;
+    public static final int KEY_DOWN = 0x13;
+    public static final int KEY_SELECT = 0x14;
+
+    // Soft keys
+    public static final int KEY_SOFT1 = 0x15;
+    public static final int KEY_SOFT2 = 0x16;
+
 
     private final java.awt.Canvas awtCanvas;
 
@@ -31,7 +42,6 @@ public abstract class Canvas {
 
             @Override
             public void update(java.awt.Graphics g) {
-                // Avoid flicker: don't clear background here, just paint
                 paint(g);
             }
         };
@@ -42,32 +52,26 @@ public abstract class Canvas {
         awtCanvas.setPreferredSize(new Dimension(240, 240));
 
         awtCanvas.addKeyListener(new KeyListener() {
+
             @Override
-            public void keyTyped(KeyEvent e) {
-                processEvent(EVENT_KEY_TYPED, e.getKeyChar());
-            }
+            public void keyTyped(KeyEvent e) {}
 
             @Override
             public void keyPressed(KeyEvent e) {
-                updateKeypadState(e.getKeyCode(), true);
-                processEvent(EVENT_KEY_PRESSED, e.getKeyCode());
+                int dojaKeyCode = mapAwtToDojaKey(e);
+                updateKeypadState(dojaKeyCode, true);
+                processEvent(KEY_PRESSED_EVENT, dojaKeyCode);
                 // repaint(); ??
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                updateKeypadState(e.getKeyCode(), false);
-                processEvent(EVENT_KEY_RELEASED, e.getKeyCode());
+                int dojaKeyCode = mapAwtToDojaKey(e);
+                updateKeypadState(dojaKeyCode, false);
+                processEvent(KEY_RELEASED_EVENT, e.getKeyCode());
             }
         });
 
-        // IDK why the game doesnt call repaint or something like that...
-        // Dirty fix for now
-        new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() {
-            @Override public void run() {
-                awtCanvas.repaint();
-            }
-        }, 0, 16);
     }
 
 
@@ -96,17 +100,44 @@ public abstract class Canvas {
 
     public java.awt.Canvas unwrap() { return awtCanvas; }
 
-    private synchronized void updateKeypadState(int keyCode, boolean pressed) {
-        int bit = 0;
+    private static int mapAwtToDojaKey(KeyEvent e) {
+        int keyCode = e.getKeyCode();
 
+        // Directions / select
         switch (keyCode) {
-            case KeyEvent.VK_LEFT:  bit = KEY_LEFT;  break;
-            case KeyEvent.VK_RIGHT: bit = KEY_RIGHT; break;
-            case KeyEvent.VK_UP:    bit = KEY_UP;    break;
-            case KeyEvent.VK_DOWN:  bit = KEY_DOWN;  break;
-            case KeyEvent.VK_ENTER: bit = KEY_ENTER; break;
-            default: return;
+            case KeyEvent.VK_LEFT: return KEY_LEFT;
+            case KeyEvent.VK_RIGHT: return KEY_RIGHT;
+            case KeyEvent.VK_UP: return KEY_UP;
+            case KeyEvent.VK_DOWN: return KEY_DOWN;
+            case KeyEvent.VK_ENTER: return KEY_SELECT;
+            // Soft keys: map to function keys as a reasonable desktop substitute
+            case KeyEvent.VK_F1: return KEY_SOFT1;
+            case KeyEvent.VK_F2: return KEY_SOFT2;
         }
+
+        // Digits (top row or numpad)
+        if (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9) {
+            return KEY_0 + (keyCode - KeyEvent.VK_0);
+        }
+        if (keyCode >= KeyEvent.VK_NUMPAD0 && keyCode <= KeyEvent.VK_NUMPAD9) {
+            return KEY_0 + (keyCode - KeyEvent.VK_NUMPAD0);
+        }
+
+        // Symbols
+        char ch = e.getKeyChar();
+        if (ch == '*') return KEY_ASTERISK;
+        if (ch == '#') return KEY_POUND;
+
+        // Not mapped
+        return -1;
+    }
+
+    private synchronized void updateKeypadState(int dojaKeyCode, boolean pressed) {
+        if (dojaKeyCode < 0 || dojaKeyCode >= 32) {
+            return;
+        }
+
+        int bit = 1 << dojaKeyCode;
 
         if (pressed) keypadStateBits |= bit;
         else keypadStateBits &= ~bit;
