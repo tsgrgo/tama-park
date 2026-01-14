@@ -1,8 +1,5 @@
 package com.nttdocomo.ui;
 
 public interface MediaListener {
-
-    // void mediaStarted(Object media);
-    // void mediaStopped(Object media);
-    // void mediaError(Object media, int errorCode);
+    void mediaAction(MediaPresenter presenter, int var2, int var3);
 }
