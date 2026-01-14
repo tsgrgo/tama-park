@@ -1171,39 +1171,39 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void aF(Graphics var0, int var1, int var2) {
+    public static void aF(Graphics g, int x, int y) {
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 184;
         int var5;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 78, 240, getSpriteHeight(6));
-            drawSprite(var0, 6, var1, var2 + 78, 0);
-            drawSprite(var0, 6, var1 + 120, var2 + 78, 0);
-            drawBeveledRect(var0, var1 + 3, var2 + 3, var4, var3 + 4, 0, 16056665);
-            setColorOfRGBInt(var0, 16777215);
-            drawString(var0, getText(29), var1 + 3 + 2, var2 + 3 + 2, 0);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            setColorOfRGBInt(g, 6728679);
+            g.fillRect(x, y + 78, 240, getSpriteHeight(6));
+            drawSprite(g, 6, x, y + 78, 0);
+            drawSprite(g, 6, x + 120, y + 78, 0);
+            drawBeveledRect(g, x + 3, y + 3, var4, var3 + 4, 0, 16056665);
+            setColorOfRGBInt(g, 16777215);
+            drawString(g, getText(29), x + 3 + 2, y + 3 + 2, 0);
 
             for(var5 = 0; var5 < 3; ++var5) {
-                aw(var0, var5, L, 0);
+                aw(g, var5, L, 0);
             }
         } else {
             for(var5 = 0; var5 < 3; ++var5) {
-                aw(var0, var5, L, 0);
+                aw(g, var5, L, 0);
             }
         }
 
         var5 = ax(L, ar(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(L, ar(), 1) + var2;
+        int var6 = ax(L, ar(), 1) + y;
         var6 += ax(L, ar(), 3) / 2;
-        aD(var0, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
+        aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (I) {
-            drawSprite(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
-            drawSprite(var0, 89, var1 + 240 + 2 - getSpriteWidth(89), var2 + 54, 0);
-            aE(var0);
+            drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
+            drawSprite(g, 89, x + 240 + 2 - getSpriteWidth(89), y + 54, 0);
+            aE(g);
         }
 
     }
@@ -4784,7 +4784,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public void mediaAction(MediaPresenter var1, int var2, int var3) {
+    public void mediaAction(MediaPresenter presenter, int var2, int var3) {
         if (var2 == 3) {
             StackMap(a, true);
         }
@@ -4795,12 +4795,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         try {
             timer.stop();
             startTimerWithRetry();
-        } catch (Exception var3) {
+        } catch (Exception ex) {
         }
 
         try {
             Thread.sleep(50L);
-        } catch (InterruptedException var2) {
+        } catch (InterruptedException ex) {
         }
 
         Z();
@@ -4808,9 +4808,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         StackMap = true;
     }
 
-    public void timerExpired(Timer var1) {
+    public void timerExpired(Timer timer) {
         try {
-            timer.stop();
+            GameApp.timer.stop();
             if (!this.c) {
                 this.c = true;
                 if (Code == 0) {
@@ -4838,7 +4838,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             startTimerWithRetry();
-        } catch (Exception var3) {
+        } catch (Exception ex) {
         }
 
     }
