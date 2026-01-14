@@ -4,10 +4,6 @@ public class Timer {
 
     private TimerListener listener;
 
-    public Timer() {
-        // this.listener = listener;
-    }
-
     public void setTime(int millis) {
         // stub
     }
@@ -23,6 +19,7 @@ public class Timer {
     public void setRepeat(boolean b) {
     }
 
-    public void setListener(TimerListener b) {
+    public void setListener(TimerListener listener) {
+        this.listener = listener;
     }
 }
