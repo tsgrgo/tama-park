@@ -456,9 +456,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return (s[2] & var0) != 0L;
     }
 
-    public static void Code(int var0, int var1) {
+    public static void Code(int type, int param) {
         try {
-            if (0 == var0) {
+            if (0 == type) {
                 s[0] = (long)(canvas.getKeypadState() & Integer.MAX_VALUE);
                 s[4]++;
             }
@@ -809,11 +809,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var1;
     }
 
-    public static void Q(int var0, String var1) {
-        if (var0 == 0) {
-            canvas.setSoftLabel(0, var1);
-        } else if (var0 == 1) {
-            canvas.setSoftLabel(1, var1);
+    public static void setSoftLabel(int which, String str) {
+        if (which == 0) {
+            canvas.setSoftLabel(0, str);
+        } else if (which == 1) {
+            canvas.setSoftLabel(1, str);
         }
 
     }
@@ -822,9 +822,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (B != var0) {
             try {
                 C = B;
-                Q(0, D[var0]);
+                setSoftLabel(0, D[var0]);
                 B = var0;
-            } catch (Exception var2) {
+            } catch (Exception ex) {
             }
 
         }
