@@ -1,12 +1,11 @@
 package com.nttdocomo.ui;
 
-import com.sun.jmx.remote.internal.ClientCommunicatorAdmin;
-
 public abstract class IApplication {
 
     protected IApplication() {}
 
-    protected static ClientCommunicatorAdmin getCurrentApp() {
+    protected static IApplication getCurrentApp() {
+        return null;
     }
 
     public void start() {}
@@ -20,5 +19,11 @@ public abstract class IApplication {
 
     protected String[] getArgs() {
         return new String[0];
+    }
+
+    public void launch(int i, String[] var2) {
+    }
+
+    public void terminate() {
     }
 }
