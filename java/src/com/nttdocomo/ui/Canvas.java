@@ -36,7 +36,7 @@ public abstract class Canvas {
         this.awtCanvas = new java.awt.Canvas() {
             @Override
             public void paint(java.awt.Graphics g) {
-                com.nttdocomo.ui.Graphics wrappedG = new com.nttdocomo.ui.Graphics(g);
+                com.nttdocomo.ui.Graphics wrappedG = new com.nttdocomo.ui.Graphics(g, awtCanvas);
                 Canvas.this.paint(wrappedG);
             }
 

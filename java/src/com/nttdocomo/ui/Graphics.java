@@ -1,12 +1,18 @@
 package com.nttdocomo.ui;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Graphics {
-    private final java.awt.Graphics g;
+    private final java.awt.Graphics screenG;
+    private java.awt.Graphics bufferG;
+    private BufferedImage buffer;
+    private final Component component;
 
-    public Graphics(java.awt.Graphics g) {
-        this.g = g;
+    public Graphics(java.awt.Graphics g, Component component) {
+        this.screenG = g;
+        this.bufferG = g;
+        this.component = component;
     }
 
     public static Object getColorOfName(int i) {
@@ -40,35 +46,59 @@ public class Graphics {
         return v;
     }
 
-    public void lock() {/* no-op */}
-    public void unlock(boolean present) {/* no-op */}
+    public void lock() {
+        if (component == null) return;
+
+        int w = component.getWidth();
+        int h = component.getHeight();
+        if (w <= 0 || h <= 0) return;
+
+        if (buffer == null || buffer.getWidth() != w || buffer.getHeight() != h) {
+            buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        }
+
+        bufferG = buffer.getGraphics();
+    }
+
+    public void unlock(boolean present) {
+        if (component == null) return;
+
+        if (present && buffer != null && screenG != null) {
+            screenG.drawImage(buffer, 0, 0, null);
+        }
+        
+        if (bufferG != null && bufferG != screenG) {
+            bufferG.dispose();
+        }
+
+        bufferG = screenG;
+    }
 
     public void setFont(Font font) {
         if (font == null) return;
         java.awt.Font awtFont = font.unwrap();
-        if (awtFont != null) g.setFont(awtFont);
+        if (awtFont != null) bufferG.setFont(awtFont);
     }
 
     public void setColor(int rgb) {
         int r = (rgb >> 16) & 0xFF;
         int gg = (rgb >> 8) & 0xFF;
         int b = rgb & 0xFF;
-        g.setColor(new Color(r, gg, b));
+        bufferG.setColor(new Color(r, gg, b));
     }
 
-    public void fillRect(int x, int y, int w, int h) { g.fillRect(x, y, w, h); }
-    public void drawRect(int x, int y, int w, int h) { g.drawRect(x, y, w, h); }
-    public void fillArc(int x, int y, int w, int h, int start, int arc) { g.fillArc(x, y, w, h, start, arc); }
-    public void drawString(String str, int x, int y) { g.drawString(str, x, y); }
-    public void setClip(int x, int y, int w, int h) { g.setClip(x, y, w, h); }
+    public void fillRect(int x, int y, int w, int h) { bufferG.fillRect(x, y, w, h); }
+    public void drawRect(int x, int y, int w, int h) { bufferG.drawRect(x, y, w, h); }
+    public void fillArc(int x, int y, int w, int h, int start, int arc) { bufferG.fillArc(x, y, w, h, start, arc); }
+    public void drawString(String str, int x, int y) { bufferG.drawString(str, x, y); }
+    public void setClip(int x, int y, int w, int h) { bufferG.setClip(x, y, w, h); }
 
     public void drawImage(Image img, int x, int y) {
         if (img == null) return;
         java.awt.Image awtImg = img.unwrap();
         if (awtImg != null) {
-            g.drawImage(awtImg, x, y, null);
+            bufferG.drawImage(awtImg, x, y, null);
         }
     }
 
-    public java.awt.Graphics unwrap() { return g; }
 }
