@@ -250,7 +250,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void startTimerWithRetry() {
         int var0 = 0;
 
-        while(var0 < 10) {
+        while (var0 < 10) {
             try {
                 timer.start();
                 return;
@@ -281,7 +281,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             b += 256;
         }
 
-        for(int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 2; ++i) {
             res = hexDigitToString(b % 16) + res;
             b /= 16;
         }
@@ -294,7 +294,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (digit < 10) {
             res = "" + digit;
         } else {
-            switch(digit) {
+            switch (digit) {
                 case 10:
                     res = "A";
                     break;
@@ -357,7 +357,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void stopAllSounds() {
-        for(int i = 0; i < audioPresenters.length; ++i) {
+        for (int i = 0; i < audioPresenters.length; ++i) {
             stopSound(i);
         }
 
@@ -410,17 +410,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int var4 = 0;
 
             int i;
-            for(i = 0; i < 93; ++i) {
+            for (i = 0; i < 93; ++i) {
                 var4 += var3[i];
             }
 
             stream = Connector.openDataInputStream("scratchpad:///0;pos=" + (var4 + 128 + 568));
 
-            for(i = 0; i < 7; ++i) {
+            for (i = 0; i < 7; ++i) {
                 byte[] data = new byte[var3[i + 93]];
                 stream.read(data);
 
-                for(int var6 = 0; var6 < data.length; ++var6) {
+                for (int var6 = 0; var6 < data.length; ++var6) {
                 }
 
                 mediaSounds[i] = MediaManager.getSound(data);
@@ -459,7 +459,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void Code(int type, int param) {
         try {
             if (0 == type) {
-                s[0] = (long)(canvas.getKeypadState() & Integer.MAX_VALUE);
+                s[0] = (long) (canvas.getKeypadState() & Integer.MAX_VALUE);
                 s[4]++;
             }
         } catch (Exception ex) {
@@ -538,7 +538,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         try {
             DataInputStream stream = Connector.openDataInputStream("scratchpad:///0;pos=0");
 
-            for(int i = 0; i < n.length; ++i) {
+            for (int i = 0; i < n.length; ++i) {
                 n[i] = stream.readInt();
             }
 
@@ -554,7 +554,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         try {
             DataOutputStream outputStream = Connector.openDataOutputStream("scratchpad:///0;pos=0");
 
-            for(int i = 0; i < n.length; ++i) {
+            for (int i = 0; i < n.length; ++i) {
                 outputStream.writeInt(n[i]);
             }
 
@@ -571,13 +571,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         d();
         pos += n[1] * 10240;
 
-        for(int i = n[1]; i < (var1 - 1) / 10240 + 1; ++i) {
-            HttpConnection var3 = (HttpConnection)Connector.open(mediaListener.getSourceURL() + path + i + ".bin", 1, true);
+        for (int i = n[1]; i < (var1 - 1) / 10240 + 1; ++i) {
+            HttpConnection var3 = (HttpConnection) Connector.open(mediaListener.getSourceURL() + path + i + ".bin", 1, true);
             var3.setRequestMethod("GET");
             var3.connect();
             System.gc();
             DataInputStream var5 = new DataInputStream(var3.openInputStream());
-            int var9 = (int)var3.getLength();
+            int var9 = (int) var3.getLength();
             int var8 = var5.read(var6, 0, var9);
             var5.close();
             var3.close();
@@ -609,11 +609,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int[] res = new int[arraySize];
         int i;
         if (elementSizeInBytes == 2) {
-            for(i = 0; i < arraySize; ++i) {
+            for (i = 0; i < arraySize; ++i) {
                 res[i] = stream.readShort();
             }
         } else if (elementSizeInBytes == 4) {
-            for(i = 0; i < arraySize; ++i) {
+            for (i = 0; i < arraySize; ++i) {
                 res[i] = stream.readInt();
             }
         }
@@ -625,7 +625,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void drawSprite(Graphics g, int idx, int x, int y, int anchor) {
         drawImage(g, images[idx], x, y, anchor);
     }
-    
+
     public static void drawImage(Graphics g, Image img, int x, int y, int anchor) {
         if (anchor == 2) {
             x -= img.getWidth() / 2;
@@ -664,7 +664,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int fromIndex = 0;
         boolean hasNewLine = true;
 
-        for(y += currentFont.getHeight(); hasNewLine; y += lineHeight) {
+        for (y += currentFont.getHeight(); hasNewLine; y += lineHeight) {
             int toIndex = str.indexOf("\n", fromIndex);
             if (toIndex == -1) {
                 toIndex = str.length();
@@ -703,7 +703,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void drawShadedRect(Graphics g, int x, int y, int width, int height, int color1, int color2, int color3) {
         int[] colors = new int[]{color1, color2, color1, color3};
 
-        for(int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             g.setColor(colors[i]);
             g.fillRect(x + i, y + i, width - i * 2, height - i * 2);
         }
@@ -712,7 +712,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void setCurrentFont(int i) {
-        switch(i) {
+        switch (i) {
             case 0:
                 currentFont = Font.getFont(1895826432);
                 break;
@@ -751,7 +751,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         int count;
         int var6;
-        for(count = 0; hasMore; var1 = var6 + delimiter.length()) {
+        for (count = 0; hasMore; var1 = var6 + delimiter.length()) {
             var6 = text.indexOf(delimiter, var1);
             if (var6 == -1) {
                 var6 = text.length();
@@ -768,7 +768,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var5 = 0;
 
         int var4;
-        for(var4 = 0; var4 < var1; ++var4) {
+        for (var4 = 0; var4 < var1; ++var4) {
             var5 = var0.indexOf(var3, var5);
             if (var5 == -1) {
                 log("subStringLine:Invalid line selection");
@@ -780,7 +780,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         int var6 = var5;
 
-        for(var4 = 0; var4 < var2; ++var4) {
+        for (var4 = 0; var4 < var2; ++var4) {
             var5 = var0.indexOf(var3, var5);
             if (var5 == -1) {
                 return var0.substring(var6);
@@ -883,13 +883,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             pos += (var4.length + 1) * 2;
 
             int i;
-            for(i = 0; i < startIndex; ++i) {
+            for (i = 0; i < startIndex; ++i) {
                 pos += var4[i];
             }
 
             DataInputStream stream = new DataInputStream(Connector.openInputStream("scratchpad:///0;pos=" + pos));
 
-            for(i = startIndex; i < count; ++i) {
+            for (i = startIndex; i < count; ++i) {
                 byte[] var3 = new byte[var4[i]];
                 stream.read(var3);
                 MediaImage mediaImage = MediaManager.getImage(var3);
@@ -920,7 +920,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             short var1 = 128;
             int var4 = var1 + (F.length + 1) * 2;
 
-            for(int var2 = 0; var2 < var0; ++var2) {
+            for (int var2 = 0; var2 < var0; ++var2) {
                 var4 += F[var2];
             }
 
@@ -991,7 +991,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aj(int var0) {
-        switch(var0) {
+        switch (var0) {
             case 0:
             case 1:
             case 2:
@@ -1004,7 +1004,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void an() {
         int var10002 = G[2]++;
-        switch(G[1]) {
+        switch (G[1]) {
             case 0:
                 aj(1);
                 return;
@@ -1041,7 +1041,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             var10000 = G;
             var10000[3] += G[4];
-            switch(aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     T(5);
                     return;
@@ -1055,7 +1055,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void au(Graphics var0, int var1, int var2) {
-        switch(G[1]) {
+        switch (G[1]) {
             case 1:
                 as(var0, var1, var2);
                 break;
@@ -1095,7 +1095,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawSprite(var0, 72, var3, var4, 0);
             drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
-            for(var5 = 0; var5 < 2; ++var5) {
+            for (var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, H, 0);
             }
         } else {
@@ -1107,7 +1107,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawSprite(var0, 72, var3, var4, 0);
             drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
-            for(var5 = 0; var5 < 2; ++var5) {
+            for (var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, H, 0);
             }
         }
@@ -1120,11 +1120,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void av(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
-        while(0 < var2) {
+        while (0 < var2) {
             var2 -= getSpriteWidth(var1);
         }
 
-        while(var2 < var5) {
+        while (var2 < var5) {
             drawSprite(var0, var1, var3 + var2, var4, 0);
             var2 += getSpriteWidth(var1);
         }
@@ -1146,7 +1146,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aB() {
         int var10002 = K[2]++;
-        switch(K[1]) {
+        switch (K[1]) {
             case 0:
                 ay(1);
                 break;
@@ -1161,7 +1161,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ao();
             ap(105, 3);
         } else {
-            switch(aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     T(7);
                     return;
@@ -1192,11 +1192,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             setColorOfRGBInt(g, 16777215);
             drawString(g, getText(29), x + 3 + 2, y + 3 + 2, TextAlign.LEFT);
 
-            for(var5 = 0; var5 < 3; ++var5) {
+            for (var5 = 0; var5 < 3; ++var5) {
                 aw(g, var5, L, 0);
             }
         } else {
-            for(var5 = 0; var5 < 3; ++var5) {
+            for (var5 = 0; var5 < 3; ++var5) {
                 aw(g, var5, L, 0);
             }
         }
@@ -1229,7 +1229,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aJ() {
         int var10002 = M[2]++;
-        switch(M[1]) {
+        switch (M[1]) {
             case 0:
                 aG(1);
                 break;
@@ -1244,7 +1244,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ao();
             ap(108, 2);
         } else {
-            switch(aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     T(10);
                     return;
@@ -1272,11 +1272,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             setColorOfRGBInt(var0, 16777215);
             drawString(var0, getText(40), var1 + 3 + 6, var2 + 3 + 4, TextAlign.LEFT);
 
-            for(var5 = 0; var5 < 2; ++var5) {
+            for (var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, N, 0);
             }
         } else {
-            for(var5 = 0; var5 < 2; ++var5) {
+            for (var5 = 0; var5 < 2; ++var5) {
                 aw(var0, var5, N, 0);
             }
         }
@@ -1298,7 +1298,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aL(int var0) {
-        switch(var0) {
+        switch (var0) {
             case 0:
                 selectSoftLabel(6);
                 break;
@@ -1329,7 +1329,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aT() {
         int var10002 = P[2]++;
-        switch(P[1]) {
+        switch (P[1]) {
             case 0:
                 aL(1);
                 break;
@@ -1415,7 +1415,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ap(115, 6);
         } else {
             if (6 < P[2]) {
-                switch(aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(s(1048576L), s(131072L), s(524288L))) {
                     case 0:
                         aL(4);
                         break;
@@ -1439,7 +1439,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bi(Graphics var0, int var1, int var2) {
-        switch(P[1]) {
+        switch (P[1]) {
             case 0:
             default:
                 break;
@@ -1466,7 +1466,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         int var4;
-        for(int var3 = 0; var3 < 5; ++var3) {
+        for (int var3 = 0; var3 < 5; ++var3) {
             var4 = var3 * 4;
             ai(Q[var4 + 0], Q[var4 + 0], Q[var4 + 0], Q[var4 + 1], Q[var4 + 0], Q[var4 + 2], Q[var4 + 2], Q[var4 + 2], Q[var4 + 3], Q[var4 + 2]);
             bk(var0, var3, R, 0);
@@ -1474,7 +1474,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         bl(var0, var1, getText(26), var2 + 2 + 34 + 1, P[2], 12, 16056665, 16777215);
 
-        for(var4 = 0; var4 < 5; ++var4) {
+        for (var4 = 0; var4 < 5; ++var4) {
             int var5 = bm(R, var4, 1) + 3;
             int var6 = bm(R, var4, 2) - 66;
             byte var7;
@@ -1530,7 +1530,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         br(g, canvasWidth / 2, var3 + 4, 62, false, I);
 
-        for(int var4 = 0; var4 < 3; ++var4) {
+        for (int var4 = 0; var4 < 3; ++var4) {
             bk(g, var4, S, 0);
         }
 
@@ -1656,7 +1656,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void bC(int var0) {
         T = true;
-        switch(var0) {
+        switch (var0) {
             case 0:
                 selectSoftLabel(6);
                 break;
@@ -1693,7 +1693,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bE() {
-        for(int var0 = 0; var0 < 2; ++var0) {
+        for (int var0 = 0; var0 < 2; ++var0) {
             if (V[var0] != null) {
                 V[var0].dispose();
                 V[var0] = null;
@@ -1707,7 +1707,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void bK() {
         int var10002 = U[6]++;
-        switch(U[1]) {
+        switch (U[1]) {
             case 0:
                 bC(1);
                 break;
@@ -1771,7 +1771,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 var0.read(var16);
 
                 int var3;
-                for(int var4 = 0; var4 < 2; ++var4) {
+                for (int var4 = 0; var4 < 2; ++var4) {
                     var3 = var0.readUnsignedShort();
                     V[var4] = bO(var0, var3);
                 }
@@ -1806,7 +1806,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bb(1, 1);
         bb(2, 3);
 
-        for(int var0 = 0; var0 < 10; ++var0) {
+        for (int var0 = 0; var0 < 10; ++var0) {
             bb(3 + var0, bR(var0));
         }
 
@@ -1844,7 +1844,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ap(127, 6);
         } else {
             if (6 < U[6]) {
-                switch(aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(s(1048576L), s(131072L), s(524288L))) {
                     case 0:
                         bC(5);
                         break;
@@ -1865,7 +1865,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bZ(Graphics var0, int var1, int var2) {
-        switch(U[1]) {
+        switch (U[1]) {
             case 0:
             default:
                 break;
@@ -1919,7 +1919,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(var0, 24, var1 + 126, var2 + 100, 0);
         int var3 = getSpriteWidth(24);
 
-        for(int var4 = 0; var4 < 3; ++var4) {
+        for (int var4 = 0; var4 < 3; ++var4) {
             drawSprite(var0, 7, var1 + 126 - 6 * var4, var2 + 118, 0);
             drawSprite(var0, 8, var1 + 126 + var3 + 6 * var4, var2 + 118, 0);
         }
@@ -1978,7 +1978,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var4 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
         ca(var0, canvasWidth / 2, var4, false);
 
-        for(int var5 = 0; var5 < 2; ++var5) {
+        for (int var5 = 0; var5 < 2; ++var5) {
             bk(var0, var5, Y, 0);
         }
 
@@ -2011,7 +2011,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ce() {
-        for(int var0 = 0; var0 < aa.length; ++var0) {
+        for (int var0 = 0; var0 < aa.length; ++var0) {
             aa(aa[var0]);
         }
 
@@ -2022,7 +2022,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cd(int var0) {
         T = true;
-        switch(var0) {
+        switch (var0) {
             case 0:
                 selectSoftLabel(6);
                 break;
@@ -2071,7 +2071,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cf() {
-        for(int var0 = 0; var0 < 2; ++var0) {
+        for (int var0 = 0; var0 < 2; ++var0) {
             if (ac[var0] != null) {
                 ac[var0].dispose();
                 ac[var0] = null;
@@ -2080,7 +2080,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         System.gc();
 
-        for(int var1 = 0; var1 < aa.length; ++var1) {
+        for (int var1 = 0; var1 < aa.length; ++var1) {
             try {
                 Y(aa[var1]);
             } catch (Exception var3) {
@@ -2092,7 +2092,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void co() {
         int var10002 = ab[3]++;
-        switch(ab[1]) {
+        switch (ab[1]) {
             case 0:
                 cd(1);
                 break;
@@ -2165,7 +2165,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 byte[] var16 = new byte[10];
                 var0.read(var16);
 
-                for(int var4 = 0; var4 < 2; ++var4) {
+                for (int var4 = 0; var4 < 2; ++var4) {
                     int var3 = var0.readUnsignedShort();
                     ac[var4] = bO(var0, var3);
                 }
@@ -2197,7 +2197,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bb(1, 2);
         bb(2, 3);
 
-        for(int var0 = 0; var0 < 10; ++var0) {
+        for (int var0 = 0; var0 < 10; ++var0) {
             bb(3 + var0, bR(var0));
         }
 
@@ -2248,7 +2248,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ap(139, 6);
         } else {
             if (6 < ab[3]) {
-                switch(aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(s(1048576L), s(131072L), s(524288L))) {
                     case 0:
                         cd(8);
                         break;
@@ -2269,7 +2269,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cx(Graphics var0, int var1, int var2) {
-        switch(ab[1]) {
+        switch (ab[1]) {
             case 0:
             default:
                 break;
@@ -2414,7 +2414,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
         bl(var0, var1, getText(70), var2 + 3 + var3 + 3, ab[3], 12, 16056665, 16777215);
 
-        for(var4 = 0; var4 < 2; ++var4) {
+        for (var4 = 0; var4 < 2; ++var4) {
             bk(var0, var4, ae, 0);
         }
 
@@ -2442,7 +2442,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cy(int var0) {
         T = true;
-        switch(var0) {
+        switch (var0) {
             case 0:
                 selectSoftLabel(6);
                 break;
@@ -2481,7 +2481,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ag = null;
         }
 
-        for(int var0 = 0; var0 < 2; ++var0) {
+        for (int var0 = 0; var0 < 2; ++var0) {
             ah[var0] = null;
         }
 
@@ -2490,7 +2490,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cF() {
         int var10002 = af[2]++;
-        switch(af[1]) {
+        switch (af[1]) {
             case 0:
                 cy(1);
                 break;
@@ -2582,7 +2582,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bb(1, var0);
         bb(2, 4);
 
-        for(int var1 = 0; var1 < 10; ++var1) {
+        for (int var1 = 0; var1 < 10; ++var1) {
             bb(3 + var1, bR(var1));
         }
 
@@ -2594,7 +2594,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ap(151, 7);
         } else {
             if (6 < af[2]) {
-                switch(aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(s(1048576L), s(131072L), s(524288L))) {
                     case 0:
                         T(4);
                         break;
@@ -2610,7 +2610,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cL(Graphics var0, int var1, int var2) {
-        switch(af[1]) {
+        switch (af[1]) {
             case 0:
             default:
                 break;
@@ -2695,7 +2695,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawImage(var0, ag, canvasWidth / 2, var2 + 2 + var3 + 4 + 4, 2);
         bl(var0, var1, ah[1], var2 + 2 + var3 + 4 + 4 + ag.getHeight() + 7, af[2], 12, 16056665, 16777215);
 
-        for(int var5 = 0; var5 < 2; ++var5) {
+        for (int var5 = 0; var5 < 2; ++var5) {
             bk(var0, var5, aj, 0);
         }
 
@@ -2718,7 +2718,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cN(int var0) {
         T = true;
-        switch(var0) {
+        switch (var0) {
             case 0:
                 selectSoftLabel(6);
                 break;
@@ -2775,14 +2775,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cP() {
         int var0;
-        for(var0 = 0; var0 < 2; ++var0) {
+        for (var0 = 0; var0 < 2; ++var0) {
             if (am[var0] != null) {
                 am[var0].dispose();
                 am[var0] = null;
             }
         }
 
-        for(var0 = 0; var0 < 3; ++var0) {
+        for (var0 = 0; var0 < 3; ++var0) {
             an[var0] = null;
         }
 
@@ -2791,7 +2791,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cY() {
         int var10002 = al[2]++;
-        switch(al[1]) {
+        switch (al[1]) {
             case 0:
                 cN(1);
                 break;
@@ -2937,7 +2937,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bb(1, 5);
         bb(2, 3);
 
-        for(int var0 = 0; var0 < 10; ++var0) {
+        for (int var0 = 0; var0 < 10; ++var0) {
             bb(3 + var0, bR(var0));
         }
 
@@ -2974,7 +2974,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ap(168, 7);
         } else {
             if (6 < al[2]) {
-                switch(aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(s(1048576L), s(131072L), s(524288L))) {
                     case 0:
                         cN(8);
                         break;
@@ -2995,7 +2995,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void di(Graphics var0, int var1, int var2) {
-        switch(al[1]) {
+        switch (al[1]) {
             case 0:
             default:
                 break;
@@ -3079,7 +3079,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bl(var0, var1, getText(74), var2 + 3 + calculateTextHeight(getText(6)) + 3, al[2], 12, 16056665, 16777215);
             bj(var0, getText(cM(al[3], 6)), var1 + 3, var4, 110, 0);
 
-            for(var5 = 0; var5 < 7; ++var5) {
+            for (var5 = 0; var5 < 7; ++var5) {
                 int var6 = cM(var5, 7);
                 if (al[3] == var5 && (al[2] & 4) != 0) {
                     ++var6;
@@ -3165,7 +3165,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bj(g, getText(51), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(51)) + 8, 2);
         bl(g, x, getText(91), y + 2 + var3 + 2, al[2], 12, 16056665, 16777215);
 
-        for(int var4 = 0; var4 < 2; ++var4) {
+        for (int var4 = 0; var4 < 2; ++var4) {
             bk(g, var4, ao, 0);
         }
 
@@ -3228,7 +3228,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int lineCount = splitCount(var5, "\n");
             setColorOfRGBInt(g, 16777215);
 
-            for(int i = 0; i < lineCount; ++i) {
+            for (int i = 0; i < lineCount; ++i) {
                 String var8 = O(var5, i, 1, "\n");
                 int var9 = var8.indexOf("$");
                 if (var9 == -1) {
@@ -3251,7 +3251,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         setColorOfRGBInt(g, var13);
                         var8 = var8.substring(var9 + 10);
                         var9 = var8.indexOf("$");
-                    } while(var9 != -1);
+                    } while (var9 != -1);
 
                     drawString(g, var8, var10, var4, TextAlign.LEFT);
                 }
@@ -3287,7 +3287,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dq(int var0) {
-        switch(var0) {
+        switch (var0) {
             case 0:
             default:
                 break;
@@ -3318,7 +3318,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void dw() {
         if (ds()) {
             int var10002 = aq[5]++;
-            switch(aq[1]) {
+            switch (aq[1]) {
                 case 0:
                     dq(1);
                     break;
@@ -3350,7 +3350,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             dr();
         } else {
             aq[4] = ar();
-            switch(aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     if (0 < aq[3]) {
                         dq(2);
@@ -3374,7 +3374,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (s(2097152L)) {
             dq(1);
         } else {
-            switch(aq(s(1048576L), s(196608L), s(786432L))) {
+            switch (aq(s(1048576L), s(196608L), s(786432L))) {
                 case 0:
                     dr();
                     T(4);
@@ -3390,7 +3390,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (s(2097152L)) {
             dq(1);
         } else {
-            switch(aq(s(1048576L), s(196608L), s(786432L))) {
+            switch (aq(s(1048576L), s(196608L), s(786432L))) {
                 case 0:
                     dx();
                     break;
@@ -3403,7 +3403,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void dB(Graphics g, int x, int y) {
         if (ds()) {
-            switch(aq[1]) {
+            switch (aq[1]) {
                 case 0:
                 default:
                     break;
@@ -3479,7 +3479,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void dD(Graphics var0, int var1, int var2, int var3, int var4) {
         int var5 = var1 - var3;
 
-        for(int var6 = 0; var6 < 3; var5 += var3) {
+        for (int var6 = 0; var6 < 3; var5 += var3) {
             int var7 = 69 + (var6 + (var4 >> 2) & 1);
             drawSprite(var0, var7, var5 - getSpriteWidth(var7) / 2, var2, 0);
             ++var6;
@@ -3507,7 +3507,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void dF(int var0) {
         O = ar[0];
         dE();
-        switch(ar[0]) {
+        switch (ar[0]) {
             case 7:
                 aL(var0);
                 break;
@@ -3542,7 +3542,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 au = !au;
             }
 
-            switch(aq(s(1048576L), s(65536L), s(262144L))) {
+            switch (aq(s(1048576L), s(65536L), s(262144L))) {
                 case 0:
                     dF(ar[1]);
                     break;
@@ -3583,13 +3583,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int pos = 128 + (var4.length + 1) * 2;
 
             int i;
-            for(i = 0; i < var3; ++i) {
+            for (i = 0; i < var3; ++i) {
                 pos += var4[i];
             }
 
             stream = Connector.openDataInputStream("scratchpad:///0;pos=" + pos);
 
-            for(i = 0; i < 183; ++i) {
+            for (i = 0; i < 183; ++i) {
                 byte[] var6 = new byte[var4[var3 + i]];
                 stream.read(var6);
                 texts[i] = new String(var6);
@@ -3747,7 +3747,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var14 = aw[12];
         }
 
-        switch(var8) {
+        switch (var8) {
             case 0:
                 dK(var0, var2, var9, var4, var5, var6, var10, var11, var12, var13, var14, var15);
                 break;
@@ -3785,7 +3785,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var14 = var3;
         }
 
-        switch(var9) {
+        switch (var9) {
             case 0:
                 dM(var0, var14, var10, var5, var6, var7, var11, var12, var13, var15);
                 break;
@@ -3869,7 +3869,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bA() {
-        for(int var0 = 0; var0 < 4; ++var0) {
+        for (int var0 = 0; var0 < 4; ++var0) {
             ax[var0] = 0;
         }
 
@@ -3882,7 +3882,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aZ(byte[] var0) {
-        for(int var1 = 0; var1 < 10; ++var1) {
+        for (int var1 = 0; var1 < 10; ++var1) {
             dQ(var1, var0[var1]);
         }
 
@@ -3909,7 +3909,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void bS() {
         int var0 = bR(1);
 
-        for(int var1 = 0; var1 < 10; ++var1) {
+        for (int var1 = 0; var1 < 10; ++var1) {
             dR(ay[var0 * 10 + var1], bR(var1));
         }
 
@@ -4014,7 +4014,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void by(Graphics var0, int var1, int var2, int var3) {
-        for(int var4 = 0; var4 < 10; ++var4) {
+        for (int var4 = 0; var4 < 10; ++var4) {
             bz(var0, var1, var2, var3, var4);
         }
 
@@ -4042,7 +4042,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var8 += 7;
         }
 
-        for(int var9 = 0; var9 < var7; ++var9) {
+        for (int var9 = 0; var9 < var7; ++var9) {
             setColorOfRGBInt(var0, az[var8]);
             var0.fillArc(var1, var2, var5 * 2, var5 * 2, 0, 360);
             ++var8;
@@ -4068,11 +4068,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var11 = var3;
         }
 
-        for(int var12 = 0; var12 < var9; ++var12) {
+        for (int var12 = 0; var12 < var9; ++var12) {
             int var13 = var5;
 
-            for(int var14 = 0; var14 < var8; ++var14) {
-                for(int var15 = 0; var15 < 8; ++var15) {
+            for (int var14 = 0; var14 < var8; ++var14) {
+                for (int var15 = 0; var15 < 8; ++var15) {
                     if ((var1[var10] >>> 7 - var15 & 1) != 0) {
                         var0.fillRect(var13, var6, var3, var3);
                     }
@@ -4101,11 +4101,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var11 = var3;
         }
 
-        for(int var12 = 0; var12 < var9; ++var12) {
+        for (int var12 = 0; var12 < var9; ++var12) {
             int var13 = var5;
 
-            for(int var14 = 0; var14 < var8; ++var14) {
-                for(int var15 = 0; var15 < 8; ++var15) {
+            for (int var14 = 0; var14 < var8; ++var14) {
+                for (int var15 = 0; var15 < 8; ++var15) {
                     if ((var1[var10] >>> 7 - var15 & 1) != 0) {
                         var0.fillRect(var13, var6, var3, var3);
                     }
@@ -4122,7 +4122,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bb(int var0, int var1) {
-        aA[var0] = (byte)var1;
+        aA[var0] = (byte) var1;
     }
 
     public static void ba() {
@@ -4142,7 +4142,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         DataOutputStream var6 = null;
 
         try {
-            var5 = (HttpConnection)Connector.open(var3, 1, true);
+            var5 = (HttpConnection) Connector.open(var3, 1, true);
             var5.setRequestMethod("GET");
             var5.connect();
             var4 = var5.openDataInputStream();
@@ -4150,7 +4150,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var6 = Connector.openDataOutputStream("scratchpad:///0;pos=85258");
 
             int var9;
-            for(int var8 = (int)var5.getLength(); 0 < var8; var8 -= var9) {
+            for (int var8 = (int) var5.getLength(); 0 < var8; var8 -= var9) {
                 if (var8 < var7.length) {
                     var9 = var8;
                 } else {
@@ -4202,7 +4202,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         byte[] var7 = new byte[var6];
         int var4 = 0;
 
-        for(int var2 = 0; var2 < var1; ++var2) {
+        for (int var2 = 0; var2 < var1; ++var2) {
             if (!var5) {
                 var7[var4] = 37;
                 ++var4;
@@ -4210,12 +4210,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             int var3 = var0[var2] & 255;
 
-            for(int var8 = 1; var8 >= 0; --var8) {
-                byte var9 = (byte)(var3 >> 4 * var8 & 15);
+            for (int var8 = 1; var8 >= 0; --var8) {
+                byte var9 = (byte) (var3 >> 4 * var8 & 15);
                 if (var9 >= 10) {
-                    var9 = (byte)(var9 - 10 + 65);
+                    var9 = (byte) (var9 - 10 + 65);
                 } else {
-                    var9 = (byte)(var9 + 48);
+                    var9 = (byte) (var9 + 48);
                 }
 
                 var7[var4] = var9;
@@ -4237,20 +4237,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static Image bO(DataInputStream var0, int var1) throws Exception {
         aB = 0L;
-        aB |= (long)var1;
+        aB |= (long) var1;
         byte[] var2 = new byte[var1];
 
         int var3;
-        for(var3 = 0; var3 < var1; ++var3) {
+        for (var3 = 0; var3 < var1; ++var3) {
             int var4 = var0.read();
             if (var4 == -1) {
                 break;
             }
 
-            var2[var3] = (byte)var4;
+            var2[var3] = (byte) var4;
         }
 
-        aB |= (long)var3 << 32;
+        aB |= (long) var3 << 32;
         MediaImage var7 = MediaManager.getImage(var2);
         var7.use();
         Image var5 = var7.getImage();
@@ -4264,7 +4264,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var2 = 0;
         int var3 = 0;
 
-        while(true) {
+        while (true) {
             var2 = var0.indexOf(39, var2);
             if (var2 == -1) {
                 if (var1) {
@@ -4294,7 +4294,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var5 = 0;
 
         String var6;
-        while(true) {
+        while (true) {
             var5 = var0.indexOf(39, var5);
             if (var5 == -1) {
                 var6 = "";
@@ -4326,7 +4326,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static IrRemoteControlFrame[] createIrRemoteControlFrames(int n) {
         IrRemoteControlFrame[] res = new IrRemoteControlFrame[n];
 
-        for(int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) {
             res[i] = new IrRemoteControlFrame();
         }
 
@@ -4342,7 +4342,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dX(int var0) {
-        switch(var0) {
+        switch (var0) {
             case 0:
                 aD.stop();
                 break;
@@ -4387,7 +4387,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         dY(3, 0);
 
         int var1;
-        for(int var0 = 0; var0 < 10; var0 += 2) {
+        for (int var0 = 0; var0 < 10; var0 += 2) {
             var1 = dZ(bT(var0)) << 4 | dZ(bT(var0 + 1));
             dY(4 + var0 / 2, var1);
         }
@@ -4400,7 +4400,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         dY(14, 0);
         var1 = 0;
 
-        for(int var2 = 0; var2 < 15; ++var2) {
+        for (int var2 = 0; var2 < 15; ++var2) {
             var1 += ea(aE[var2]);
         }
 
@@ -4408,7 +4408,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dY(int var0, int var1) {
-        aE[var0] = (byte)var1;
+        aE[var0] = (byte) var1;
     }
 
     public static int dZ(int var0) {
@@ -4426,7 +4426,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void bd() {
         if (bc()) {
             int var10002 = aC[1]++;
-            switch(aC[0]) {
+            switch (aC[0]) {
                 case 1:
                     ec();
                     break;
@@ -4484,7 +4484,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ao();
             ap(aC[3], aC[4]);
         } else {
-            switch(aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     if (aC[2] == 7) {
                         dX(0);
@@ -4516,7 +4516,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             setColorOfRGBInt(var0, 16763955);
             var0.fillRect(var1, var2, 240, 240);
             drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-            switch(aC[0]) {
+            switch (aC[0]) {
                 case 2:
                     eg(var0, var1, var2);
                     break;
@@ -4550,7 +4550,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var3 = aI;
         }
 
-        for(int var4 = 0; var4 < 3; ++var4) {
+        for (int var4 = 0; var4 < 3; ++var4) {
             bk(var0, var4, var3, 0);
         }
 
@@ -4579,7 +4579,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void T(int var0) {
         T = true;
-        switch(O) {
+        switch (O) {
             case 8:
                 bE();
                 break;
@@ -4593,7 +4593,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cP();
         }
 
-        switch(var0) {
+        switch (var0) {
             case 2:
                 w = 0;
                 break;
@@ -4660,7 +4660,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else if (dG()) {
             dH();
         } else {
-            switch(O) {
+            switch (O) {
                 case -3:
                 case -2:
                 case -1:
@@ -4727,7 +4727,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 return;
             }
 
-            switch(O) {
+            switch (O) {
                 case -3:
                     showError(g, "Authenticating", rootX, rootY);
                     break;
@@ -4790,8 +4790,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public void mediaAction(MediaPresenter presenter, int var2, int var3) {
-        if (var2 == 3) {
+    public void mediaAction(MediaPresenter source, int type, int param) {
+        if (type == 3) {
             StackMap(a, true);
         }
 

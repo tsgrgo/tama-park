@@ -4,12 +4,12 @@ import com.nttdocomo.io.DesktopHttpConnection;
 import com.nttdocomo.io.HttpConnection;
 
 import java.io.*;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class Connector {
     private static volatile File scratchpadFile;
+
     public static void setScratchpadFile(File file) {
         scratchpadFile = file;
     }
@@ -115,7 +115,7 @@ public final class Connector {
             this.raf = new RandomAccessFile(file, "r");
 
             if (pos < 0) pos = 0;
-            pos+=64;
+            pos += 64;
             raf.seek(pos);
         }
 
@@ -161,7 +161,7 @@ public final class Connector {
         ScratchpadOutputStream(File file, long pos) throws IOException {
             this.raf = new RandomAccessFile(file, "rw");
             if (pos < 0) pos = 0;
-            pos+=64;
+            pos += 64;
             raf.seek(pos);
         }
 
