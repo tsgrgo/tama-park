@@ -31,6 +31,7 @@ public class AudioPresenter extends MediaPresenter {
     };
 
     public void setSound(MediaSound mediaSound) {
+        mediaSound.setListener(listener);
         if (clip != null) {
             try {
                 clip.removeLineListener(lineListener);

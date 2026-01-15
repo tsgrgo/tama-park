@@ -6,7 +6,7 @@ public class MediaPresenter {
     public static final int MEDIA_FINISHED = 3;
     public static final int MEDIA_ERROR    = 4;
 
-    private MediaListener listener;
+    protected MediaListener listener;
 
     public void setMediaListener(MediaListener listener) {
         this.listener = listener;
