@@ -32,7 +32,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int Code;
     public static boolean e;
     public static boolean Z;
-    public static int aK;
+    public static int fps;
     public static boolean Exceptions;
     public static boolean I;
     public static boolean StackMap;
@@ -77,9 +77,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] aV;
     public static boolean[] aW;
     public static int[] aX;
-    public static int B;
-    public static int C;
-    public static String[] D;
+    public static int previousSoftLabelIdx;
+    public static int currentSoftLabelIdx;
+    public static String[] softLabels;
     public static int w;
     public static Image[] images;
     public static int[] F;
@@ -171,9 +171,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aW = new boolean[]{false, false};
         aX = new int[2];
         String[] var10000 = new String[2];
-        B = 6;
-        C = 6;
-        D = new String[]{"Start", "Menu", "Close", "Back", "Title", "Help", ""};
+        previousSoftLabelIdx = 6;
+        currentSoftLabelIdx = 6;
+        softLabels = new String[]{"Start", "Menu", "Close", "Back", "Title", "Help", ""};
         images = new Image[93];
         G = new int[5];
         H = new int[]{120, 176, 186, 26, 26, 25, 2, 120, 208, 186, 26, 16, 15, 2};
@@ -234,10 +234,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         setCurrentFont(2);
-        aK = 8;
+        fps = 8;
         timer = new Timer();
         timer.setRepeat(true);
-        timer.setTime(1000 / aK);
+        timer.setTime(1000 / fps);
         timer.setListener(this);
         timer.start();
     }
@@ -403,7 +403,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         DataInputStream stream = null;
         byte var2 = 0;
 
-        boolean var1;
+        boolean success;
         try {
             mediaSounds = new MediaSound[7];
             int[] var3 = loadShortArray(128);
@@ -417,13 +417,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             stream = Connector.openDataInputStream("scratchpad:///0;pos=" + (var4 + 128 + 568));
 
             for(i = 0; i < 7; ++i) {
-                byte[] var5 = new byte[var3[i + 93]];
-                stream.read(var5);
+                byte[] data = new byte[var3[i + 93]];
+                stream.read(data);
 
-                for(int var6 = 0; var6 < var5.length; ++var6) {
+                for(int var6 = 0; var6 < data.length; ++var6) {
                 }
 
-                mediaSounds[i] = MediaManager.getSound(var5);
+                mediaSounds[i] = MediaManager.getSound(data);
                 mediaSounds[i].use();
                 log("loadsound:" + i);
                 Object var19 = null;
@@ -431,21 +431,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             initAudioPresenters();
-            var1 = true;
+            success = true;
         } catch (Exception var16) {
             log("loadsounderr i:" + var2);
-            var1 = false;
+            success = false;
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (Exception var15) {
+                } catch (Exception e) {
                 }
             }
 
         }
 
-        return var1;
+        return success;
     }
 
     public static boolean s(long var0) {
@@ -818,12 +818,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void R(int var0) {
-        if (B != var0) {
+    public static void selectSoftLabel(int idx) {
+        if (previousSoftLabelIdx != idx) {
             try {
-                C = B;
-                setSoftLabel(0, D[var0]);
-                B = var0;
+                currentSoftLabelIdx = previousSoftLabelIdx;
+                setSoftLabel(0, softLabels[idx]);
+                previousSoftLabelIdx = idx;
             } catch (Exception ex) {
             }
 
@@ -1300,19 +1300,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void aL(int var0) {
         switch(var0) {
             case 0:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 1:
                 ag(5, true);
                 ah(4);
                 aN(16750848, 16750848, 16763955, 16777215, 16750848, 16777164, 16750848, 16750848);
-                R(1);
+                selectSoftLabel(1);
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 3:
-                R(1);
+                selectSoftLabel(1);
                 ag(3, true);
                 ah(0);
                 aN(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
@@ -1658,10 +1658,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch(var0) {
             case 0:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 1:
-                R(1);
+                selectSoftLabel(1);
                 T = false;
                 ag(2, true);
                 ah(0);
@@ -1669,16 +1669,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 U[0] = 0;
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 3:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                R(1);
+                selectSoftLabel(1);
                 ag(2, true);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -2024,10 +2024,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch(var0) {
             case 0:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 1:
-                R(1);
+                selectSoftLabel(1);
                 T = false;
                 ab[0] = 0;
                 ag(2, true);
@@ -2035,28 +2035,28 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 3:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 5:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 7:
-                R(1);
+                selectSoftLabel(1);
                 ag(2, true);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -2444,10 +2444,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch(var0) {
             case 0:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 1:
-                R(1);
+                selectSoftLabel(1);
                 T = false;
                 af[0] = 0;
                 ag(2, true);
@@ -2455,19 +2455,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
-                R(1);
+                selectSoftLabel(1);
                 ag(2, true);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                R(1);
+                selectSoftLabel(1);
         }
 
         StackMap = true;
@@ -2720,10 +2720,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch(var0) {
             case 0:
-                R(6);
+                selectSoftLabel(6);
                 break;
             case 1:
-                R(1);
+                selectSoftLabel(1);
                 T = false;
                 al[0] = 0;
                 ag(2, true);
@@ -2731,35 +2731,35 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
                 al[3] = 0;
-                R(1);
+                selectSoftLabel(1);
                 break;
             case 4:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
-                R(1);
+                selectSoftLabel(1);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
-                R(1);
+                selectSoftLabel(1);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 7:
-                R(1);
+                selectSoftLabel(1);
                 ag(2, true);
                 ah(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -3185,7 +3185,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ap[1] = var1;
         ap[2] = 0;
         ap[3] = 1;
-        R(3);
+        selectSoftLabel(3);
     }
 
     public static void dk() {
@@ -3272,7 +3272,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aq[4] = ar();
         aq[0] = 1;
         aq[5] = 0;
-        R(3);
+        selectSoftLabel(3);
         dq(0);
     }
 
@@ -3346,7 +3346,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (s(2097152L)) {
             ag(aq[7], aq[8] != 0);
             ah(aq[6]);
-            R(C);
+            selectSoftLabel(currentSoftLabelIdx);
             dr();
         } else {
             aq[4] = ar();
@@ -3495,7 +3495,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ag(2, true);
         ah(1);
         aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
-        R(6);
+        selectSoftLabel(6);
         ar[3] = 1;
     }
 
@@ -4347,30 +4347,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aD.stop();
                 break;
             case 1:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 aN(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 2:
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 break;
             case 3:
-                R(1);
+                selectSoftLabel(1);
                 ag(3, true);
                 ah(0);
                 break;
             case 4:
                 aD.stop();
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
                 break;
             case 5:
                 aD.stop();
-                R(6);
+                selectSoftLabel(6);
                 ag(1, false);
                 ah(0);
         }
@@ -4602,42 +4602,42 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 4:
                 // Resources loaded successfully
-                R(1);
+                selectSoftLabel(1);
                 T = false;
                 ak();
                 break;
             case 5:
-                R(1);
+                selectSoftLabel(1);
                 az();
                 break;
             case 6:
-                R(1);
+                selectSoftLabel(1);
                 aH();
                 break;
             case 7:
-                R(1);
+                selectSoftLabel(1);
                 aM();
                 break;
             case 8:
-                R(1);
+                selectSoftLabel(1);
                 bD();
                 break;
             case 9:
-                R(1);
+                selectSoftLabel(1);
                 ce();
                 break;
             case 10:
-                R(1);
+                selectSoftLabel(1);
                 cz();
                 break;
             case 11:
-                R(1);
+                selectSoftLabel(1);
                 cO();
                 break;
             default:
                 // Failed to load resources
                 T = false;
-                R(6);
+                selectSoftLabel(6);
         }
 
         dr();
