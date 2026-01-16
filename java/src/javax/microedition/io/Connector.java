@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class Connector {
+    private static final int SCRATCHPAD_HEADER_SIZE = 64;
     private static volatile File scratchpadFile;
 
     public static void setScratchpadFile(File file) {
         scratchpadFile = file;
     }
-
 
     // public static HttpConnection open(String var3, int i, boolean b)
     public static HttpConnection open(String url, int mode, boolean timeouts) throws IOException {
@@ -113,10 +113,8 @@ public final class Connector {
 
         ScratchpadInputStream(File file, long pos) throws IOException {
             this.raf = new RandomAccessFile(file, "r");
-
             if (pos < 0) pos = 0;
-            pos += 64;
-            raf.seek(pos);
+            raf.seek(pos + SCRATCHPAD_HEADER_SIZE);
         }
 
         @Override
@@ -161,8 +159,7 @@ public final class Connector {
         ScratchpadOutputStream(File file, long pos) throws IOException {
             this.raf = new RandomAccessFile(file, "rw");
             if (pos < 0) pos = 0;
-            pos += 64;
-            raf.seek(pos);
+            raf.seek(pos + SCRATCHPAD_HEADER_SIZE);
         }
 
         @Override

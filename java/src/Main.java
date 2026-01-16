@@ -13,7 +13,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Connector.setScratchpadFile(getScratchpadFile());
         new GameApp();
-        Display.init();
     }
 
     private static File getScratchpadFile() throws IOException {

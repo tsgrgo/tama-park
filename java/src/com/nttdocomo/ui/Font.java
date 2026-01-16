@@ -1,6 +1,6 @@
 package com.nttdocomo.ui;
 
-import java.awt.FontMetrics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +66,7 @@ public class Font {
         return metrics().stringWidth(str);
     }
 
-    public java.awt.Font unwrap() {
+    java.awt.Font unwrap() {
         return font;
     }
 
@@ -127,7 +127,7 @@ public class Font {
                 return "SansSerif";
             case FACE_SYSTEM:
             default:
-                return "Serif";
+                return "DialogInput";
         }
     }
 
@@ -148,14 +148,14 @@ public class Font {
     private static int mapSize(int size) {
         switch (size) {
             case SIZE_SMALL:
-                return 18;
+                return 20;
             case SIZE_MEDIUM:
-                return 22;
+                return 24;
             case SIZE_LARGE:
-                return 25;
+                return 26;
             case SIZE_TINY:
             default:
-                return 15;
+                return 16;
         }
     }
 

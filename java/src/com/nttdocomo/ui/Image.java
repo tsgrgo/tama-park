@@ -7,6 +7,10 @@ public class Image {
         this.awtImage = awtImage;
     }
 
+    java.awt.Image unwrap() {
+        return awtImage;
+    }
+
     public int getWidth() {
         if (awtImage == null) return 0;
         int w = awtImage.getWidth(null);
@@ -18,14 +22,11 @@ public class Image {
         int h = awtImage.getHeight(null);
         return (h < 0) ? 0 : h;
     }
+
     public void dispose() {
         if (awtImage != null) {
             awtImage.flush();
             awtImage = null;
         }
-    }
-
-    public java.awt.Image unwrap() {
-        return awtImage;
     }
 }

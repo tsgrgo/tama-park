@@ -9,8 +9,7 @@ public final class Display {
     private static Canvas current;
     private static Frame frame;
 
-    // Call once during startup
-    public static void init() {
+    private static void init() {
         if (frame != null) return;
 
         frame = new Frame("DoJa Emulator");
@@ -20,7 +19,8 @@ public final class Display {
         frame.setVisible(true);
 
         frame.addWindowListener(new WindowAdapter() {
-            @Override public void windowClosing(WindowEvent e) {
+            @Override
+            public void windowClosing(WindowEvent e) {
                 frame.dispose();
                 System.exit(0);
             }

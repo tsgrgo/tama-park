@@ -5,6 +5,7 @@ public class MediaManager {
     public static MediaImage getImage(String s) {
         byte[] data = new byte[0];
         // TODO: read from sp
+        System.out.println("MediaManager.getImage: " + s);
         return new MediaImage(data);
     }
 

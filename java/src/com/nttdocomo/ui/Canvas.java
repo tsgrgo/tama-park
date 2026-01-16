@@ -28,6 +28,8 @@ public abstract class Canvas {
     public static final int KEY_SOFT2 = 0x16;
 
 
+    private static final int CANVAS_WIDTH = 240;
+    private static final int CANVAS_HEIGHT = 240;
     private final java.awt.Canvas awtCanvas;
 
     private volatile int keypadStateBits = 0;
@@ -47,14 +49,14 @@ public abstract class Canvas {
         };
 
         awtCanvas.setBackground(Color.BLACK);
-
         awtCanvas.setFocusable(true);
-        awtCanvas.setPreferredSize(new Dimension(240, 240));
+        awtCanvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
         awtCanvas.addKeyListener(new KeyListener() {
 
             @Override
-            public void keyTyped(KeyEvent e) {}
+            public void keyTyped(KeyEvent e) {
+            }
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -76,11 +78,20 @@ public abstract class Canvas {
 
 
     protected abstract void paint(Graphics g);
+
     protected abstract void processEvent(int type, int param);
 
-    public int getWidth() { return 240; }
-    public int getHeight() { return 240; }
-    public void repaint() { awtCanvas.repaint(); }
+    public int getWidth() {
+        return CANVAS_WIDTH;
+    }
+
+    public int getHeight() {
+        return CANVAS_HEIGHT;
+    }
+
+    public void repaint() {
+        awtCanvas.repaint();
+    }
 
     public void setBackground(Object color) {
         if (color instanceof Color) { // Might wrap color properly in the future
@@ -98,21 +109,30 @@ public abstract class Canvas {
         return keypadStateBits;
     }
 
-    public java.awt.Canvas unwrap() { return awtCanvas; }
+    java.awt.Canvas unwrap() {
+        return awtCanvas;
+    }
 
     private static int mapAwtToDojaKey(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
         // Directions / select
         switch (keyCode) {
-            case KeyEvent.VK_LEFT: return KEY_LEFT;
-            case KeyEvent.VK_RIGHT: return KEY_RIGHT;
-            case KeyEvent.VK_UP: return KEY_UP;
-            case KeyEvent.VK_DOWN: return KEY_DOWN;
-            case KeyEvent.VK_ENTER: return KEY_SELECT;
+            case KeyEvent.VK_LEFT:
+                return KEY_LEFT;
+            case KeyEvent.VK_RIGHT:
+                return KEY_RIGHT;
+            case KeyEvent.VK_UP:
+                return KEY_UP;
+            case KeyEvent.VK_DOWN:
+                return KEY_DOWN;
+            case KeyEvent.VK_ENTER:
+                return KEY_SELECT;
             // Soft keys: map to function keys as a reasonable desktop substitute
-            case KeyEvent.VK_F1: return KEY_SOFT1;
-            case KeyEvent.VK_F2: return KEY_SOFT2;
+            case KeyEvent.VK_F1:
+                return KEY_SOFT1;
+            case KeyEvent.VK_F2:
+                return KEY_SOFT2;
         }
 
         // Digits (top row or numpad)
