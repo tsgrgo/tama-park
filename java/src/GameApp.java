@@ -256,27 +256,22 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void startTimerWithRetry() {
-        int var0 = 0;
-
-        while (var0 < 10) {
+        for (int i = 0; i < 10; ++i) {
             try {
                 timer.start();
                 return;
-            } catch (Exception ex) {
+            } catch (Exception e) {
                 try {
                     timer.stop();
-                } catch (Exception ex2) {
+                } catch (Exception e2) {
                 }
 
                 try {
                     Thread.sleep(1000L);
-                } catch (Exception ex2) {
+                } catch (Exception e2) {
                 }
-
-                ++var0;
             }
         }
-
     }
 
     public static void log(String str) {
@@ -418,14 +413,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int[] var3 = loadShortArray(128);
             int var4 = 0;
 
-            int i;
-            for (i = 0; i < 93; ++i) {
+            for (int i = 0; i < 93; ++i) {
                 var4 += var3[i];
             }
 
             stream = Connector.openDataInputStream("scratchpad:///0;pos=" + (var4 + 128 + 568));
 
-            for (i = 0; i < 7; ++i) {
+            for (int i = 0; i < 7; ++i) {
                 byte[] data = new byte[var3[i + 93]];
                 stream.read(data);
 
@@ -598,13 +592,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             outputStream.write(var6, 0, var9);
             outputStream.close();
             pos += var9;
-            int var10002 = gameSave[1]++;
+            gameSave[1]++;
             saveGame();
             ++w;
             d();
         }
 
-        Object var10 = null;
+        var6 = null;
         System.gc();
     }
 
@@ -616,13 +610,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         DataInputStream stream = new DataInputStream(Connector.openInputStream("scratchpad:///0;pos=" + pos));
         short arraySize = stream.readShort();
         int[] res = new int[arraySize];
-        int i;
+
         if (elementSizeInBytes == 2) {
-            for (i = 0; i < arraySize; ++i) {
+            for (int i = 0; i < arraySize; ++i) {
                 res[i] = stream.readShort();
             }
         } else if (elementSizeInBytes == 4) {
-            for (i = 0; i < arraySize; ++i) {
+            for (int i = 0; i < arraySize; ++i) {
                 res[i] = stream.readInt();
             }
         }
@@ -754,7 +748,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static int splitCount(String text, String delimiter) {
-        boolean var3 = false;
         int var1 = 0;
         boolean hasMore = true;
 
@@ -773,12 +766,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return count;
     }
 
-    public static String O(String var0, int var1, int var2, String var3) {
+    public static String O(String str, int var1, int var2, String var3) {
         int var5 = 0;
 
-        int var4;
-        for (var4 = 0; var4 < var1; ++var4) {
-            var5 = var0.indexOf(var3, var5);
+        for (int i = 0; i < var1; ++i) {
+            var5 = str.indexOf(var3, var5);
             if (var5 == -1) {
                 log("subStringLine:Invalid line selection");
                 return "";
@@ -789,10 +781,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         int var6 = var5;
 
-        for (var4 = 0; var4 < var2; ++var4) {
-            var5 = var0.indexOf(var3, var5);
+        for (int i = 0; i < var2; ++i) {
+            var5 = str.indexOf(var3, var5);
             if (var5 == -1) {
-                return var0.substring(var6);
+                return str.substring(var6);
             }
 
             var5 += var3.length();
@@ -802,7 +794,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var5 -= var3.length();
         }
 
-        return var0.substring(var5, var5); // shouldn't this be var0.substring(var6, var5); ?
+        return str.substring(var6, var5);
     }
 
     public static boolean launchCurrentApp(String var0) {
