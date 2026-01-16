@@ -713,17 +713,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void setCurrentFont(int i) {
         switch (i) {
-            case 0:
-                currentFont = Font.getFont(1895826432);
+            case 0:                                           //      face style    size     no type
+                currentFont = Font.getFont(1895826432); // 0111 0001 00000000 00000100 00000000
                 break;
             case 1:
-                currentFont = Font.getFont(1895825664);
+                currentFont = Font.getFont(1895825664); // 0111 0001 00000000 00000001 00000000
                 break;
             case 2:
-                currentFont = Font.getFont(1895825920);
+                currentFont = Font.getFont(1895825920); // 0111 0001 00000000 00000010 00000000
                 break;
             case 3:
-                currentFont = Font.getFont(1896940032);
+                currentFont = Font.getFont(1896940032); // 0111 0001 00010001 00000010 00000000
         }
 
         currentFontHeight = currentFont.getHeight();
