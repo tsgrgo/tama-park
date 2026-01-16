@@ -16,6 +16,7 @@ import com.nttdocomo.ui.MediaSound;
 import com.nttdocomo.ui.PhoneSystem;
 import com.nttdocomo.util.Timer;
 import com.nttdocomo.util.TimerListener;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Date;
@@ -60,13 +61,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int aR;
     public static AudioPresenter[] audioPresenters;
     public static MediaSound[] mediaSounds;
-    public static int a;
+    public static int loopedSoundIdx;
     public static int aS;
     public static int aT;
     public static int p;
     public static boolean r;
     public static boolean q;
-    public static long[] s;
+    public static long[] inputState;
     public static int t;
     public static int u;
     public static int[] v;
@@ -82,7 +83,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static String[] softLabels;
     public static int w;
     public static Image[] images;
-    public static int[] F;
+    public static int[] imageSizes;
     public static int[] G;
     public static int[] H;
     public static int[] aY;
@@ -106,7 +107,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] af;
     public static int[] aj;
     public static String[] ah;
-    public static Image ag;
+    public static Image travelMemoryPhoto;
     public static int[] al;
     public static int[] ao;
     public static Image[] am;
@@ -134,6 +135,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static byte[] aE;
     public static IrRemoteControlFrame[] aF;
     public static IrRemoteControl aD;
+    /**
+     * aC[0] - transmission state
+     */
     public static int[] aC;
     public static long aG;
     public static int[] aI;
@@ -156,11 +160,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aQ = new long[240];
         aR = 0;
         audioPresenters = new AudioPresenter[2];
-        a = -1;
+        loopedSoundIdx = -1;
         aS = 0;
         aT = -1;
         p = -1;
-        s = new long[7];
+        inputState = new long[7];
         t = 0;
         u = 0;
         v = new int[2];
@@ -333,6 +337,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (n[3] == 0) {
                 audioPresenters[presenterIdx].setSound(mediaSounds[soundIdx]);
                 if (var2) {
+                    // Not sure why this is empty...
                 }
 
                 audioPresenters[presenterIdx].play();
@@ -363,14 +368,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void StackMap(int var0, boolean var1) {
-        if (n[3] == 0 && var0 >= 0) {
+    public static void StackMap(int soundIdx, boolean var1) {
+        if (n[3] == 0 && soundIdx >= 0) {
             stopSound(0);
-            playSoundInternal(var0, 0, var1);
+            playSoundInternal(soundIdx, 0, var1);
         }
 
-        a = var0;
-        p = var0;
+        loopedSoundIdx = soundIdx;
+        p = soundIdx;
         q = var1;
     }
 
@@ -449,62 +454,62 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static boolean s(long var0) {
-        return (s[1] & var0) != 0L;
+        return (inputState[1] & var0) != 0L;
     }
 
     public static boolean t(long var0) {
-        return (s[2] & var0) != 0L;
+        return (inputState[2] & var0) != 0L;
     }
 
     public static void Code(int type, int param) {
         try {
             if (0 == type) {
-                s[0] = (long) (canvas.getKeypadState() & Integer.MAX_VALUE);
-                s[4]++;
+                inputState[0] = (long) (canvas.getKeypadState() & Integer.MAX_VALUE);
+                inputState[4]++;
             }
         } catch (Exception ex) {
         }
 
     }
 
-    public static void J() {
+    public static void updateInputState() {
         long var0 = 0L;
         long var2 = 0L;
         long var4 = 0L;
         var2 = 0L;
-        if (s[4] == 0L) {
-            s[0] = 0L;
+        if (inputState[4] == 0L) {
+            inputState[0] = 0L;
         }
 
-        s[3] = s[6];
-        s[6] = s[0] | var0 | var2 << 32;
-        s[5] = s[6] & (s[6] ^ s[3]);
+        inputState[3] = inputState[6];
+        inputState[6] = inputState[0] | var0 | var2 << 32;
+        inputState[5] = inputState[6] & (inputState[6] ^ inputState[3]);
         long[] var10000;
         if (k) {
-            if (s[4] != 0L) {
-                var10000 = s;
+            if (inputState[4] != 0L) {
+                var10000 = inputState;
                 var10000[5] |= var2 << 32 & 844424930131968L;
             }
-        } else if (s[4] != 0L) {
-            var10000 = s;
+        } else if (inputState[4] != 0L) {
+            var10000 = inputState;
             var10000[5] |= var0 & 655360L;
         }
 
-        if ((s[3] ^ s[6]) == 0L && s[6] != 0L) {
+        if ((inputState[3] ^ inputState[6]) == 0L && inputState[6] != 0L) {
             ++t;
         } else {
             t = 0;
         }
 
-        s[4] = 0L;
-        if ((s[6] & 9851624207876096L) == 0L) {
+        inputState[4] = 0L;
+        if ((inputState[6] & 9851624207876096L) == 0L) {
             ++u;
         } else {
             u = 0;
         }
 
-        s[2] = s[6];
-        s[1] = s[5];
+        inputState[2] = inputState[6];
+        inputState[1] = inputState[5];
     }
 
     public static void u() {
@@ -736,12 +741,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return A * var0 / '耀';
     }
 
-    public static int M(int var0) {
-        if (var0 < 0) {
-            var0 *= -1;
+    public static int abs(int n) {
+        if (n < 0) {
+            n *= -1;
         }
 
-        return var0;
+        return n;
     }
 
     public static int splitCount(String text, String delimiter) {
@@ -796,17 +801,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var0.substring(var5, var5); // shouldn't this be var0.substring(var6, var5); ?
     }
 
-    public static boolean P(String var0) {
-        boolean var1 = true;
+    public static boolean launchCurrentApp(String var0) {
+        boolean success = true;
 
         try {
-            String[] var2 = new String[]{var0};
-            IApplication.getCurrentApp().launch(1, var2);
-        } catch (Exception var3) {
-            var1 = false;
+            String[] args = new String[]{var0};
+            IApplication.getCurrentApp().launch(1, args);
+        } catch (Exception e) {
+            success = false;
         }
 
-        return var1;
+        return success;
     }
 
     public static void setSoftLabel(int which, String str) {
@@ -824,7 +829,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 currentSoftLabelIdx = previousSoftLabelIdx;
                 setSoftLabel(0, softLabels[idx]);
                 previousSoftLabelIdx = idx;
-            } catch (Exception ex) {
+            } catch (Exception e) {
             }
 
         }
@@ -874,35 +879,35 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int loadImages(int pos, int startIndex, int count) {
         try {
             Thread.sleep(200L);
-        } catch (Exception ex) {
+        } catch (Exception e) {
         }
 
         try {
-            int[] var4 = loadShortArray(128);
-            F = var4;
-            pos += (var4.length + 1) * 2;
+            int[] sizes = loadShortArray(128);
+            imageSizes = sizes;
+            pos += (sizes.length + 1) * 2;
 
             int i;
             for (i = 0; i < startIndex; ++i) {
-                pos += var4[i];
+                pos += sizes[i];
             }
 
             DataInputStream stream = new DataInputStream(Connector.openInputStream("scratchpad:///0;pos=" + pos));
 
             for (i = startIndex; i < count; ++i) {
-                byte[] var3 = new byte[var4[i]];
-                stream.read(var3);
-                MediaImage mediaImage = MediaManager.getImage(var3);
+                byte[] imageData = new byte[sizes[i]];
+                stream.read(imageData);
+                MediaImage mediaImage = MediaManager.getImage(imageData);
                 mediaImage.use();
                 images[i] = mediaImage.getImage();
                 Object var12 = null;
                 ++w;
-                pos += var4[i];
+                pos += sizes[i];
                 d();
 
                 try {
                     Thread.sleep(50L);
-                } catch (Exception ex) {
+                } catch (Exception e) {
                 }
             }
 
@@ -915,31 +920,31 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void Y(int var0) throws Exception {
-        if (images[var0] == null) {
-            short var1 = 128;
-            int var4 = var1 + (F.length + 1) * 2;
+    public static void loadImage(int idx) throws Exception {
+        if (images[idx] == null) {
+            short baseOffset = 128;
+            int pos = baseOffset + (imageSizes.length + 1) * 2;
 
-            for (int var2 = 0; var2 < var0; ++var2) {
-                var4 += F[var2];
+            for (int i = 0; i < idx; ++i) {
+                pos += imageSizes[i];
             }
 
-            MediaImage var3 = MediaManager.getImage("scratchpad:///0;pos=" + var4);
-            var3.use();
-            images[var0] = var3.getImage();
+            MediaImage mediaImage = MediaManager.getImage("scratchpad:///0;pos=" + pos);
+            mediaImage.use();
+            images[idx] = mediaImage.getImage();
         }
 
     }
 
-    public static void aa(int var0) {
-        if (images[var0] != null) {
-            images[var0].dispose();
-            images[var0] = null;
+    public static void disposeImage(int idx) {
+        if (images[idx] != null) {
+            images[idx].dispose();
+            images[idx] = null;
         }
 
     }
 
-    public static void showDownloadingText(Graphics g, int x, int y) {
+    public static void downloadingPage(Graphics g, int x, int y) {
         int var3 = (GameApp.canvasWidth - 200) / 2;
         int var4 = y + 168;
         setColorOfRGBInt(g, 16777215);
@@ -951,14 +956,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(var3, var4, var5, 40);
     }
 
-    public static void ad(Graphics var0, int var1, int var2) {
+    public static void ad(Graphics g, int x, int y) {
         if (3 < w) {
             try {
                 Thread.sleep(300L);
-            } catch (Exception var4) {
+            } catch (Exception e) {
             }
 
-            ac(var0, var1, var2, w * 8 / 93, w);
+            ac(g, x, y, w * 8 / 93, w);
         }
 
     }
@@ -1049,7 +1054,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(6);
                     return;
                 default:
-                    G[0] = ar();
+                    G[0] = getSelectedButtonIdx();
             }
         }
     }
@@ -1065,19 +1070,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void as(Graphics var0, int var1, int var2) {
+    public static void as(Graphics g, int x, int y) {
         int var3 = (canvasWidth - getSpriteWidth(72)) / 2;
-        int var4 = var2 + 54;
+        int var4 = y + 54;
         int var5 = -48 + G[2] * 8;
-        setColorOfRGBInt(var0, 6728679);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 23, var1, var2 + var5, 0);
-        drawSprite(var0, 6, var1, var2 + 116, 0);
-        drawSprite(var0, 6, var1 + 120, var2 + 116, 0);
-        setColorOfRGBInt(var0, 7456538);
-        var0.fillRect(var1, var2 + 158, 240, 82);
-        drawSprite(var0, 72, var3, var4, 0);
-        drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+        setColorOfRGBInt(g, 6728679);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 23, x, y + var5, 0);
+        drawSprite(g, 6, x, y + 116, 0);
+        drawSprite(g, 6, x + 120, y + 116, 0);
+        setColorOfRGBInt(g, 7456538);
+        g.fillRect(x, y + 158, 240, 82);
+        drawSprite(g, 72, var3, var4, 0);
+        drawSprite(g, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
     }
 
     public static void at(Graphics var0, int var1, int var2) {
@@ -1112,8 +1117,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
         }
 
-        var5 = ax(H, ar(), 1);
-        var5 += ax(H, ar(), 3) / 2;
+        var5 = ax(H, getSelectedButtonIdx(), 1);
+        var5 += ax(H, getSelectedButtonIdx(), 3) / 2;
         var5 -= 10;
         drawSprite(var0, 75, var1 + 2, var2 + var5, 0);
         drawSprite(var0, 75, var1 + 240 - (getSpriteWidth(75) - 10), var2 + var5, 0);
@@ -1172,7 +1177,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(9);
                     return;
                 default:
-                    K[0] = ar();
+                    K[0] = getSelectedButtonIdx();
             }
         }
     }
@@ -1190,6 +1195,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawSprite(g, 6, x + 120, y + 78, 0);
             drawBeveledRect(g, x + 3, y + 3, var4, var3 + 4, 0, 16056665);
             setColorOfRGBInt(g, 16777215);
+            // 29: Connect to Tama Planet by phone!
             drawString(g, getText(29), x + 3 + 2, y + 3 + 2, TextAlign.LEFT);
 
             for (var5 = 0; var5 < 3; ++var5) {
@@ -1201,10 +1207,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
         }
 
-        var5 = ax(L, ar(), 2) / 2;
+        var5 = ax(L, getSelectedButtonIdx(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(L, ar(), 1) + y;
-        var6 += ax(L, ar(), 3) / 2;
+        int var6 = ax(L, getSelectedButtonIdx(), 1) + y;
+        var6 += ax(L, getSelectedButtonIdx(), 3) / 2;
         aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
@@ -1252,43 +1258,44 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(11);
                     return;
                 default:
-                    M[0] = ar();
+                    M[0] = getSelectedButtonIdx();
             }
         }
     }
 
-    public static void aK(Graphics var0, int var1, int var2) {
+    public static void travelModePage(Graphics g, int x, int y) {
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 192;
         int var5;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 78, 240, getSpriteHeight(6));
-            drawSprite(var0, 6, var1, var2 + 78, 0);
-            drawSprite(var0, 6, var1 + 120, var2 + 78, 0);
-            drawBeveledRect(var0, var1 + 3, var2 + 3, var4, var3 + 8, 0, 16056665);
-            setColorOfRGBInt(var0, 16777215);
-            drawString(var0, getText(40), var1 + 3 + 6, var2 + 3 + 4, TextAlign.LEFT);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            setColorOfRGBInt(g, 6728679);
+            g.fillRect(x, y + 78, 240, getSpriteHeight(6));
+            drawSprite(g, 6, x, y + 78, 0);
+            drawSprite(g, 6, x + 120, y + 78, 0);
+            drawBeveledRect(g, x + 3, y + 3, var4, var3 + 8, 0, 16056665);
+            setColorOfRGBInt(g, 16777215);
+            // 40: Send your Tama on a trip with your phone!
+            drawString(g, getText(40), x + 3 + 6, y + 3 + 4, TextAlign.LEFT);
 
             for (var5 = 0; var5 < 2; ++var5) {
-                aw(var0, var5, N, 0);
+                aw(g, var5, N, 0);
             }
         } else {
             for (var5 = 0; var5 < 2; ++var5) {
-                aw(var0, var5, N, 0);
+                aw(g, var5, N, 0);
             }
         }
 
-        var5 = ax(N, ar(), 2) / 2;
+        var5 = ax(N, getSelectedButtonIdx(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(N, ar(), 1) + var2;
-        var6 += ax(N, ar(), 3) / 2;
-        aD(var0, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
+        int var6 = ax(N, getSelectedButtonIdx(), 1) + y;
+        var6 += ax(N, getSelectedButtonIdx(), 3) / 2;
+        aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
         if (I) {
-            drawSprite(var0, 90, var1 + 3 + var4 - 1, var2 + 3 + var3 / 2 - 5, 0);
-            drawSprite(var0, 57, var1 + 240 - getSpriteWidth(57) - 2, var2 + 68, 0);
+            drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
+            drawSprite(g, 57, x + 240 - getSpriteWidth(57) - 2, y + 68, 0);
         }
 
     }
@@ -1354,9 +1361,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ao();
             ap(110, 5);
         } else {
-            int var0 = ar();
+            int var0 = getSelectedButtonIdx();
             int var1 = aq(s(1048576L), s(524288L), s(131072L));
-            P[0] = ar();
+            P[0] = getSelectedButtonIdx();
             if (var0 != P[0]) {
                 P[3] = 0;
             }
@@ -1385,8 +1392,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aZ(var14);
                 aL(3);
             }
-        } catch (Exception var12) {
-            log("e:" + var12);
+        } catch (Exception e) {
+            log("e:" + e);
+            // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
             if (var0 != null) {
@@ -1438,87 +1446,92 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void bi(Graphics var0, int var1, int var2) {
+    public static void shoppingCenterPage(Graphics g, int x, int y) {
         switch (P[1]) {
             case 0:
             default:
                 break;
             case 1:
-                be(var0, var1, var2);
+                shoppingCenterItemTypeSelect(g, x, y);
                 break;
             case 2:
-                bf(var0, var1, var2);
+                shoppingCenterIssuingItemTicket(g, x, y);
                 break;
             case 3:
-                bg(var0, var1, var2);
+                shoppingCenterItemTicket(g, x, y);
                 break;
             case 4:
-                bh(var0, var1, var2);
+                shoppingCenterSendViaIR(g, x, y);
         }
 
     }
 
-    public static void be(Graphics var0, int var1, int var2) {
+    public static void shoppingCenterItemTypeSelect(Graphics g, int x, int y) {
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(2), canvasWidth / 2, var2 + 2, currentFont.stringWidth(getText(2)) + 8, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            // 2: Shopping Center
+            drawTextWithBackground(g, getText(2), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(2)) + 8, 2);
         }
 
         int var4;
-        for (int var3 = 0; var3 < 5; ++var3) {
-            var4 = var3 * 4;
+        for (int i = 0; i < 5; ++i) {
+            var4 = i * 4;
             ai(Q[var4 + 0], Q[var4 + 0], Q[var4 + 0], Q[var4 + 1], Q[var4 + 0], Q[var4 + 2], Q[var4 + 2], Q[var4 + 2], Q[var4 + 3], Q[var4 + 2]);
-            bk(var0, var3, R, 0);
+            bk(g, i, R, 0);
         }
 
-        bl(var0, var1, getText(26), var2 + 2 + 34 + 1, P[2], 12, 16056665, 16777215);
+        // 26: Use your Gotchi Points from your Keitama to buy Tamagotchi goods! Choose the rank of the item you want and press OK!
+        bl(g, x, getText(26), y + 2 + 34 + 1, P[2], 12, 16056665, 16777215);
 
         for (var4 = 0; var4 < 5; ++var4) {
             int var5 = bm(R, var4, 1) + 3;
             int var6 = bm(R, var4, 2) - 66;
             byte var7;
             boolean var8;
-            if (var4 == ar()) {
+            if (var4 == getSelectedButtonIdx()) {
                 var7 = 61;
                 var8 = false;
-                var6 -= M((P[3] & 31) - 16);
+                var6 -= abs((P[3] & 31) - 16);
             } else {
                 var7 = 62;
                 var8 = false;
             }
 
             int var10 = var7 + (P[3] >> 3 & 1);
-            int var9 = var2 + bm(R, var4, 1);
+            int var9 = y + bm(R, var4, 1);
             var9 += bm(R, var4, 3) / 2 + 2;
-            bn(var0, var10, var1 + bm(R, var4, 0), var9, var6, P[2], 0);
+            drawButtonTamas(g, var10, x + bm(R, var4, 0), var9, var6, P[2], 0);
         }
 
     }
 
-    public static void bf(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        setColorOfRGBInt(var0, 6728679);
-        var0.fillRect(var1, var2 + 110, 240, getSpriteHeight(6));
-        drawSprite(var0, 6, var1, var2 + 110, 0);
-        drawSprite(var0, 6, var1 + 120, var2 + 110, 0);
-        bj(var0, getText(76), canvasWidth / 2, var2 + 2, 200, 2);
-        drawSprite(var0, 76, canvasWidth / 2, var2 + 100, 2);
+    public static void shoppingCenterIssuingItemTicket(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        setColorOfRGBInt(g, 6728679);
+        g.fillRect(x, y + 110, 240, getSpriteHeight(6));
+        drawSprite(g, 6, x, y + 110, 0);
+        drawSprite(g, 6, x + 120, y + 110, 0);
+        // 76: Issuing Item Ticket
+        drawTextWithBackground(g, getText(76), canvasWidth / 2, y + 2, 200, 2);
+        drawSprite(g, 76, canvasWidth / 2, y + 100, 2);
     }
 
-    public static void bg(Graphics g, int x, int y) {
+    public static void shoppingCenterItemTicket(Graphics g, int x, int y) {
         if (I) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
-            bj(g, getText(79), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(79)) + 8, 2);
+            // 79: Item Ticket
+            drawTextWithBackground(g, getText(79), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(79)) + 8, 2);
         } else {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + getSpriteHeight(0)));
         }
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 64: Enter the Ticket No. in your Keitama
         bl(g, x, getText(64), y + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
         int var3 = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
@@ -1534,11 +1547,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, var4, S, 0);
         }
 
-        aD(g, 61, x + bm(S, ar(), 0), y + bm(S, ar(), 1) + bm(S, ar(), 3) / 2, bm(S, ar(), 2) - 10, P[2]);
+        aD(g, 61, x + bm(S, getSelectedButtonIdx(), 0), y + bm(S, getSelectedButtonIdx(), 1) + bm(S, getSelectedButtonIdx(), 3) / 2, bm(S, getSelectedButtonIdx(), 2) - 10, P[2]);
     }
 
-    public static void bh(Graphics g, int x, int y) {
-        bs(g, x, y);
+    public static void shoppingCenterSendViaIR(Graphics g, int x, int y) {
+        sendViaIR(g, x, y);
     }
 
     public static void bl(Graphics g, int var1, String var2, int var3, int var4, int var5, int var6, int var7) {
@@ -1567,20 +1580,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bp(var0, var1, var2, var3, var4, var5);
     }
 
-    public static void bj(Graphics var0, String var1, int var2, int var3, int var4, int var5) {
-        int var6 = calculateTextHeight(var1);
+    public static void drawTextWithBackground(Graphics g, String text, int x, int y, int width, int align) {
+        int height = calculateTextHeight(text);
         byte var7 = 0;
         int var8 = 16056665;
         int var9 = 16777215;
-        if (var5 == 2) {
-            var2 -= var4 / 2;
-        } else if (var5 == 1) {
-            var2 -= var4;
+        if (align == 2) {
+            x -= width / 2;
+        } else if (align == 1) {
+            x -= width;
         }
 
-        drawBeveledRect(var0, var2, var3, var4, var6, var7, var8);
-        setColorOfRGBInt(var0, var9);
-        drawString(var0, var1, var2 + var4 / 2, var3 + 2, TextAlign.CENTER);
+        drawBeveledRect(g, x, y, width, height, var7, var8);
+        setColorOfRGBInt(g, var9);
+        drawString(g, text, x + width / 2, y + 2, TextAlign.CENTER);
     }
 
     public static int calculateTextHeight(String text) {
@@ -1612,10 +1625,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aD(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
-        bn(var0, var1, var2, var3, var4, var5, 1);
+        drawButtonTamas(var0, var1, var2, var3, var4, var5, 1);
     }
 
-    public static void bn(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6) {
+    public static void drawButtonTamas(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6) {
         drawSprite(var0, var1 + (var6 & -(var5 >> 2 & 1)), var2 - var4 / 2 - getSpriteWidth(var1) - 2 - 2, var3 - getSpriteHeight(var1) / 2, 0);
         drawSprite(var0, var1 + (var6 & -((var5 >> 2) + 1 & 1)), var2 + var4 / 2 + 2 + 2, var3 - getSpriteHeight(var1) / 2, 0);
     }
@@ -1757,27 +1770,27 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void bG() {
         bE();
         bN();
-        DataInputStream var0 = null;
+        DataInputStream inputStream = null;
 
         try {
-            var0 = aV(13);
-            aW(var0);
-            int var1 = var0.read();
+            inputStream = aV(13);
+            aW(inputStream);
+            int var1 = inputStream.read();
             if (0 < var1) {
-                String var2 = aX(var0, var1);
+                String var2 = aX(inputStream, var1);
                 aY(O, 2, 1, var2);
             } else {
                 byte[] var16 = new byte[10];
-                var0.read(var16);
+                inputStream.read(var16);
 
                 int var3;
                 for (int var4 = 0; var4 < 2; ++var4) {
-                    var3 = var0.readUnsignedShort();
-                    V[var4] = bO(var0, var3);
+                    var3 = inputStream.readUnsignedShort();
+                    V[var4] = bO(inputStream, var3);
                 }
 
-                var3 = var0.readUnsignedShort();
-                W = aX(var0, var3);
+                var3 = inputStream.readUnsignedShort();
+                W = aX(inputStream, var3);
                 U[2] = 0;
                 U[4] = 0;
                 U[5] = bP(W);
@@ -1785,14 +1798,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aZ(var16);
                 bC(3);
             }
-        } catch (Exception var14) {
-            log("e:" + var14);
+        } catch (Exception e) {
+            log("e:" + e);
+            // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
-            if (var0 != null) {
+            if (inputStream != null) {
                 try {
-                    var0.close();
-                } catch (Exception var13) {
+                    inputStream.close();
+                } catch (Exception e) {
                 }
             }
 
@@ -1864,88 +1878,93 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void bZ(Graphics var0, int var1, int var2) {
+    public static void parentCallPage(Graphics g, int x, int y) {
         switch (U[1]) {
             case 0:
             default:
                 break;
             case 1:
-                bU(var0, var1, var2);
+                parentCallCodeInput(g, x, y);
                 break;
             case 2:
-                bV(var0, var1, var2);
+                bV(g, x, y);
                 break;
             case 3:
-                bW(var0, var1, var2);
+                parentCallExplanation(g, x, y);
                 break;
             case 4:
-                bX(var0, var1, var2);
+                parentCallAllowanceTicket(g, x, y);
                 break;
             case 5:
-                bY(var0, var1, var2);
+                parentCallSendViaIR(g, x, y);
         }
 
     }
 
-    public static void bU(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(17));
-        int var4 = var2 + 240 - 42;
+    public static void parentCallCodeInput(Graphics g, int x, int y) {
+        // 17: Connect with your parent on Tamagotchi Planet!
+        int textHeight = calculateTextHeight(getText(17));
+        int var4 = y + 240 - 42;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240 - getSpriteHeight(0));
-            bj(var0, getText(17), canvasWidth / 2, var2 + 3, 232, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240 - getSpriteHeight(0));
+            // 17: Connect with your parent on Tamagotchi Planet!
+            drawTextWithBackground(g, getText(17), canvasWidth / 2, y + 3, 232, 2);
         }
 
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bl(var0, var1, getText(65), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
-        int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 4 + 20;
-        boolean var6 = 0 == ar() & (U[6] & 4) != 0;
-        ca(var0, canvasWidth / 2, var5, var6);
-        cb(var0, 1, getText(18), canvasWidth / 2, var4, 100, 28, 2, 0);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 65: Enter the Address No. shown on your Keitama
+        bl(g, x, getText(65), y + 3 + textHeight + 3, U[6], 12, 16056665, 16777215);
+        int var5 = y + 3 + textHeight + 3 + currentFontHeight + 4 + 20;
+        boolean var6 = 0 == getSelectedButtonIdx() & (U[6] & 4) != 0;
+        ca(g, canvasWidth / 2, var5, var6);
+        // 18: OK
+        cb(g, 1, getText(18), canvasWidth / 2, var4, 100, 28, 2, 0);
         if (I) {
-            bp(var0, canvasWidth / 2, var5 + 5, 56, U[6] >> 1, true);
+            bp(g, canvasWidth / 2, var5 + 5, 56, U[6] >> 1, true);
         } else {
-            bq(var0, canvasWidth / 2, var5 + 5, 56, U[6] >> 1, true, 16777076);
+            bq(g, canvasWidth / 2, var5 + 5, 56, U[6] >> 1, true, 16777076);
         }
 
-        if (1 == ar()) {
-            aD(var0, 55, canvasWidth / 2, var2 + 240 - 42 + 14, 120, U[6]);
-        }
-
-    }
-
-    public static void bV(Graphics var0, int var1, int var2) {
-        ac(var0, var1, var2, 8, 0);
-        drawSprite(var0, 24, var1 + 126, var2 + 100, 0);
-        int var3 = getSpriteWidth(24);
-
-        for (int var4 = 0; var4 < 3; ++var4) {
-            drawSprite(var0, 7, var1 + 126 - 6 * var4, var2 + 118, 0);
-            drawSprite(var0, 8, var1 + 126 + var3 + 6 * var4, var2 + 118, 0);
+        if (1 == getSelectedButtonIdx()) {
+            aD(g, 55, canvasWidth / 2, y + 240 - 42 + 14, 120, U[6]);
         }
 
     }
 
-    public static void bW(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        int var3 = var2 + 4;
-        bj(var0, getText(23), canvasWidth / 2, var3, currentFont.stringWidth(getText(23)) + 8, 2);
+    public static void bV(Graphics g, int x, int y) {
+        ac(g, x, y, 8, 0);
+        drawSprite(g, 24, x + 126, y + 100, 0);
+        int spriteWidth = getSpriteWidth(24);
+
+        for (int i = 0; i < 3; ++i) {
+            drawSprite(g, 7, x + 126 - 6 * i, y + 118, 0);
+            drawSprite(g, 8, x + 126 + spriteWidth + 6 * i, y + 118, 0);
+        }
+
+    }
+
+    public static void parentCallExplanation(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        int var3 = y + 4;
+        // 23: Parent Call
+        drawTextWithBackground(g, getText(23), canvasWidth / 2, var3, currentFont.stringWidth(getText(23)) + 8, 2);
         int var4 = var3 + currentFontHeight + 8 + 6;
-        drawSprite(var0, 58, var1, var4, 0);
-        drawImage(var0, V[U[6] >> 3 & 1], var1 + 144, var4, 0);
+        drawSprite(g, 58, x, var4, 0);
+        drawImage(g, V[U[6] >> 3 & 1], x + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (canvasWidth - 232) / 2;
-        bt(var0, X, var6, var5, 232, U[3], 12, 16777215, 16056665);
-        setColorOfRGBInt(var0, 0);
-        var0.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var5, 4, currentFontHeight);
-        var0.fillRect(var6, var5 - 1, 1, 1);
-        var0.fillRect(var6, var5 + currentFontHeight, 1, 1);
-        var0.fillRect(var6 + 232, var5, 4, currentFontHeight);
-        var0.fillRect(var6 - 1, var5 - 1, 1, 1);
-        var0.fillRect(var6 + 232 - 1, var5 + currentFontHeight, 1, 1);
+        bt(g, X, var6, var5, 232, U[3], 12, 16777215, 16056665);
+        setColorOfRGBInt(g, 0);
+        g.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, var5, 4, currentFontHeight);
+        g.fillRect(var6, var5 - 1, 1, 1);
+        g.fillRect(var6, var5 + currentFontHeight, 1, 1);
+        g.fillRect(var6 + 232, var5, 4, currentFontHeight);
+        g.fillRect(var6 - 1, var5 - 1, 1, 1);
+        g.fillRect(var6 + 232 - 1, var5 + currentFontHeight, 1, 1);
         byte var7;
         if (U[5] - 1 <= U[4]) {
             var7 = 22;
@@ -1953,41 +1972,45 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var7 = 87;
         }
 
-        cb(var0, 0, getText(var7), canvasWidth / 2, var2 + 240 - 36, 160, 28, 2, 0);
-        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
-        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
-        drawSprite(var0, 37 + (U[6] >> 1 & 1), var1 + 240 - 44, var2 + var4 + 1, 0);
-        drawSprite(var0, 12, var1 + 240 - 38, var4 + 9, 0);
-        drawSprite(var0, 92, var1 + 140, var5 - 16, 0);
-        aD(var0, 55, canvasWidth / 2, var2 + 240 - 36 + getSpriteHeight(55) / 2, 160, U[6]);
+        // 7: Explanation
+        cb(g, 0, getText(var7), canvasWidth / 2, y + 240 - 36, 160, 28, 2, 0);
+        drawSprite(g, 27, x + 1, y + 1, 0);
+        drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
+        drawSprite(g, 37 + (U[6] >> 1 & 1), x + 240 - 44, y + var4 + 1, 0);
+        drawSprite(g, 12, x + 240 - 38, var4 + 9, 0);
+        drawSprite(g, 92, x + 140, var5 - 16, 0);
+        aD(g, 55, canvasWidth / 2, y + 240 - 36 + getSpriteHeight(55) / 2, 160, U[6]);
     }
 
-    public static void bX(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(67));
+    public static void parentCallAllowanceTicket(Graphics g, int x, int y) {
+        // 67: Allowance Ticket
+        int textHeight = calculateTextHeight(getText(67));
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(67), canvasWidth / 2, var2 + 3, currentFont.stringWidth(getText(67)) + 8, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            // 67: Allowance Ticket
+            drawTextWithBackground(g, getText(67), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(67)) + 8, 2);
         } else {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + getSpriteHeight(0)));
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + getSpriteHeight(0)));
         }
 
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bl(var0, var1, getText(66), var2 + 3 + var3 + 3, U[6], 12, 16056665, 16777215);
-        int var4 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
-        ca(var0, canvasWidth / 2, var4, false);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 66: Enter the Allowance Ticket No. in your Keitama!
+        bl(g, x, getText(66), y + 3 + textHeight + 3, U[6], 12, 16056665, 16777215);
+        int var4 = y + 3 + textHeight + 3 + currentFontHeight + 12;
+        ca(g, canvasWidth / 2, var4, false);
 
-        for (int var5 = 0; var5 < 2; ++var5) {
-            bk(var0, var5, Y, 0);
+        for (int i = 0; i < 2; ++i) {
+            bk(g, i, Y, 0);
         }
 
-        bq(var0, canvasWidth / 2, var4 + 5, 56, U[6] >> 1, false, 16777076);
-        aD(var0, 55, var1 + bm(Y, ar(), 0), var2 + bm(Y, ar(), 1) + bm(Y, ar(), 3) / 2, bm(Y, ar(), 2), U[6]);
+        bq(g, canvasWidth / 2, var4 + 5, 56, U[6] >> 1, false, 16777076);
+        aD(g, 55, x + bm(Y, getSelectedButtonIdx(), 0), y + bm(Y, getSelectedButtonIdx(), 1) + bm(Y, getSelectedButtonIdx(), 3) / 2, bm(Y, getSelectedButtonIdx(), 2), U[6]);
     }
 
-    public static void bY(Graphics var0, int var1, int var2) {
-        bs(var0, var1, var2);
+    public static void parentCallSendViaIR(Graphics var0, int var1, int var2) {
+        sendViaIR(var0, var1, var2);
     }
 
     public static void ca(Graphics var0, int var1, int var2, boolean var3) {
@@ -2012,7 +2035,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void ce() {
         for (int var0 = 0; var0 < aa.length; ++var0) {
-            aa(aa[var0]);
+            disposeImage(aa[var0]);
         }
 
         bA();
@@ -2071,19 +2094,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cf() {
-        for (int var0 = 0; var0 < 2; ++var0) {
-            if (ac[var0] != null) {
-                ac[var0].dispose();
-                ac[var0] = null;
+        for (int i = 0; i < 2; ++i) {
+            if (ac[i] != null) {
+                ac[i].dispose();
+                ac[i] = null;
             }
         }
 
         System.gc();
 
-        for (int var1 = 0; var1 < aa.length; ++var1) {
+        for (int i = 0; i < aa.length; ++i) {
             try {
-                Y(aa[var1]);
-            } catch (Exception var3) {
+                loadImage(aa[i]);
+            } catch (Exception e) {
             }
         }
 
@@ -2176,8 +2199,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aZ(var16);
                 cd(3);
             }
-        } catch (Exception var14) {
-            log("e:" + var14);
+        } catch (Exception e) {
+            log("e:" + e);
+            // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
             if (var0 != null) {
@@ -2268,77 +2292,82 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void cx(Graphics var0, int var1, int var2) {
+    public static void gotchiKingPage(Graphics g, int x, int y) {
         switch (ab[1]) {
             case 0:
             default:
                 break;
             case 1:
-                cq(var0, var1, var2);
+                gotchiKingCodeInput(g, x, y);
                 break;
             case 2:
-                cr(var0, var1, var2);
+                cr(g, x, y);
                 break;
             case 3:
             case 4:
-                cs(var0, var1, var2);
+                gotchiKingBroadcast(g, x, y);
                 break;
             case 5:
-                ct(var0, var1, var2);
+                ct(g, x, y);
                 break;
             case 6:
-                cu(var0, var1, var2);
+                gotchiKingIssuingInvitation(g, x, y);
                 break;
             case 7:
-                cv(var0, var1, var2);
+                gotchiKingInviteTicket(g, x, y);
                 break;
             case 8:
-                cw(var0, var1, var2);
+                gotchiKingSendViaIR(g, x, y);
         }
 
     }
 
-    public static void cq(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(30));
+    public static void gotchiKingCodeInput(Graphics g, int x, int y) {
+        // 30: Connect with the Gotchi King on Tamagotchi Planet!
+        int textHeight = calculateTextHeight(getText(30));
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240 - getSpriteHeight(0));
-            bj(var0, getText(30), canvasWidth / 2, var2 + 2, 230, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240 - getSpriteHeight(0));
+            // 30: Connect with the Gotchi King on Tamagotchi Planet!
+            drawTextWithBackground(g, getText(30), canvasWidth / 2, y + 2, 230, 2);
         }
 
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bl(var0, var1, getText(68), var2 + 2 + var3 + 2, ab[3], 12, 16056665, 16777215);
-        boolean var4 = 0 == ar() & (ab[3] & 4) != 0;
-        int var5 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
-        ca(var0, canvasWidth / 2, var5, var4);
-        cb(var0, 1, getText(18), canvasWidth / 2, var2 + 240 - 42, 100, 28, 2, 0);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 68: Enter the Gotchi King Address No. shown on your Keitama
+        bl(g, x, getText(68), y + 2 + textHeight + 2, ab[3], 12, 16056665, 16777215);
+        boolean var4 = 0 == getSelectedButtonIdx() & (ab[3] & 4) != 0;
+        int var5 = y + 2 + textHeight + 2 + currentFontHeight + 3;
+        ca(g, canvasWidth / 2, var5, var4);
+        // 18: OK
+        cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
         if (I) {
         }
 
         if (I) {
-            bp(var0, canvasWidth / 2, var5 + 5, 56, ab[3] >> 1, true);
+            bp(g, canvasWidth / 2, var5 + 5, 56, ab[3] >> 1, true);
         } else {
-            bq(var0, canvasWidth / 2, var5 + 5, 56, ab[3] >> 1, true, 16777076);
+            bq(g, canvasWidth / 2, var5 + 5, 56, ab[3] >> 1, true, 16777076);
         }
 
-        if (1 == ar()) {
-            aD(var0, 39, canvasWidth / 2, var2 + 240 - 42 + getSpriteHeight(39) / 2, 100, ab[3]);
+        if (1 == getSelectedButtonIdx()) {
+            aD(g, 39, canvasWidth / 2, y + 240 - 42 + getSpriteHeight(39) / 2, 100, ab[3]);
         }
 
     }
 
-    public static void cr(Graphics var0, int var1, int var2) {
-        bV(var0, var1, var2);
+    public static void cr(Graphics g, int x, int y) {
+        bV(g, x, y);
     }
 
-    public static void cs(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        int var3 = var2 + 68;
-        setColorOfRGBInt(var0, 6532583);
-        var0.fillRect(var1, var3, 240, 118);
-        int var4 = var2 + 4;
-        bj(var0, getText(31), canvasWidth / 2, var4, 200, 2);
+    public static void gotchiKingBroadcast(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        int var3 = y + 68;
+        setColorOfRGBInt(g, 6532583);
+        g.fillRect(x, var3, 240, 118);
+        int var4 = y + 4;
+        // 31: Gotchi King Broadcast
+        drawTextWithBackground(g, getText(31), canvasWidth / 2, var4, 200, 2);
         int var5 = var3 + 15;
         if (ab[1] == 4) {
             int var6;
@@ -2351,87 +2380,94 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var5 -= var6 * 6 / 20;
         }
 
-        drawSprite(var0, 6, var1, var3 + 76, 0);
-        drawSprite(var0, 6, var1 + 120, var3 + 76, 0);
-        drawSprite(var0, 66, canvasWidth / 2, var3, 2);
-        drawBeveledRect(var0, (canvasWidth - 36) / 2, var3 + 21, 36, 8, 3805255, 16315136);
-        drawBeveledRect(var0, (canvasWidth - 36) / 2, var5, 36, 8, 3805255, 16315136);
+        drawSprite(g, 6, x, var3 + 76, 0);
+        drawSprite(g, 6, x + 120, var3 + 76, 0);
+        drawSprite(g, 66, canvasWidth / 2, var3, 2);
+        drawBeveledRect(g, (canvasWidth - 36) / 2, var3 + 21, 36, 8, 3805255, 16315136);
+        drawBeveledRect(g, (canvasWidth - 36) / 2, var5, 36, 8, 3805255, 16315136);
         if (ab[1] == 3) {
-            cb(var0, 0, getText(75), canvasWidth / 2, var2 + 240 - 44, 100, 28, 2, 0);
-            aD(var0, 39, canvasWidth / 2, var2 + 240 - 44 + getSpriteHeight(39) / 2, 100, ab[3]);
+            // 75: Enter
+            cb(g, 0, getText(75), canvasWidth / 2, y + 240 - 44, 100, 28, 2, 0);
+            aD(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 100, ab[3]);
         }
 
-        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
-        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
-        drawSprite(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var3 + 2, 0);
-        drawSprite(var0, 12, var1 + 240 - 38, var3 + 10, 0);
+        drawSprite(g, 27, x + 1, y + 1, 0);
+        drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
+        drawSprite(g, 37 + (ab[3] >> 1 & 1), x + 240 - 44, var3 + 2, 0);
+        drawSprite(g, 12, x + 240 - 38, var3 + 10, 0);
     }
 
-    public static void ct(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        int var3 = var2 + 4;
-        bj(var0, getText(31), canvasWidth / 2, var3, 200, 2);
-        int var4 = var2 + 68;
+    public static void ct(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        int var3 = y + 4;
+        // 31: Gotchi King Broadcast
+        drawTextWithBackground(g, getText(31), canvasWidth / 2, var3, 200, 2);
+        int var4 = y + 68;
         int var5 = ab[4];
-        drawImage(var0, ac[var5], var1 + 0, var4, 0);
-        cb(var0, 0, getText(32), canvasWidth / 2, var2 + 240 - 44, 160, 28, 2, 0);
-        drawSprite(var0, 27, var1 + 1, var2 + 1, 0);
-        drawSprite(var0, 28, var1 + 240 - 1 - getSpriteWidth(28), var2 + 1, 0);
-        drawSprite(var0, 37 + (ab[3] >> 1 & 1), var1 + 240 - 44, var4 + 2, 0);
-        drawSprite(var0, 12, var1 + 240 - 38, var4 + 10, 0);
-        aD(var0, 39, canvasWidth / 2, var2 + 240 - 44 + getSpriteHeight(39) / 2, 160, ab[3]);
+        drawImage(g, ac[var5], x + 0, var4, 0);
+        // 32: Invite
+        cb(g, 0, getText(32), canvasWidth / 2, y + 240 - 44, 160, 28, 2, 0);
+        drawSprite(g, 27, x + 1, y + 1, 0);
+        drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
+        drawSprite(g, 37 + (ab[3] >> 1 & 1), x + 240 - 44, var4 + 2, 0);
+        drawSprite(g, 12, x + 240 - 38, var4 + 10, 0);
+        aD(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 160, ab[3]);
     }
 
-    public static void cu(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bj(var0, getText(77), canvasWidth / 2, var2 + 2, 200, 2);
+    public static void gotchiKingIssuingInvitation(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 77: Issuing Invitation
+        drawTextWithBackground(g, getText(77), canvasWidth / 2, y + 2, 200, 2);
         byte var3 = 16;
         byte var4 = 6;
         byte var5 = 11;
         int var6 = var4 + var3 * (var5 - 1);
-        cc(var0, (canvasWidth - var6) / 2, var2 + 68, var3, 0, var4, ab[3], var5);
-        drawSprite(var0, 34, canvasWidth / 2, var2 + 90, 2);
+        cc(g, (canvasWidth - var6) / 2, y + 68, var3, 0, var4, ab[3], var5);
+        drawSprite(g, 34, canvasWidth / 2, y + 90, 2);
     }
 
-    public static void cv(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(69));
+    public static void gotchiKingInviteTicket(Graphics g, int x, int y) {
+        // 69: Invite Ticket
+        int textHeight = calculateTextHeight(getText(69));
         int var4;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(69), canvasWidth / 2, var2 + 3, currentFont.stringWidth(getText(69)) + 8, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            // 69: Invite Ticket
+            drawTextWithBackground(g, getText(69), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(69)) + 8, 2);
         } else {
-            var4 = var2 + bm(ae, 0, 1);
+            var4 = y + bm(ae, 0, 1);
             var4 += bm(ae, 0, 3) / 2;
             var4 -= getSpriteHeight(39) / 2;
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var4, 240, 240 - (var4 + getSpriteHeight(39) / 2));
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, var4, 240, 240 - (var4 + getSpriteHeight(39) / 2));
         }
 
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bl(var0, var1, getText(70), var2 + 3 + var3 + 3, ab[3], 12, 16056665, 16777215);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 70: Enter the Invitation Ticket No. in your Keitama!
+        bl(g, x, getText(70), y + 3 + textHeight + 3, ab[3], 12, 16056665, 16777215);
 
         for (var4 = 0; var4 < 2; ++var4) {
-            bk(var0, var4, ae, 0);
+            bk(g, var4, ae, 0);
         }
 
-        int var5 = var2 + 3 + var3 + 3 + currentFontHeight + 12;
+        int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
         if (I) {
-            bo(var0, canvasWidth / 2, var5, 2, 0, 16756418, 13722050, 16756418);
-            bp(var0, canvasWidth / 2, var5 + 10, 56, ab[3] >> 1, false);
+            bo(g, canvasWidth / 2, var5, 2, 0, 16756418, 13722050, 16756418);
+            bp(g, canvasWidth / 2, var5 + 10, 56, ab[3] >> 1, false);
         } else {
-            bq(var0, canvasWidth / 2, var5 + 10, 56, ab[3] >> 1, false, 16756418);
+            bq(g, canvasWidth / 2, var5 + 10, 56, ab[3] >> 1, false, 16756418);
         }
 
-        br(var0, canvasWidth / 2, var5 + 4, 62, false, I);
-        aD(var0, 39, var1 + bm(ae, ar(), 0), var2 + bm(ae, ar(), 1) + bm(ae, ar(), 3) / 2 + 1, bm(ae, ar(), 2), ab[3]);
+        br(g, canvasWidth / 2, var5 + 4, 62, false, I);
+        aD(g, 39, x + bm(ae, getSelectedButtonIdx(), 0), y + bm(ae, getSelectedButtonIdx(), 1) + bm(ae, getSelectedButtonIdx(), 3) / 2 + 1, bm(ae, getSelectedButtonIdx(), 2), ab[3]);
     }
 
-    public static void cw(Graphics var0, int var1, int var2) {
-        bs(var0, var1, var2);
+    public static void gotchiKingSendViaIR(Graphics g, int x, int y) {
+        sendViaIR(g, x, y);
     }
 
     public static void cz() {
@@ -2476,13 +2512,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cA() {
-        if (ag != null) {
-            ag.dispose();
-            ag = null;
+        if (travelMemoryPhoto != null) {
+            travelMemoryPhoto.dispose();
+            travelMemoryPhoto = null;
         }
 
-        for (int var0 = 0; var0 < 2; ++var0) {
-            ah[var0] = null;
+        for (int i = 0; i < 2; ++i) {
+            ah[i] = null;
         }
 
         System.gc();
@@ -2551,13 +2587,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 ah[0] = aX(var0, var14);
                 af[3] = var0.readUnsignedShort();
                 var14 = var0.readUnsignedShort();
-                ag = bO(var0, var14);
+                travelMemoryPhoto = bO(var0, var14);
                 var14 = var0.readUnsignedShort();
                 ah[1] = aX(var0, var14);
                 cy(3);
             }
-        } catch (Exception var12) {
-            log("e:" + var12);
+        } catch (Exception e) {
+            log("e:" + e);
+            // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
             if (var0 != null) {
@@ -2599,7 +2636,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         T(4);
                         break;
                     case 1:
-                        P("http://tamapark.gs.keitaiarchive.org/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest");
+                        launchCurrentApp("http://tamapark.gs.keitaiarchive.org/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest");
                 }
             }
 
@@ -2609,97 +2646,102 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void cE() {
     }
 
-    public static void cL(Graphics var0, int var1, int var2) {
+    public static void travelMemoryPage(Graphics g, int x, int y) {
         switch (af[1]) {
             case 0:
             default:
                 break;
             case 1:
-                cH(var0, var1, var2);
+                travelMemoryCodeInput(g, x, y);
                 break;
             case 2:
-                cI(var0, var1, var2);
+                printingPhoto(g, x, y);
                 break;
             case 3:
-                cJ(var0, var1, var2);
+                drawMemoryPhoto(g, x, y);
                 break;
             case 4:
-                cK(var0, var1, var2);
+                cK(g, x, y);
         }
 
     }
 
-    public static void cH(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(36));
-        int var4 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
+    public static void travelMemoryCodeInput(Graphics g, int x, int y) {
+        // 36: Let's look at travel memories from your trips!
+        int textHeight = calculateTextHeight(getText(36));
+        int var4 = y + 2 + textHeight + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(36), canvasWidth / 2, var2 + 2, 230, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            // 36: Let's look at travel memories from your trips!
+            drawTextWithBackground(g, getText(36), canvasWidth / 2, y + 2, 230, 2);
             if (ai) {
-                setColorOfRGBInt(var0, 16777215);
-                var0.fillRect(var1, var2 + 240 - 4, 4, 4);
+                setColorOfRGBInt(g, 16777215);
+                g.fillRect(x, y + 240 - 4, 4, 4);
             }
         } else {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + 240 - 42, 240, 193);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y + 240 - 42, 240, 193);
         }
 
         if (I) {
-            bv(var0, var1, var4, 0, 16777215, 2210832, 10873360, 7786961);
-            bp(var0, canvasWidth / 2, var4 + 4 + 2, 56, af[2] >> 1, true);
+            bv(g, x, var4, 0, 16777215, 2210832, 10873360, 7786961);
+            bp(g, canvasWidth / 2, var4 + 4 + 2, 56, af[2] >> 1, true);
         } else {
-            bq(var0, canvasWidth / 2, var4 + 4 + 2, 56, af[2] >> 1, true, 10873360);
+            bq(g, canvasWidth / 2, var4 + 4 + 2, 56, af[2] >> 1, true, 10873360);
         }
 
-        boolean var7 = 0 == ar() & (af[2] & 4) != 0;
-        br(var0, canvasWidth / 2, var4 + 4, 62, var7, I);
-        bl(var0, var1, getText(71), var2 + 2 + var3 + 2, af[2], 12, 16056665, 16777215);
-        cb(var0, 1, getText(18), canvasWidth / 2, var2 + 240 - 42, 100, 28, 2, 0);
-        if (1 == ar()) {
-            aD(var0, 35, canvasWidth / 2, var2 + 240 - 42 + 14 + 1, 100, af[2]);
+        boolean var7 = 0 == getSelectedButtonIdx() & (af[2] & 4) != 0;
+        br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
+        // 71: Enter the Travel No. shown on your Keitama
+        bl(g, x, getText(71), y + 2 + textHeight + 2, af[2], 12, 16056665, 16777215);
+        // 18: OK
+        cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
+        if (1 == getSelectedButtonIdx()) {
+            aD(g, 35, canvasWidth / 2, y + 240 - 42 + 14 + 1, 100, af[2]);
         }
 
     }
 
-    public static void cI(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        int var3 = var2 + 4;
-        bj(var0, getText(37), canvasWidth / 2, var2 + 2, 200, 2);
-        setColorOfRGBInt(var0, 16770939);
-        var0.fillRect(var1, var2 + 46, 240, 108);
-        drawSprite(var0, 60, canvasWidth / 2, var2 + 46, 2);
+    public static void printingPhoto(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        int var3 = y + 4;
+        // 37: Printing Photo
+        drawTextWithBackground(g, getText(37), canvasWidth / 2, y + 2, 200, 2);
+        setColorOfRGBInt(g, 16770939);
+        g.fillRect(x, y + 46, 240, 108);
+        drawSprite(g, 60, canvasWidth / 2, y + 46, 2);
         byte var4 = 16;
         byte var5 = 6;
         byte var6 = 11;
         int var7 = var5 + var4 * (var6 - 1);
-        cc(var0, (canvasWidth - var7) / 2, var2 + 46 + 108 + 8, var4, 0, var5, 0, var6);
+        cc(g, (canvasWidth - var7) / 2, y + 46 + 108 + 8, var4, 0, var5, 0, var6);
     }
 
-    public static void cJ(Graphics var0, int var1, int var2) {
-        int var3 = currentFontHeight;
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        int var4 = currentFont.stringWidth(ah[0]) + 8;
-        if (var4 < ag.getWidth()) {
-            var4 = ag.getWidth();
+    public static void drawMemoryPhoto(Graphics g, int x, int y) {
+        int fontHeight = currentFontHeight;
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        int stringWidth = currentFont.stringWidth(ah[0]) + 8;
+        if (stringWidth < travelMemoryPhoto.getWidth()) {
+            stringWidth = travelMemoryPhoto.getWidth();
         }
 
-        bj(var0, ah[0], canvasWidth / 2, var2 + 2, var4, 2);
-        var4 = currentFontHeight;
-        drawImage(var0, ag, canvasWidth / 2, var2 + 2 + var3 + 4 + 4, 2);
-        bl(var0, var1, ah[1], var2 + 2 + var3 + 4 + 4 + ag.getHeight() + 7, af[2], 12, 16056665, 16777215);
+        drawTextWithBackground(g, ah[0], canvasWidth / 2, y + 2, stringWidth, 2);
+        stringWidth = currentFontHeight;
+        drawImage(g, travelMemoryPhoto, canvasWidth / 2, y + 2 + fontHeight + 4 + 4, 2);
+        bl(g, x, ah[1], y + 2 + fontHeight + 4 + 4 + travelMemoryPhoto.getHeight() + 7, af[2], 12, 16056665, 16777215);
 
-        for (int var5 = 0; var5 < 2; ++var5) {
-            bk(var0, var5, aj, 0);
+        for (int i = 0; i < 2; ++i) {
+            bk(g, i, aj, 0);
         }
 
-        aD(var0, 35, var1 + bm(aj, ar(), 0), var2 + bm(aj, ar(), 1) + bm(aj, ar(), 3) / 2 + 1, bm(aj, ar(), 2), af[2]);
+        aD(g, 35, x + bm(aj, getSelectedButtonIdx(), 0), y + bm(aj, getSelectedButtonIdx(), 1) + bm(aj, getSelectedButtonIdx(), 3) / 2 + 1, bm(aj, getSelectedButtonIdx(), 2), af[2]);
     }
 
     public static void cK(Graphics var0, int var1, int var2) {
@@ -2908,6 +2950,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 var3 = var0.read();
                 an[0] = aX(var0, var3);
                 var3 = var0.read();
+                // 49: -san
                 an[1] = aX(var0, var3) + getText(49);
                 var3 = var0.readUnsignedShort();
                 am[0] = bO(var0, var3);
@@ -2916,14 +2959,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aZ(var15);
                 cN(6);
             }
-        } catch (Exception var13) {
-            log("e:" + var13);
+        } catch (Exception e) {
+            log("e:" + e);
+            // 92: Communication has failed. Would you like to try again?
             aY(O, 4, 1, getText(92));
         } finally {
             if (var0 != null) {
                 try {
                     var0.close();
-                } catch (Exception var12) {
+                } catch (Exception e) {
                 }
             }
 
@@ -2994,90 +3038,98 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void di(Graphics var0, int var1, int var2) {
+    public static void exchangePlazaPage(Graphics g, int x, int y) {
         switch (al[1]) {
             case 0:
             default:
                 break;
             case 1:
-                da(var0, var1, var2);
+                exchangePlazaCodeInput(g, x, y);
                 break;
             case 2:
-                db(var0, var1, var2);
+                exchangePlazaLoadingScreen(g, x, y);
                 break;
             case 3:
-                dc(var0, var1, var2);
+                exchangePlazaRegionSelect(g, x, y);
                 break;
             case 4:
-                dd(var0, var1, var2);
+                exchangePlazaLoadingShip(g, x, y);
                 break;
             case 5:
-                de(var0, var1, var2);
+                exchangePlazaExchangeFailed(g, x, y);
                 break;
             case 6:
-                df(var0, var1, var2);
+                exchangePlazaExchangeSuccess(g, x, y);
                 break;
             case 7:
-                dg(var0, var1, var2);
+                exchangePlazaExchangeTicket(g, x, y);
                 break;
             case 8:
-                dh(var0, var1, var2);
+                exchangePlazaSendViaIR(g, x, y);
         }
 
     }
 
-    public static void da(Graphics var0, int var1, int var2) {
-        int var3 = calculateTextHeight(getText(41));
-        int var4 = var2 + 2 + var3 + 2 + currentFontHeight + 3;
+    public static void exchangePlazaCodeInput(Graphics g, int x, int y) {
+        // 41: Trade the regional specialty items you've collected!
+        int textHeight = calculateTextHeight(getText(41));
+        int var4 = y + 2 + textHeight + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            bj(var0, getText(41), canvasWidth / 2, var2 + 2, 230, 2);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            // 41: Trade the regional specialty items you've collected!
+            drawTextWithBackground(g, getText(41), canvasWidth / 2, y + 2, 230, 2);
         } else {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2 + 240 - 52, 240, 188);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y + 240 - 52, 240, 188);
         }
 
         if (I) {
-            bv(var0, var1, var4, 0, 16777215, 3429838, 6728678, 7786961);
-            bp(var0, canvasWidth / 2, var4 + 4 + 2, 56, al[2] >> 1, true);
+            bv(g, x, var4, 0, 16777215, 3429838, 6728678, 7786961);
+            bp(g, canvasWidth / 2, var4 + 4 + 2, 56, al[2] >> 1, true);
         } else {
-            bq(var0, canvasWidth / 2, var4 + 4 + 2, 56, al[2] >> 1, true, 6728678);
+            bq(g, canvasWidth / 2, var4 + 4 + 2, 56, al[2] >> 1, true, 6728678);
         }
 
-        bl(var0, var1, getText(72), var2 + 2 + var3 + 2, al[2], 12, 16056665, 16777215);
-        boolean var7 = 0 == ar() & (al[2] & 4) != 0;
-        br(var0, canvasWidth / 2, var4 + 4, 62, var7, I);
-        cb(var0, 1, getText(18), canvasWidth / 2, var2 + 240 - 42, 100, 28, 2, 0);
-        if (1 == ar()) {
-            aD(var0, 30, canvasWidth / 2, var2 + 240 - 42 + 7 + 1, 100, al[2]);
+        // 72: Enter the Exchange No. shown on your Keitama
+        bl(g, x, getText(72), y + 2 + textHeight + 2, al[2], 12, 16056665, 16777215);
+        boolean var7 = 0 == getSelectedButtonIdx() & (al[2] & 4) != 0;
+        br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
+        // 18: OK
+        cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
+        if (1 == getSelectedButtonIdx()) {
+            aD(g, 30, canvasWidth / 2, y + 240 - 42 + 7 + 1, 100, al[2]);
         }
 
     }
 
-    public static void db(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        bj(var0, getText(73), canvasWidth / 2, var2 + 2, currentFont.stringWidth(getText(73)) + 8, 2);
-        drawSprite(var0, 59, canvasWidth / 2, var2 + 50, 2);
+    public static void exchangePlazaLoadingScreen(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 73: To Exchange Plaza!
+        drawTextWithBackground(g, getText(73), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(73)) + 8, 2);
+        drawSprite(g, 59, canvasWidth / 2, y + 50, 2);
         short var3 = 176;
-        cc(var0, (canvasWidth - var3) / 2, var2 + 160, 16, 0, 6, al[2], 11);
+        cc(g, (canvasWidth - var3) / 2, y + 160, 16, 0, 6, al[2], 11);
     }
 
-    public static void dc(Graphics var0, int var1, int var2) {
-        int var3 = var1 + 168;
-        int var4 = var2 + 76;
+    public static void exchangePlazaRegionSelect(Graphics g, int x, int y) {
+        int var3 = x + 168;
+        int var4 = y + 76;
         int var5;
         if (I) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            drawSprite(var0, 71, var1, var2 + 240 - getSpriteHeight(71), 0);
-            bj(var0, getText(6), canvasWidth / 2, var2 + 3, currentFont.stringWidth(getText(6)) + 8, 2);
-            bl(var0, var1, getText(74), var2 + 3 + calculateTextHeight(getText(6)) + 3, al[2], 12, 16056665, 16777215);
-            bj(var0, getText(cM(al[3], 6)), var1 + 3, var4, 110, 0);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            drawSprite(g, 71, x, y + 240 - getSpriteHeight(71), 0);
+            // 6: Exchange Plaza
+            drawTextWithBackground(g, getText(6), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(6)) + 8, 2);
+            // 74: Choose a region to trade with and press OK!
+            bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, al[2], 12, 16056665, 16777215);
+
+            drawTextWithBackground(g, getText(cM(al[3], 6)), x + 3, var4, 110, 0);
 
             for (var5 = 0; var5 < 7; ++var5) {
                 int var6 = cM(var5, 7);
@@ -3085,70 +3137,76 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     ++var6;
                 }
 
-                drawSprite(var0, var6, var3 + cM(var5, 0), var4 + cM(var5, 1), 0);
+                drawSprite(g, var6, var3 + cM(var5, 0), var4 + cM(var5, 1), 0);
             }
         } else {
-            bl(var0, var1, getText(74), var2 + 3 + calculateTextHeight(getText(6)) + 3, al[2], 12, 16056665, 16777215);
+            bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, al[2], 12, 16056665, 16777215);
             if (al[4] != al[3]) {
-                bj(var0, getText(cM(al[3], 6)), var1 + 3, var4, 110, 0);
-                drawSprite(var0, cM(al[4], 7), var3 + cM(al[4], 0), var4 + cM(al[4], 1), 0);
+                drawTextWithBackground(g, getText(cM(al[3], 6)), x + 3, var4, 110, 0);
+                drawSprite(g, cM(al[4], 7), var3 + cM(al[4], 0), var4 + cM(al[4], 1), 0);
                 var5 = cM(al[3], 7);
                 if ((al[2] & 4) != 0) {
                     ++var5;
                 }
 
-                drawSprite(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
+                drawSprite(g, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
             } else if ((al[2] & 3) == 0) {
                 var5 = cM(al[3], 7);
                 if ((al[2] & 4) != 0) {
                     ++var5;
                 }
 
-                drawSprite(var0, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
+                drawSprite(g, var5, var3 + cM(al[3], 0), var4 + cM(al[3], 1), 0);
             }
         }
 
     }
 
-    public static void dd(Graphics var0, int var1, int var2) {
-        setColorOfRGBInt(var0, 16763955);
-        var0.fillRect(var1, var2, 240, 240);
-        drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
-        setColorOfRGBInt(var0, 6728679);
-        var0.fillRect(var1, var2 + 114, 240, getSpriteHeight(6));
-        drawSprite(var0, 6, var1, var2 + 114, 0);
-        drawSprite(var0, 6, var1 + 120, var2 + 114, 0);
-        bj(var0, getText(43), canvasWidth / 2, var2 + 2, currentFont.stringWidth(getText(43)) + 8, 2);
-        drawSprite(var0, 76, canvasWidth / 2, var2 + 102, 2);
-    }
-
-    public static void de(Graphics g, int x, int y) {
+    public static void exchangePlazaLoadingShip(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
-        bj(g, getText(89), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(89)) + 8, 2);
+        setColorOfRGBInt(g, 6728679);
+        g.fillRect(x, y + 114, 240, getSpriteHeight(6));
+        drawSprite(g, 6, x, y + 114, 0);
+        drawSprite(g, 6, x + 120, y + 114, 0);
+        // 43: Landing ship...
+        drawTextWithBackground(g, getText(43), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(43)) + 8, 2);
+        drawSprite(g, 76, canvasWidth / 2, y + 102, 2);
+    }
+
+    public static void exchangePlazaExchangeFailed(Graphics g, int x, int y) {
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+        // 89: Exchanged Failed
+        drawTextWithBackground(g, getText(89), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(89)) + 8, 2);
         int var3 = y + 62;
         drawSprite(g, 4, x + 0, var3, 0);
         drawSprite(g, 4, x + 120, var3, 0);
         drawImage(g, am[0], canvasWidth / 2, var3 - 12, 2);
         int var4 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var5 = y + 240 - (var4 + 4) - 2;
+        // 88: Retry
         cb(g, 0, getText(88), canvasWidth / 2, var5 - 44, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var5, 232, var4 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
+        // 90: No trading partners were found in that region.
         drawString(g, getText(90), canvasWidth / 2, var5 + 2, TextAlign.CENTER);
         aD(g, 30, canvasWidth / 2, var5 - 44 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
-    public static void df(Graphics g, int x, int y) {
+    public static void exchangePlazaExchangeSuccess(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
-        bj(g, getText(48), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(48)) + 8, 2);
+        // 48: Exchange Success!
+        drawTextWithBackground(g, getText(48), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(48)) + 8, 2);
         drawImage(g, am[0], x + 0, y + 42, 0);
         drawImage(g, am[1], x + 120, y + 42, 0);
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var4 = y + 240 - (var3 + 4) - 2;
+        // 18: OK
         cb(g, 0, getText(18), canvasWidth / 2, var4 - 38, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var4, 232, var3 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
@@ -3158,26 +3216,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aD(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
-    public static void dg(Graphics g, int x, int y) {
+    public static void exchangePlazaExchangeTicket(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
-        int var3 = calculateTextHeight(getText(51));
-        bj(g, getText(51), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(51)) + 8, 2);
-        bl(g, x, getText(91), y + 2 + var3 + 2, al[2], 12, 16056665, 16777215);
 
-        for (int var4 = 0; var4 < 2; ++var4) {
-            bk(g, var4, ao, 0);
+        // 51: Exchange Ticket
+        int textHeight = calculateTextHeight(getText(51));
+        drawTextWithBackground(g, getText(51), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(51)) + 8, 2);
+
+        // 91: Enter the Exchange Ticket No. in your Keitama!
+        bl(g, x, getText(91), y + 2 + textHeight + 2, al[2], 12, 16056665, 16777215);
+
+        for (int i = 0; i < 2; ++i) {
+            bk(g, i, ao, 0);
         }
 
-        int var5 = y + 3 + var3 + 3 + currentFontHeight + 12;
+        int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
         bv(g, x, var5, 0, 16777215, 16730112, 16751616, 7786961);
         br(g, canvasWidth / 2, var5 + 4, 62, false, true);
         bp(g, canvasWidth / 2, var5 + 10, 56, al[2] >> 1, false);
-        aD(g, 30, x + bm(ao, ar(), 0), y + bm(ao, ar(), 1) + bm(ao, ar(), 3) / 2 + 1, bm(ao, ar(), 2), al[2]);
+        aD(g, 30, x + bm(ao, getSelectedButtonIdx(), 0), y + bm(ao, getSelectedButtonIdx(), 1) + bm(ao, getSelectedButtonIdx(), 3) / 2 + 1, bm(ao, getSelectedButtonIdx(), 2), al[2]);
     }
 
-    public static void dh(Graphics var0, int var1, int var2) {
-        bs(var0, var1, var2);
+    public static void exchangePlazaSendViaIR(Graphics var0, int var1, int var2) {
+        sendViaIR(var0, var1, var2);
     }
 
     public static void dj(int var0, int var1) {
@@ -3224,12 +3286,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int var3 = x + 4;
             int var4 = y + (240 - (currentFontHeight + 1) * 7) / 2;
             drawBeveledRect(g, x + 2, var4 - 1, 236, (currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
-            String var5 = getText(ap[0] + ap[2]);
-            int lineCount = splitCount(var5, "\n");
+            String text = getText(ap[0] + ap[2]);
+            int lineCount = splitCount(text, "\n");
             setColorOfRGBInt(g, 16777215);
 
             for (int i = 0; i < lineCount; ++i) {
-                String var8 = O(var5, i, 1, "\n");
+                String var8 = O(text, i, 1, "\n");
                 int var9 = var8.indexOf("$");
                 if (var9 == -1) {
                     drawString(g, var8, var3, var4, TextAlign.LEFT);
@@ -3263,13 +3325,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ao() {
-        aq[6] = ar();
+        aq[6] = getSelectedButtonIdx();
         aq[7] = dorr();
         aq[8] = dp();
         ag(4, true);
         ah(0);
         ap(0, -1);
-        aq[4] = ar();
+        aq[4] = getSelectedButtonIdx();
         aq[0] = 1;
         aq[5] = 0;
         selectSoftLabel(3);
@@ -3349,7 +3411,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             selectSoftLabel(currentSoftLabelIdx);
             dr();
         } else {
-            aq[4] = ar();
+            aq[4] = getSelectedButtonIdx();
             switch (aq(s(1048576L), s(131072L), s(524288L))) {
                 case 0:
                     if (0 < aq[3]) {
@@ -3408,7 +3470,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 default:
                     break;
                 case 1:
-                    dy(g, x, y);
+                    menuPage(g, x, y);
                     break;
                 case 2:
                     if (dm()) {
@@ -3416,73 +3478,86 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     }
                     break;
                 case 3:
-                    dz(g, x, y);
+                    returnToTitlePage(g, x, y);
                     break;
                 case 4:
-                    dA(g, x, y);
+                    closeAppPage(g, x, y);
             }
 
         }
     }
 
-    public static void dy(Graphics g, int x, int y) {
+    public static void menuPage(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         int newX = x + 120;
         int newY = y + 5;
         g.fillRect(x, y, 240, 240);
-        bj(g, getText(54), newX, newY, currentFont.stringWidth(getText(54)) + 8, 2);
-        dC(g, getText(55), 0, newY + 2 + (currentFontHeight + 6) * 2);
-        dC(g, getText(56), 1, newY + 2 + (currentFontHeight + 6) * 3);
-        dC(g, getText(57), 2, newY + 2 + (currentFontHeight + 6) * 4);
-        dC(g, getText(58 + n[3]), 3, newY + 2 + (currentFontHeight + 6) * 5);
-        dD(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        // 54: Menu
+        drawTextWithBackground(g, getText(54), newX, newY, currentFont.stringWidth(getText(54)) + 8, 2);
+        // 55: Read Explanation
+        drawButton(g, getText(55), 0, newY + 2 + (currentFontHeight + 6) * 2);
+        // 56: Return to Title
+        drawButton(g, getText(56), 1, newY + 2 + (currentFontHeight + 6) * 3);
+        // 57: Close App
+        drawButton(g, getText(57), 2, newY + 2 + (currentFontHeight + 6) * 4);
+        // 58: Sound  ON
+        // 59: Sound  OFF
+        drawButton(g, getText(58 + n[3]), 3, newY + 2 + (currentFontHeight + 6) * 5);
+
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
-    public static void dz(Graphics g, int x, int y) {
+    public static void returnToTitlePage(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         int newX = x + 120;
         int newY = y + 5;
         g.fillRect(x, y, 240, 240);
-        bj(g, getText(60), newX, newY, currentFont.stringWidth(getText(60)) + 4, 2);
-        dC(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
-        dC(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
-        dD(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        // 60: Return to Title?
+        drawTextWithBackground(g, getText(60), newX, newY, currentFont.stringWidth(getText(60)) + 4, 2);
+        // 62: Yes
+        drawButton(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
+        // 63: No
+        drawButton(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
-    public static void dA(Graphics g, int x, int y) {
+    public static void closeAppPage(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         int newX = x + 120;
         int newY = y + 5;
         g.fillRect(x, y, 240, 240);
-        bj(g, getText(61), newX, newY, currentFont.stringWidth(getText(61)) + 8, 2);
-        dC(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
-        dC(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
-        dD(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        // 61: Close App?
+        drawTextWithBackground(g, getText(61), newX, newY, currentFont.stringWidth(getText(61)) + 8, 2);
+        // 62: Yes
+        drawButton(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
+        // 63: No
+        drawButton(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
 
-    public static void dC(Graphics var0, String var1, int var2, int var3) {
-        int var4;
-        int var5;
-        if (var2 == ar()) {
-            var5 = 16056665;
-            var4 = 16777215;
+    public static void drawButton(Graphics g, String text, int buttonIdx, int y) {
+        int textColor;
+        int backgroundColor;
+        if (buttonIdx == getSelectedButtonIdx()) {
+            backgroundColor = 16056665;
+            textColor = 16777215;
         } else {
-            var5 = 7786961;
-            var4 = 3096512;
+            backgroundColor = 7786961;
+            textColor = 3096512;
         }
 
-        drawBeveledRect(var0, (canvasWidth - 220) / 2, var3, 220, currentFontHeight + 4, var5, var5);
-        setColorOfRGBInt(var0, var4);
-        drawString(var0, var1, canvasWidth / 2, var3 + 2, TextAlign.CENTER);
+        drawBeveledRect(g, (canvasWidth - 220) / 2, y, 220, currentFontHeight + 4, backgroundColor, backgroundColor);
+        setColorOfRGBInt(g, textColor);
+        drawString(g, text, canvasWidth / 2, y + 2, TextAlign.CENTER);
     }
 
-    public static void dD(Graphics var0, int var1, int var2, int var3, int var4) {
+    public static void drawMenuEggs(Graphics g, int var1, int var2, int var3, int var4) {
         int var5 = var1 - var3;
 
-        for (int var6 = 0; var6 < 3; var5 += var3) {
-            int var7 = 69 + (var6 + (var4 >> 2) & 1);
-            drawSprite(var0, var7, var5 - getSpriteWidth(var7) / 2, var2, 0);
-            ++var6;
+        for (int i = 0; i < 3; var5 += var3) {
+            int var7 = 69 + (i + (var4 >> 2) & 1);
+            drawSprite(g, var7, var5 - getSpriteWidth(var7) / 2, var2, 0);
+            ++i;
         }
 
     }
@@ -3564,7 +3639,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawBeveledRect(var0, (canvasWidth - 232) / 2, var5, 232, textHeight, 16056665, 16056665);
             setColorOfRGBInt(var0, 16777215);
             drawString(var0, as, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
+            // 88: Retry
             cb(var0, 0, getText(88), canvasWidth / 2 - 8, var5 + textHeight + 4, 100, 28, 1, 0);
+            // 9: Back
             cb(var0, 1, getText(9), canvasWidth / 2 + 8, var5 + textHeight + 4, 100, 28, 0, 0);
         }
     }
@@ -3579,24 +3656,24 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         byte var3 = 100;
 
         try {
-            int[] var4 = loadShortArray(128);
-            int pos = 128 + (var4.length + 1) * 2;
+            int[] lengths = loadShortArray(128);
+            int pos = 128 + (lengths.length + 1) * 2;
 
             int i;
             for (i = 0; i < var3; ++i) {
-                pos += var4[i];
+                pos += lengths[i];
             }
 
             stream = Connector.openDataInputStream("scratchpad:///0;pos=" + pos);
 
             for (i = 0; i < 183; ++i) {
-                byte[] var6 = new byte[var4[var3 + i]];
-                stream.read(var6);
-                texts[i] = new String(var6);
+                byte[] data = new byte[lengths[var3 + i]];
+                stream.read(data);
+                texts[i] = new String(data);
                 Object var18 = null;
                 System.gc();
             }
-        } catch (Exception var16) {
+        } catch (Exception e) {
             success = false;
         } finally {
             if (stream != null) {
@@ -3604,7 +3681,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     stream.close();
                     stream = null;
                     System.gc();
-                } catch (Exception ex) {
+                } catch (Exception e) {
                 }
             }
 
@@ -3643,7 +3720,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int aq(boolean var0, boolean var1, boolean var2) {
         int var3 = -1;
         if (aw[13] != 0) {
-            var3 = ar();
+            var3 = getSelectedButtonIdx();
             aw[13] = 0;
             playSound(5, false);
         } else if (var0) {
@@ -3688,7 +3765,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var3;
     }
 
-    public static int ar() {
+    public static int getSelectedButtonIdx() {
         return aw[0];
     }
 
@@ -3732,7 +3809,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var12;
         int var13;
         int var14;
-        if (var1 == ar()) {
+        if (var1 == getSelectedButtonIdx()) {
             var10 = aw[3];
             var11 = aw[4];
             var12 = aw[5];
@@ -3772,7 +3849,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var12;
         int var13;
         int var14;
-        if (var1 == ar()) {
+        if (var1 == getSelectedButtonIdx()) {
             var11 = aw[3];
             var12 = aw[4];
             var13 = aw[7];
@@ -4511,38 +4588,42 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void bs(Graphics var0, int var1, int var2) {
+    public static void sendViaIR(Graphics g, int x, int y) {
         if (bc()) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
             switch (aC[0]) {
                 case 2:
-                    eg(var0, var1, var2);
+                    sendViaIR_Sending(g, x, y);
                     break;
                 case 3:
-                    eh(var0, var1, var2);
+                    sendViaIR_SendingComplete(g, x, y);
                     break;
                 case 4:
-                    ei(var0, var1, var2);
+                    sendViaIR_Interrupted(g, x, y);
                     break;
                 case 5:
-                    ej(var0, var1, var2);
+                    sendViaIR_TransmissionFailed(g, x, y);
             }
 
         }
     }
 
-    public static void eg(Graphics var0, int var1, int var2) {
-        bj(var0, getText(98), canvasWidth / 2, var2 + 5, currentFont.stringWidth(getText(98)) + 8, 2);
-        drawSprite(var0, 67, canvasWidth / 2 + (aC[1] * 8 - 60), var2 + 50, 2);
-        cb(var0, 0, getText(38), canvasWidth / 2, var2 + 50 + getSpriteHeight(67) + 10, currentFont.stringWidth(getText(38)) + 8, currentFontHeight + 4, 2, 0);
-        aD(var0, aC[5], canvasWidth / 2, var2 + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, aC[1]);
+    public static void sendViaIR_Sending(Graphics g, int x, int y) {
+        // 98: Sending...
+        drawTextWithBackground(g, getText(98), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(98)) + 8, 2);
+        drawSprite(g, 67, canvasWidth / 2 + (aC[1] * 8 - 60), y + 50, 2);
+        // 38: End
+        cb(g, 0, getText(38), canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10, currentFont.stringWidth(getText(38)) + 8, currentFontHeight + 4, 2, 0);
+        // 18: OK
+        aD(g, aC[5], canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, aC[1]);
     }
 
-    public static void eh(Graphics var0, int var1, int var2) {
-        bj(var0, getText(99), canvasWidth / 2, var2 + 5, currentFont.stringWidth(getText(99)) + 8, 2);
-        drawSprite(var0, 68, canvasWidth / 2, var2 + 50, 2);
+    public static void sendViaIR_SendingComplete(Graphics g, int x, int y) {
+        // 99: Sending complete!
+        drawTextWithBackground(g, getText(99), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(99)) + 8, 2);
+        drawSprite(g, 68, canvasWidth / 2, y + 50, 2);
         int[] var3;
         if (aC[2] == 7) {
             var3 = aH;
@@ -4550,27 +4631,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var3 = aI;
         }
 
-        for (int var4 = 0; var4 < 3; ++var4) {
-            bk(var0, var4, var3, 0);
+        for (int i = 0; i < 3; ++i) {
+            bk(g, i, var3, 0);
         }
 
-        aD(var0, aC[5], var1 + bm(var3, ar(), 0), var2 + bm(var3, ar(), 1) + bm(var3, ar(), 3) / 2, bm(var3, ar(), 2) - 10, aC[1]);
+        aD(g, aC[5], x + bm(var3, getSelectedButtonIdx(), 0), y + bm(var3, getSelectedButtonIdx(), 1) + bm(var3, getSelectedButtonIdx(), 3) / 2, bm(var3, getSelectedButtonIdx(), 2) - 10, aC[1]);
     }
 
-    public static void ei(Graphics var0, int var1, int var2) {
-        bj(var0, getText(96), canvasWidth / 2, var2 + 5, currentFont.stringWidth(getText(96)) + 8, 2);
-        ek(var0, var1, var2);
+    public static void sendViaIR_Interrupted(Graphics g, int x, int y) {
+        // 96: Interrupted...
+        drawTextWithBackground(g, getText(96), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(96)) + 8, 2);
+        ek(g, x, y);
     }
 
-    public static void ej(Graphics var0, int var1, int var2) {
-        bj(var0, getText(97), canvasWidth / 2, var2 + 5, currentFont.stringWidth(getText(97)) + 8, 2);
-        ek(var0, var1, var2);
+    public static void sendViaIR_TransmissionFailed(Graphics g, int x, int y) {
+        // 97: Transmission failed
+        drawTextWithBackground(g, getText(97), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(97)) + 8, 2);
+        ek(g, x, y);
     }
 
-    public static void ek(Graphics var0, int var1, int var2) {
-        drawSprite(var0, 29, canvasWidth / 2, var2 + 50, 2);
-        cb(var0, 0, getText(18), canvasWidth / 2, var2 + 50 + getSpriteHeight(29) + 10, currentFont.stringWidth(getText(18)) + 8, currentFontHeight + 4, 2, 0);
-        aD(var0, aC[5], canvasWidth / 2, var2 + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, aC[1]);
+    public static void ek(Graphics g, int x, int y) {
+        drawSprite(g, 29, canvasWidth / 2, y + 50, 2);
+        // 18: OK
+        cb(g, 0, getText(18), canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10, currentFont.stringWidth(getText(18)) + 8, currentFontHeight + 4, 2, 0);
+        aD(g, aC[5], canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, aC[1]);
     }
 
     public static void dx() {
@@ -4741,7 +4825,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 default:
                     break;
                 case 2:
-                    showDownloadingText(g, rootX, rootY);
+                    downloadingPage(g, rootX, rootY);
                     break;
                 case 3:
                     ad(g, rootX, rootY);
@@ -4753,25 +4837,25 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     aF(g, rootX, rootY);
                     break;
                 case 6:
-                    aK(g, rootX, rootY);
+                    travelModePage(g, rootX, rootY);
                     break;
                 case 7:
-                    bi(g, rootX, rootY);
+                    shoppingCenterPage(g, rootX, rootY);
                     break;
                 case 8:
-                    bZ(g, rootX, rootY);
+                    parentCallPage(g, rootX, rootY);
                     break;
                 case 9:
-                    cx(g, rootX, rootY);
+                    gotchiKingPage(g, rootX, rootY);
                     break;
                 case 10:
-                    cL(g, rootX, rootY);
+                    travelMemoryPage(g, rootX, rootY);
                     break;
                 case 11:
-                    di(g, rootX, rootY);
+                    exchangePlazaPage(g, rootX, rootY);
             }
-        } catch (Exception var2) {
-            log("disp error" + var2.toString());
+        } catch (Exception e) {
+            log("disp error" + e.toString());
         }
 
     }
@@ -4792,7 +4876,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public void mediaAction(MediaPresenter source, int type, int param) {
         if (type == 3) {
-            StackMap(a, true);
+            StackMap(loopedSoundIdx, true);
         }
 
     }
@@ -4820,7 +4904,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (!this.c) {
                 this.c = true;
                 if (Code == 0) {
-                    J();
+                    updateInputState();
                     a();
                     b();
                     if ((d & 10) == 0) {
