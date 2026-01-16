@@ -7,7 +7,6 @@ import com.keitaiwiki.music.MLDPlayer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AudioPresenter implements MediaPresenter {
     // Event types
@@ -46,7 +45,7 @@ public class AudioPresenter implements MediaPresenter {
     }
 
     private final Map<Integer, Integer> attributes = new ConcurrentHashMap<>();
-    private final AtomicBoolean playing = new AtomicBoolean(false);
+    private volatile boolean playing = false;
 
     private volatile boolean stopRequestedByUser;
 
@@ -68,7 +67,7 @@ public class AudioPresenter implements MediaPresenter {
         if (sound == null) return;
 
         stopRequestedByUser = false;
-        playing.set(true);
+        playing = true;
 
         startPlaybackThread(sound);
         fireEvent(AUDIO_PLAYING, 0);
@@ -78,11 +77,12 @@ public class AudioPresenter implements MediaPresenter {
     public synchronized void stop() {
         stopRequestedByUser = true;
 
-        if (!playing.getAndSet(false)) {
+        if (!playing) {
             stopPlaybackThread();
             return;
         }
 
+        playing = false;
         stopPlaybackThread();
         fireEvent(AUDIO_STOPPED, 0);
     }
@@ -126,7 +126,7 @@ public class AudioPresenter implements MediaPresenter {
             MLDPlayer renderer = createRenderer(soundSnapshot, SAMPLE_RATE);
 
             try (FloatPcmPlayer player = new FloatPcmPlayer(SAMPLE_RATE, CHANNELS)) {
-                while (playing.get()) {
+                while (playing) {
                     int renderedFrames = renderer.render(buffer, 0, FRAMES_PER_CHUNK);
                     player.write(buffer, 0, FRAMES_PER_CHUNK);
                     if (renderedFrames <= 0) {
@@ -138,7 +138,7 @@ public class AudioPresenter implements MediaPresenter {
         } catch (Exception e) {
             System.out.println(e);
         } finally {
-            playing.set(false);
+            playing = false;
             if (finishedNaturally && !stopRequestedByUser) {
                 fireEvent(AUDIO_COMPLETE, 0);
             }
