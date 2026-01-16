@@ -453,12 +453,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return success;
     }
 
-    public static boolean s(long var0) {
-        return (inputState[1] & var0) != 0L;
+    public static boolean isKeyPressed(long key) {
+        return (inputState[1] & key) != 0L;
     }
 
-    public static boolean t(long var0) {
-        return (inputState[2] & var0) != 0L;
+    public static boolean isKeyDown(long key) {
+        return (inputState[2] & key) != 0L;
     }
 
     public static void Code(int type, int param) {
@@ -969,7 +969,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ae() {
-        if (s(1048576L)) {
+        if (isKeyPressed(1048576L)) {
             e = false;
         }
 
@@ -1024,14 +1024,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void al() {
         int var0 = -48 + G[2] * 8;
-        if (s(1048576L) || 0 <= var0) {
+        if (isKeyPressed(1048576L) || 0 <= var0) {
             aj(2);
         }
 
     }
 
     public static void am() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(100, 5);
         } else {
@@ -1046,7 +1046,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             var10000 = G;
             var10000[3] += G[4];
-            switch (aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     T(5);
                     return;
@@ -1162,11 +1162,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aA() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(105, 3);
         } else {
-            switch (aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     T(7);
                     return;
@@ -1246,11 +1246,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aI() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(108, 2);
         } else {
-            switch (aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     T(10);
                     return;
@@ -1357,12 +1357,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aP() {
         int var10002 = P[3]++;
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(110, 5);
         } else {
             int var0 = getSelectedButtonIdx();
-            int var1 = aq(s(1048576L), s(524288L), s(131072L));
+            int var1 = aq(isKeyPressed(1048576L), isKeyPressed(524288L), isKeyPressed(131072L));
             P[0] = getSelectedButtonIdx();
             if (var0 != P[0]) {
                 P[3] = 0;
@@ -1418,12 +1418,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aR() {
         int var10002 = P[3]++;
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(115, 6);
         } else {
             if (6 < P[2]) {
-                switch (aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         aL(4);
                         break;
@@ -1743,23 +1743,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bF() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(121, 6);
         } else {
             if (U[0] != 0) {
-                if (aq(s(1048576L), false, false) != -1) {
+                if (aq(isKeyPressed(1048576L), false, false) != -1) {
                     bC(2);
-                } else if (!s(1048576L)) {
-                    if (s(196608L)) {
+                } else if (!isKeyPressed(1048576L)) {
+                    if (isKeyPressed(196608L)) {
                         bB(9);
                         U[0] = 0;
-                    } else if (s(786432L)) {
+                    } else if (isKeyPressed(786432L)) {
                         bB(0);
                         U[0] = 0;
                     }
                 }
-            } else if (bM(s(65536L), s(262144L), s(131072L), s(524288L), s(1048576L), bL())) {
+            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 U[0] = 1;
             }
 
@@ -1829,7 +1829,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void bH() {
         int var10002 = U[3]++;
         if (6 < U[6]) {
-            if (-1 != aq(s(1048576L), s(65536L), s(262144L))) {
+            if (-1 != aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L))) {
                 var10002 = U[4]++;
                 U[3] = 0;
                 if (U[5] <= U[4]) {
@@ -1853,12 +1853,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bI() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(127, 6);
         } else {
             if (6 < U[6]) {
-                switch (aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         bC(5);
                         break;
@@ -2147,23 +2147,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cg() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(133, 6);
         } else {
             if (ab[0] != 0) {
-                if (aq(s(1048576L), false, false) != -1) {
+                if (aq(isKeyPressed(1048576L), false, false) != -1) {
                     cd(2);
-                } else if (!s(1048576L)) {
-                    if (s(196608L)) {
+                } else if (!isKeyPressed(1048576L)) {
+                    if (isKeyPressed(196608L)) {
                         bB(9);
                         ab[0] = 0;
-                    } else if (s(786432L)) {
+                    } else if (isKeyPressed(786432L)) {
                         bB(0);
                         ab[0] = 0;
                     }
                 }
-            } else if (bM(s(65536L), s(262144L), s(131072L), s(524288L), s(1048576L), bL())) {
+            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 ab[0] = 1;
             }
 
@@ -2228,14 +2228,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ci() {
-        if (aq(s(1048576L), s(65536L), s(262144L)) != -1) {
+        if (aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L)) != -1) {
             cd(4);
         }
 
     }
 
     public static void cj() {
-        if (45 <= ab[3] || s(1048576L)) {
+        if (45 <= ab[3] || isKeyPressed(1048576L)) {
             cd(5);
         }
 
@@ -2252,7 +2252,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var10002 = ab[5]++;
         }
 
-        if (6 < ab[3] && aq(s(1048576L), s(65536L), s(262144L)) != -1) {
+        if (6 < ab[3] && aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L)) != -1) {
             cd(6);
         }
 
@@ -2267,12 +2267,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cm() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(139, 6);
         } else {
             if (6 < ab[3]) {
-                switch (aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         cd(8);
                         break;
@@ -2546,23 +2546,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cB() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(145, 6);
         } else {
             if (af[0] != 0) {
-                if (aq(s(1048576L), false, false) != -1) {
+                if (aq(isKeyPressed(1048576L), false, false) != -1) {
                     cy(2);
-                } else if (!s(1048576L)) {
-                    if (s(196608L)) {
+                } else if (!isKeyPressed(1048576L)) {
+                    if (isKeyPressed(196608L)) {
                         bB(9);
                         af[0] = 0;
-                    } else if (s(786432L)) {
+                    } else if (isKeyPressed(786432L)) {
                         bB(0);
                         af[0] = 0;
                     }
                 }
-            } else if (bM(s(65536L), s(262144L), s(131072L), s(524288L), s(1048576L), bL())) {
+            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 af[0] = 1;
             }
 
@@ -2626,12 +2626,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cD() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(151, 7);
         } else {
             if (6 < af[2]) {
-                switch (aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         T(4);
                         break;
@@ -2865,23 +2865,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cQ() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(158, 6);
         } else {
             if (al[0] != 0) {
-                if (aq(s(1048576L), false, false) != -1) {
+                if (aq(isKeyPressed(1048576L), false, false) != -1) {
                     cN(2);
-                } else if (!s(1048576L)) {
-                    if (s(196608L)) {
+                } else if (!isKeyPressed(1048576L)) {
+                    if (isKeyPressed(196608L)) {
                         bB(9);
                         al[0] = 0;
-                    } else if (s(786432L)) {
+                    } else if (isKeyPressed(786432L)) {
                         bB(0);
                         al[0] = 0;
                     }
                 }
-            } else if (bM(s(65536L), s(262144L), s(131072L), s(524288L), s(1048576L), bL())) {
+            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 al[0] = 1;
             }
 
@@ -2898,24 +2898,24 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cS() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(164, 2);
         } else {
             al[4] = al[3];
-            if (s(65536L)) {
+            if (isKeyPressed(65536L)) {
                 playSound(4, false);
                 al[3] = cM(al[3], 2);
-            } else if (s(131072L)) {
+            } else if (isKeyPressed(131072L)) {
                 playSound(4, false);
                 al[3] = cM(al[3], 3);
-            } else if (s(262144L)) {
+            } else if (isKeyPressed(262144L)) {
                 playSound(4, false);
                 al[3] = cM(al[3], 4);
-            } else if (s(524288L)) {
+            } else if (isKeyPressed(524288L)) {
                 playSound(4, false);
                 al[3] = cM(al[3], 5);
-            } else if (s(1048576L)) {
+            } else if (isKeyPressed(1048576L)) {
                 playSound(5, false);
                 cN(4);
             }
@@ -2989,11 +2989,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cU() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(167, 1);
         } else {
-            if (6 < al[2] && aq(s(1048576L), s(65536L), s(262144L)) != -1) {
+            if (6 < al[2] && aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L)) != -1) {
                 cN(3);
             }
 
@@ -3001,11 +3001,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cV() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(166, 1);
         } else {
-            if (6 < al[2] && aq(s(1048576L), s(65536L), s(262144L)) != -1) {
+            if (6 < al[2] && aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L)) != -1) {
                 cN(7);
             }
 
@@ -3013,12 +3013,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cW() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(168, 7);
         } else {
             if (6 < al[2]) {
-                switch (aq(s(1048576L), s(131072L), s(524288L))) {
+                switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         cN(8);
                         break;
@@ -3255,16 +3255,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dl() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             dk();
         } else {
             int var10002;
-            if (s(1835008L)) {
+            if (isKeyPressed(1835008L)) {
                 var10002 = ap[2]++;
                 if (ap[1] <= ap[2]) {
                     dk();
                 }
-            } else if (s(196608L)) {
+            } else if (isKeyPressed(196608L)) {
                 var10002 = ap[2]--;
                 if (ap[2] < 0) {
                     ap[2] = 0;
@@ -3405,14 +3405,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dt() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ag(aq[7], aq[8] != 0);
             ah(aq[6]);
             selectSoftLabel(currentSoftLabelIdx);
             dr();
         } else {
             aq[4] = getSelectedButtonIdx();
-            switch (aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     if (0 < aq[3]) {
                         dq(2);
@@ -3433,10 +3433,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void du() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             dq(1);
         } else {
-            switch (aq(s(1048576L), s(196608L), s(786432L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(196608L), isKeyPressed(786432L))) {
                 case 0:
                     dr();
                     T(4);
@@ -3449,10 +3449,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dv() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             dq(1);
         } else {
-            switch (aq(s(1048576L), s(196608L), s(786432L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(196608L), isKeyPressed(786432L))) {
                 case 0:
                     dx();
                     break;
@@ -3607,17 +3607,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void dH() {
         if (dG()) {
-            if (s(524288L)) {
+            if (isKeyPressed(524288L)) {
                 at -= (currentFontHeight + 1) * 7;
-            } else if (s(131072L)) {
+            } else if (isKeyPressed(131072L)) {
                 at += (currentFontHeight + 1) * 7;
             }
 
-            if (s(1L)) {
+            if (isKeyPressed(1L)) {
                 au = !au;
             }
 
-            switch (aq(s(1048576L), s(65536L), s(262144L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L))) {
                 case 0:
                     dF(ar[1]);
                     break;
@@ -4063,31 +4063,31 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var7;
     }
 
-    public static int bL() {
-        byte var0 = -1;
-        if (s(1L)) {
-            var0 = 0;
-        } else if (s(2L)) {
-            var0 = 1;
-        } else if (s(4L)) {
-            var0 = 2;
-        } else if (s(8L)) {
-            var0 = 3;
-        } else if (s(16L)) {
-            var0 = 4;
-        } else if (s(32L)) {
-            var0 = 5;
-        } else if (s(64L)) {
-            var0 = 6;
-        } else if (s(128L)) {
-            var0 = 7;
-        } else if (s(256L)) {
-            var0 = 8;
-        } else if (s(512L)) {
-            var0 = 9;
+    public static int getPressedNumber() {
+        byte number = -1;
+        if (isKeyPressed(1L)) {
+            number = 0;
+        } else if (isKeyPressed(2L)) {
+            number = 1;
+        } else if (isKeyPressed(4L)) {
+            number = 2;
+        } else if (isKeyPressed(8L)) {
+            number = 3;
+        } else if (isKeyPressed(16L)) {
+            number = 4;
+        } else if (isKeyPressed(32L)) {
+            number = 5;
+        } else if (isKeyPressed(64L)) {
+            number = 6;
+        } else if (isKeyPressed(128L)) {
+            number = 7;
+        } else if (isKeyPressed(256L)) {
+            number = 8;
+        } else if (isKeyPressed(512L)) {
+            number = 9;
         }
 
-        return var0;
+        return number;
     }
 
     public static void by(Graphics var0, int var1, int var2, int var3) {
@@ -4544,7 +4544,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ed() {
-        if (aq(s(1048576L), false, false) != -1) {
+        if (aq(isKeyPressed(1048576L), false, false) != -1) {
             dX(4);
         } else {
             if (750L < (new Date()).getTime() - aG) {
@@ -4557,11 +4557,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ee() {
-        if (s(2097152L)) {
+        if (isKeyPressed(2097152L)) {
             ao();
             ap(aC[3], aC[4]);
         } else {
-            switch (aq(s(1048576L), s(131072L), s(524288L))) {
+            switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     if (aC[2] == 7) {
                         dX(0);
@@ -4582,7 +4582,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ef() {
-        if (aq(s(1048576L), false, false) != -1) {
+        if (aq(isKeyPressed(1048576L), false, false) != -1) {
             dX(0);
         }
 
@@ -4734,7 +4734,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void b() {
         o();
-        if (s(1024L)) {
+        if (isKeyPressed(1024L)) {
             p();
             saveIntsInN();
         }
@@ -4791,7 +4791,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     cY();
                     break;
                 default:
-                    if (s(1048576L)) {
+                    if (isKeyPressed(1048576L)) {
                         e = false;
                     }
             }
