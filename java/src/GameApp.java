@@ -71,9 +71,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int t;
     public static int u;
     public static int[] v;
-    public static int[] n;
+    /**
+     * 1 - [0/255] are resources downloaded
+     * 3 - [0/1] sound on/off
+     */
+    public static int[] gameSave;
     public static int currentFontIdx;
-    public static int A;
+    public static int rngState;
     public static short[] aU;
     public static int[] aV;
     public static boolean[] aW;
@@ -168,8 +172,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         t = 0;
         u = 0;
         v = new int[2];
-        n = new int[7];
-        A = 0;
+        gameSave = new int[7];
+        rngState = 0;
         aU = new short[]{0, 4, 8, 13, 17, 22, 26, 31, 35, 40, 44, 48, 53, 57, 61, 66, 70, 74, 79, 83, 87, 91, 95, 100, 104, 108, 112, 116, 120, 124, 127, 131, 135, 139, 143, 146, 150, 154, 157, 161, 164, 167, 171, 174, 177, 181, 184, 187, 190, 193, 196, 198, 201, 204, 207, 209, 212, 214, 217, 219, 221, 223, 226, 228, 230, 232, 233, 235, 237, 238, 240, 242, 243, 244, 246, 247, 248, 249, 250, 251, 252, 252, 253, 254, 254, 255, 255, 255, 255, 255, 256};
         aV = new int[]{0, 17, 34, 52, 69, 87, 105, 122, 140, 158, 176, 194, 212, 230, 249, 267, 286, 305, 324, 344, 363, 383, 404, 424, 445, 466, 487, 509, 531, 554, 577, 600, 624, 649, 674, 700, 726, 753, 781, 809, 839, 869, 900, 932, 965, 999, 1035, 1072, 1110, 1150, 1191, 1234, 1279, 1327, 1376, 1428, 1482, 1539, 1600, 1664, 1732, 1804, 1880, 1962, 2050, 2144, 2246, 2355, 2475, 2605, 2747, 2904, 3077, 3270, 3487, 3732, 4010, 4331, 4704, 5144, 5671, 6313, 7115, 8144, 9514, 11430, 14300, 19081, 28636, 57289};
         aW = new boolean[]{false, false};
@@ -334,7 +338,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         stopSound(presenterIdx);
 
         try {
-            if (n[3] == 0) {
+            if (gameSave[3] == 0) {
                 audioPresenters[presenterIdx].setSound(mediaSounds[soundIdx]);
                 if (var2) {
                     // Not sure why this is empty...
@@ -369,7 +373,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void StackMap(int soundIdx, boolean var1) {
-        if (n[3] == 0 && soundIdx >= 0) {
+        if (gameSave[3] == 0 && soundIdx >= 0) {
             stopSound(0);
             playSoundInternal(soundIdx, 0, var1);
         }
@@ -391,8 +395,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         r = true;
     }
 
-    public static void p() {
-        n[3] = 1 - n[3];
+    public static void toggleSound() {
+        gameSave[3] = 1 - gameSave[3];
         stopAllSounds();
         n();
     }
@@ -517,18 +521,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             v[0] = 0;
             v[1] = 0;
             PhoneSystem.setAttribute(1, 0);
-        } catch (Exception var1) {
+        } catch (Exception e) {
         }
 
     }
 
     public static void a() {
         if (v[0] > 0) {
-            if (n[5] == 0 && v[1] == 0) {
+            if (gameSave[5] == 0 && v[1] == 0) {
                 try {
                     v[1] = 1;
                     PhoneSystem.setAttribute(1, 1);
-                } catch (Exception var1) {
+                } catch (Exception e) {
                 }
             }
 
@@ -539,34 +543,34 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void loadIntsIntoN() {
+    public static void loadGameSave() {
         try {
             DataInputStream stream = Connector.openDataInputStream("scratchpad:///0;pos=0");
 
-            for (int i = 0; i < n.length; ++i) {
-                n[i] = stream.readInt();
+            for (int i = 0; i < gameSave.length; ++i) {
+                gameSave[i] = stream.readInt();
             }
 
             stream.close();
             stream = null;
             System.gc();
-        } catch (Exception ex) {
+        } catch (Exception e) {
         }
 
     }
 
-    public static void saveIntsInN() {
+    public static void saveGame() {
         try {
             DataOutputStream outputStream = Connector.openDataOutputStream("scratchpad:///0;pos=0");
 
-            for (int i = 0; i < n.length; ++i) {
-                outputStream.writeInt(n[i]);
+            for (int i = 0; i < gameSave.length; ++i) {
+                outputStream.writeInt(gameSave[i]);
             }
 
             outputStream.close();
             outputStream = null;
             System.gc();
-        } catch (Exception ex) {
+        } catch (Exception e) {
         }
 
     }
@@ -574,9 +578,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void downloadBinFiles(String path, int var1, int pos) throws Exception {
         byte[] var6 = new byte[10240];
         d();
-        pos += n[1] * 10240;
+        pos += gameSave[1] * 10240;
 
-        for (int i = n[1]; i < (var1 - 1) / 10240 + 1; ++i) {
+        for (int i = gameSave[1]; i < (var1 - 1) / 10240 + 1; ++i) {
             HttpConnection var3 = (HttpConnection) Connector.open(mediaListener.getSourceURL() + path + i + ".bin", 1, true);
             var3.setRequestMethod("GET");
             var3.connect();
@@ -594,8 +598,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             outputStream.write(var6, 0, var9);
             outputStream.close();
             pos += var9;
-            int var10002 = n[1]++;
-            saveIntsInN();
+            int var10002 = gameSave[1]++;
+            saveGame();
             ++w;
             d();
         }
@@ -735,10 +739,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         currentFontIdx = i;
     }
 
-    public static int c(int var0) {
-        A = A * 1103515245 + 12345;
-        A &= 32767;
-        return A * var0 / '耀';
+    public static int rand(int max) {
+        rngState = rngState * 1103515245 + 12345;
+        rngState &= 32767;
+        return rngState * max / '耀';
     }
 
     public static int abs(int n) {
@@ -837,17 +841,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static boolean S() {
         try {
-            if (E != n[2]) {
-                n[1] = 0;
-                n[2] = E;
-                saveIntsInN();
+            if (E != gameSave[2]) {
+                gameSave[1] = 0;
+                gameSave[2] = E;
+                saveGame();
             }
 
-            if (n[1] != 255) {
-                w = n[1];
+            if (gameSave[1] != 255) {
+                w = gameSave[1];
                 downloadBinFiles("", 72483, 128);
-                n[1] = 255;
-                saveIntsInN();
+                gameSave[1] = 255;
+                saveGame();
             }
 
             return true;
@@ -3425,8 +3429,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     dq(4);
                     break;
                 case 3:
-                    p();
-                    saveIntsInN();
+                    toggleSound();
+                    saveGame();
             }
 
         }
@@ -3502,7 +3506,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawButton(g, getText(57), 2, newY + 2 + (currentFontHeight + 6) * 4);
         // 58: Sound  ON
         // 59: Sound  OFF
-        drawButton(g, getText(58 + n[3]), 3, newY + 2 + (currentFontHeight + 6) * 5);
+        drawButton(g, getText(58 + gameSave[3]), 3, newY + 2 + (currentFontHeight + 6) * 5);
 
         drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
     }
@@ -4735,8 +4739,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void b() {
         o();
         if (isKeyPressed(1024L)) {
-            p();
-            saveIntsInN();
+            toggleSound();
+            saveGame();
         }
 
         if (ds()) {
@@ -4752,8 +4756,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     break;
                 case 0:
                     if (--aJ <= 0) {
-                        n[4] = 3;
-                        loadIntsIntoN();
+                        gameSave[4] = 3;
+                        loadGameSave();
                         T(1);
                     }
                     break;
@@ -4911,7 +4915,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         System.gc();
                     }
 
-                    c(2);
+                    rand(2);
                     ++d;
                     Code = 1;
                 }
