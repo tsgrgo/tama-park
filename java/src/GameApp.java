@@ -97,16 +97,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] S;
     public static int[] U;
     public static int[] Y;
-    public static Image[] downloadedImages2;
-    public static String downloadedString;
-    public static String currentDownloadedQuote;
+    public static Image[] parentCallImages;
+    public static String parentCallText;
+    public static String parentCallQuote;
     public static int[] ab;
     public static int[] ae;
     public static Image[] gotchiKingImages;
     public static int[] aa;
     public static int[] af;
     public static int[] aj;
-    public static String[] ah;
+    public static String[] travelMemoryTexts;
     public static Image travelMemoryPhoto;
     public static int[] al;
     public static int[] ao;
@@ -115,8 +115,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] ak;
     public static int[] explanationState; // [offset, size, current, isOpen]
     public static int[] aq;
-    public static int[] ar;
-    public static String as;
+    public static int[] errorState; // [?, ?, ?, showErrorPage] ? = some action id?
+    public static String errorPageText;
     public static long aB;
     public static long ad;
     public static boolean au;
@@ -132,11 +132,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static byte[] digitsSentToServer;
     public static String bc;
     public static String bd;
-    public static byte[] aE;
+    public static byte[] bytesToSendViaIr;
     public static IrRemoteControlFrame[] irFrames;
     public static IrRemoteControl irRemoteControl;
     public static int[] aC; // [transmissionState, ...]
-    public static long aG;
+    public static long irSendTimestamp;
     public static int[] aI;
     public static int[] aH;
     public boolean c;
@@ -189,14 +189,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         S = new int[]{120, 144, 190, 28, 93, 2, 120, 176, 190, 28, 16, 2, 120, 208, 190, 28, 15, 2};
         U = new int[7];
         Y = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
-        downloadedImages2 = new Image[2];
+        parentCallImages = new Image[2];
         ab = new int[6];
         ae = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
         gotchiKingImages = new Image[2];
         aa = new int[]{58, 59, 60, 71, 89, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 72, 89};
         af = new int[4];
         aj = new int[]{120, 165, 170, 28, 15, 2, 120, 198, 170, 28, 35, 2};
-        ah = new String[2];
+        travelMemoryTexts = new String[2];
         al = new int[5];
         ao = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
         downloadedImages = new Image[2];
@@ -204,7 +204,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ak = new int[]{0, 0, 1, 6, 6, 1, 80, 41, 0, 28, 2, 0, 0, 2, 81, 43, 0, 64, 3, 1, 1, 3, 82, 45, -44, 44, 4, 2, 2, 4, 83, 47, -64, 60, 5, 3, 3, 5, 84, 49, -108, 60, 6, 4, 4, 6, 85, 51, -164, 60, 0, 5, 5, 0, 86, 53};
         explanationState = new int[4];
         aq = new int[9];
-        ar = new int[4];
+        errorState = new int[4];
         texts = new String[183];
         aw = new int[14];
         digitEditorState = new int[6];
@@ -216,7 +216,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         digitsSentToServer = new byte[14];
         bc = "";
         bd = "";
-        aE = new byte[16];
+        bytesToSendViaIr = new byte[16];
         irFrames = createIrRemoteControlFrames(1);
         irRemoteControl = IrRemoteControl.getIrRemoteControl();
         aC = new int[6];
@@ -975,7 +975,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void ak() {
         ag(2, true);
-        setSelectedButtonIdx(0);
+        setSelectedButtonIndex(0);
         ai(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         StackMap(1, true);
         G[2] = 0;
@@ -1043,7 +1043,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(6);
                     return;
                 default:
-                    G[0] = getSelectedButtonIdx();
+                    G[0] = getSelectedButtonIndex();
             }
         }
     }
@@ -1106,8 +1106,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
         }
 
-        var5 = ax(H, getSelectedButtonIdx(), 1);
-        var5 += ax(H, getSelectedButtonIdx(), 3) / 2;
+        var5 = ax(H, getSelectedButtonIndex(), 1);
+        var5 += ax(H, getSelectedButtonIndex(), 3) / 2;
         var5 -= 10;
         drawSprite(var0, 75, var1 + 2, var2 + var5, 0);
         drawSprite(var0, 75, var1 + 240 - (getSpriteWidth(75) - 10), var2 + var5, 0);
@@ -1127,7 +1127,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void az() {
         ag(3, true);
-        setSelectedButtonIdx(0);
+        setSelectedButtonIndex(0);
         ai(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         StackMap(2, true);
         ay(0);
@@ -1166,7 +1166,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(9);
                     return;
                 default:
-                    K[0] = getSelectedButtonIdx();
+                    K[0] = getSelectedButtonIndex();
             }
         }
     }
@@ -1196,10 +1196,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
         }
 
-        var5 = ax(L, getSelectedButtonIdx(), 2) / 2;
+        var5 = ax(L, getSelectedButtonIndex(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(L, getSelectedButtonIdx(), 1) + y;
-        var6 += ax(L, getSelectedButtonIdx(), 3) / 2;
+        int var6 = ax(L, getSelectedButtonIndex(), 1) + y;
+        var6 += ax(L, getSelectedButtonIndex(), 3) / 2;
         aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
@@ -1211,7 +1211,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aH() {
         ag(2, true);
-        setSelectedButtonIdx(0);
+        setSelectedButtonIndex(0);
         ai(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         StackMap(0, true);
         aG(0);
@@ -1247,7 +1247,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(11);
                     return;
                 default:
-                    M[0] = getSelectedButtonIdx();
+                    M[0] = getSelectedButtonIndex();
             }
         }
     }
@@ -1277,10 +1277,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
         }
 
-        var5 = ax(N, getSelectedButtonIdx(), 2) / 2;
+        var5 = ax(N, getSelectedButtonIndex(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(N, getSelectedButtonIdx(), 1) + y;
-        var6 += ax(N, getSelectedButtonIdx(), 3) / 2;
+        int var6 = ax(N, getSelectedButtonIndex(), 1) + y;
+        var6 += ax(N, getSelectedButtonIndex(), 3) / 2;
         aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
@@ -1300,7 +1300,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 1:
                 ag(5, true);
-                setSelectedButtonIdx(4);
+                setSelectedButtonIndex(4);
                 aN(16750848, 16750848, 16763955, 16777215, 16750848, 16777164, 16750848, 16750848);
                 selectSoftLabel(1);
                 break;
@@ -1310,7 +1310,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 3:
                 selectSoftLabel(1);
                 ag(3, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 4:
@@ -1350,9 +1350,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             ao();
             ap(110, 5);
         } else {
-            int var0 = getSelectedButtonIdx();
+            int var0 = getSelectedButtonIndex();
             int var1 = aq(isKeyPressed(1048576L), isKeyPressed(524288L), isKeyPressed(131072L));
-            P[0] = getSelectedButtonIdx();
+            P[0] = getSelectedButtonIndex();
             if (var0 != P[0]) {
                 P[3] = 0;
             }
@@ -1374,7 +1374,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int var1 = inputStream.read();
             if (0 < var1) {
                 String var2 = readString(inputStream, var1);
-                aY(O, 2, 1, var2);
+                showErrorPage(O, 2, 1, var2);
             } else {
                 byte[] var14 = new byte[10];
                 inputStream.read(var14);
@@ -1384,7 +1384,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            aY(O, 2, 1, getText(92));
+            showErrorPage(O, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -1478,7 +1478,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int var6 = bm(R, var4, 2) - 66;
             byte var7;
             boolean var8;
-            if (var4 == getSelectedButtonIdx()) {
+            if (var4 == getSelectedButtonIndex()) {
                 var7 = 61;
                 var8 = false;
                 var6 -= abs((P[3] & 31) - 16);
@@ -1536,7 +1536,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, var4, S, 0);
         }
 
-        aD(g, 61, x + bm(S, getSelectedButtonIdx(), 0), y + bm(S, getSelectedButtonIdx(), 1) + bm(S, getSelectedButtonIdx(), 3) / 2, bm(S, getSelectedButtonIdx(), 2) - 10, P[2]);
+        aD(g, 61, x + bm(S, getSelectedButtonIndex(), 0), y + bm(S, getSelectedButtonIndex(), 1) + bm(S, getSelectedButtonIndex(), 3) / 2, bm(S, getSelectedButtonIndex(), 2) - 10, P[2]);
     }
 
     public static void shoppingCenterSendViaIR(Graphics g, int x, int y) {
@@ -1666,7 +1666,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 selectSoftLabel(1);
                 T = false;
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 U[0] = 0;
                 break;
@@ -1676,13 +1676,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 3:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
                 selectSoftLabel(1);
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
@@ -1694,20 +1694,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         U[1] = var0;
     }
 
-    public static void clearDownloadedImagesAndTexts() {
+    public static void clearDownloadedParentCallData() {
         for (int i = 0; i < 2; ++i) {
-            if (downloadedImages2[i] != null) {
-                downloadedImages2[i].dispose();
-                downloadedImages2[i] = null;
+            if (parentCallImages[i] != null) {
+                parentCallImages[i].dispose();
+                parentCallImages[i] = null;
             }
         }
 
-        downloadedString = null;
-        currentDownloadedQuote = null;
+        parentCallText = null;
+        parentCallQuote = null;
         System.gc();
     }
 
-    public static void bK() {
+    public static void parentCallFlow() {
         int var10002 = U[6]++;
         switch (U[1]) {
             case 0:
@@ -1717,7 +1717,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 bF();
                 break;
             case 2:
-                bG();
+                downloadParentCallData();
                 break;
             case 3:
                 bH();
@@ -1752,45 +1752,46 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 U[0] = 1;
             }
 
-            setSelectedButtonIdx(U[0]);
+            setSelectedButtonIndex(U[0]);
         }
     }
 
-    public static void bG() {
-        clearDownloadedImagesAndTexts();
+    public static void downloadParentCallData() {
+        clearDownloadedParentCallData();
         bN();
         DataInputStream inputStream = null;
 
         try {
             inputStream = sendDigitsToServer(13);
             unknownOperationOnServerResponse(inputStream);
-            int var1 = inputStream.read();
-            if (0 < var1) {
-                String var2 = readString(inputStream, var1);
-                aY(O, 2, 1, var2);
+
+            int errorTextLength = inputStream.read();
+            if (0 < errorTextLength) {
+                String errorText = readString(inputStream, errorTextLength);
+                showErrorPage(O, 2, 1, errorText);
             } else {
-                byte[] buffer = new byte[10];
-                inputStream.read(buffer);
+                byte[] passwordData = new byte[10];
+                inputStream.read(passwordData);
 
                 for (int i = 0; i < 2; ++i) {
                     int imageSize = inputStream.readUnsignedShort();
-                    downloadedImages2[i] = readImage(inputStream, imageSize);
+                    parentCallImages[i] = readImage(inputStream, imageSize);
                 }
 
                 int stringSize = inputStream.readUnsignedShort();
-                downloadedString = readString(inputStream, stringSize);
+                parentCallText = readString(inputStream, stringSize);
 
                 U[2] = 0;
                 U[4] = 0;
-                U[5] = countQuotedSegments(downloadedString);
-                currentDownloadedQuote = findNthQuote(downloadedString, U[4]);
-                parseAndStoreDownloadedPassword(buffer);
+                U[5] = countQuotedSegments(parentCallText);
+                parentCallQuote = findNthQuote(parentCallText, U[4]);
+                parseAndStoreDownloadedPassword(passwordData);
                 bC(3);
             }
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            aY(O, 2, 1, getText(92));
+            showErrorPage(O, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -1829,11 +1830,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         bC(4);
                     }
                 } else {
-                    currentDownloadedQuote = findNthQuote(downloadedString, U[4]);
+                    parentCallQuote = findNthQuote(parentCallText, U[4]);
                 }
             }
         } else {
-            int var0 = currentFont.stringWidth(currentDownloadedQuote);
+            int var0 = currentFont.stringWidth(parentCallQuote);
             if (var0 + 232 <= U[3] * 12) {
                 U[3] = 0;
             }
@@ -1905,7 +1906,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 65: Enter the Address No. shown on your Keitama
         bl(g, x, getText(65), y + 3 + textHeight + 3, U[6], 12, 16056665, 16777215);
         int var5 = y + 3 + textHeight + 3 + currentFontHeight + 4 + 20;
-        boolean var6 = 0 == getSelectedButtonIdx() & (U[6] & 4) != 0;
+        boolean var6 = 0 == getSelectedButtonIndex() & (U[6] & 4) != 0;
         ca(g, canvasWidth / 2, var5, var6);
         // 18: OK
         cb(g, 1, getText(18), canvasWidth / 2, var4, 100, 28, 2, 0);
@@ -1915,7 +1916,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bq(g, canvasWidth / 2, var5 + 5, 56, U[6] >> 1, true, 16777076);
         }
 
-        if (1 == getSelectedButtonIdx()) {
+        if (1 == getSelectedButtonIndex()) {
             aD(g, 55, canvasWidth / 2, y + 240 - 42 + 14, 120, U[6]);
         }
 
@@ -1941,10 +1942,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawTextWithBackground(g, getText(23), canvasWidth / 2, var3, currentFont.stringWidth(getText(23)) + 8, 2);
         int var4 = var3 + currentFontHeight + 8 + 6;
         drawSprite(g, 58, x, var4, 0);
-        drawImage(g, downloadedImages2[U[6] >> 3 & 1], x + 144, var4, 0);
+        drawImage(g, parentCallImages[U[6] >> 3 & 1], x + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (canvasWidth - 232) / 2;
-        bt(g, currentDownloadedQuote, var6, var5, 232, U[3], 12, 16777215, 16056665);
+        bt(g, parentCallQuote, var6, var5, 232, U[3], 12, 16777215, 16056665);
         setColorOfRGBInt(g, 0);
         g.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
         setColorOfRGBInt(g, 16763955);
@@ -1995,7 +1996,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         bq(g, canvasWidth / 2, var4 + 5, 56, U[6] >> 1, false, 16777076);
-        aD(g, 55, x + bm(Y, getSelectedButtonIdx(), 0), y + bm(Y, getSelectedButtonIdx(), 1) + bm(Y, getSelectedButtonIdx(), 3) / 2, bm(Y, getSelectedButtonIdx(), 2), U[6]);
+        aD(g, 55, x + bm(Y, getSelectedButtonIndex(), 0), y + bm(Y, getSelectedButtonIndex(), 1) + bm(Y, getSelectedButtonIndex(), 3) / 2, bm(Y, getSelectedButtonIndex(), 2), U[6]);
     }
 
     public static void parentCallSendViaIR(Graphics var0, int var1, int var2) {
@@ -2043,7 +2044,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 T = false;
                 ab[0] = 0;
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
@@ -2052,7 +2053,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 3:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
@@ -2061,7 +2062,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 5:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
@@ -2070,7 +2071,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 7:
                 selectSoftLabel(1);
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 8:
@@ -2082,7 +2083,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ab[1] = var0;
     }
 
-    public static void clearGotchiKingImages() {
+    public static void clearDownloadedGotchiKingData() {
         for (int i = 0; i < 2; ++i) {
             if (gotchiKingImages[i] != null) {
                 gotchiKingImages[i].dispose();
@@ -2156,12 +2157,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 ab[0] = 1;
             }
 
-            setSelectedButtonIdx(ab[0]);
+            setSelectedButtonIndex(ab[0]);
         }
     }
 
     public static void downloadGotchiKingData() {
-        clearGotchiKingImages();
+        clearDownloadedGotchiKingData();
         cp();
         DataInputStream inputStream = null;
 
@@ -2173,7 +2174,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int textLength = inputStream.read();
             if (0 < textLength) {
                 String text = readString(inputStream, textLength);
-                aY(O, 2, 1, text);
+                showErrorPage(O, 2, 1, text);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -2192,7 +2193,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            aY(O, 2, 1, getText(92));
+            showErrorPage(O, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -2325,7 +2326,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 68: Enter the Gotchi King Address No. shown on your Keitama
         bl(g, x, getText(68), y + 2 + textHeight + 2, ab[3], 12, 16056665, 16777215);
-        boolean var4 = 0 == getSelectedButtonIdx() & (ab[3] & 4) != 0;
+        boolean var4 = 0 == getSelectedButtonIndex() & (ab[3] & 4) != 0;
         int var5 = y + 2 + textHeight + 2 + currentFontHeight + 3;
         ca(g, canvasWidth / 2, var5, var4);
         // 18: OK
@@ -2339,7 +2340,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bq(g, canvasWidth / 2, var5 + 5, 56, ab[3] >> 1, true, 16777076);
         }
 
-        if (1 == getSelectedButtonIdx()) {
+        if (1 == getSelectedButtonIndex()) {
             aD(g, 39, canvasWidth / 2, y + 240 - 42 + getSpriteHeight(39) / 2, 100, ab[3]);
         }
 
@@ -2453,7 +2454,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         br(g, canvasWidth / 2, var5 + 4, 62, false, I);
-        aD(g, 39, x + bm(ae, getSelectedButtonIdx(), 0), y + bm(ae, getSelectedButtonIdx(), 1) + bm(ae, getSelectedButtonIdx(), 3) / 2 + 1, bm(ae, getSelectedButtonIdx(), 2), ab[3]);
+        aD(g, 39, x + bm(ae, getSelectedButtonIndex(), 0), y + bm(ae, getSelectedButtonIndex(), 1) + bm(ae, getSelectedButtonIndex(), 3) / 2 + 1, bm(ae, getSelectedButtonIndex(), 2), ab[3]);
     }
 
     public static void gotchiKingSendViaIR(Graphics g, int x, int y) {
@@ -2477,19 +2478,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 T = false;
                 af[0] = 0;
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
                 selectSoftLabel(1);
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
@@ -2508,7 +2509,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         for (int i = 0; i < 2; ++i) {
-            ah[i] = null;
+            travelMemoryTexts[i] = null;
         }
 
         System.gc();
@@ -2524,7 +2525,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cB();
                 break;
             case 2:
-                cC();
+                downloadTraverMemoryData();
                 break;
             case 3:
                 cD();
@@ -2556,41 +2557,47 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 af[0] = 1;
             }
 
-            setSelectedButtonIdx(af[0]);
+            setSelectedButtonIndex(af[0]);
         }
     }
 
-    public static void cC() {
+    public static void downloadTraverMemoryData() {
         cA();
         cG();
-        DataInputStream var0 = null;
+        DataInputStream inputStream = null;
 
         try {
-            var0 = sendDigitsToServer(13);
-            unknownOperationOnServerResponse(var0);
-            int var1 = var0.read();
-            if (0 < var1) {
-                String var2 = readString(var0, var1);
-                aY(O, 2, 1, var2);
+            inputStream = sendDigitsToServer(13);
+            unknownOperationOnServerResponse(inputStream);
+
+            int errorMessageLength = inputStream.read();
+
+            if (0 < errorMessageLength) {
+                String errorMessage = readString(inputStream, errorMessageLength);
+                showErrorPage(O, 2, 1, errorMessage);
             } else {
-                int var14 = var0.read();
-                ah[0] = readString(var0, var14);
-                af[3] = var0.readUnsignedShort();
-                var14 = var0.readUnsignedShort();
-                travelMemoryPhoto = readImage(var0, var14);
-                var14 = var0.readUnsignedShort();
-                ah[1] = readString(var0, var14);
+                int text1Size = inputStream.read();
+                travelMemoryTexts[0] = readString(inputStream, text1Size);
+
+                af[3] = inputStream.readUnsignedShort();
+
+                int imageSize = inputStream.readUnsignedShort();
+                travelMemoryPhoto = readImage(inputStream, imageSize);
+
+                int text2Size = inputStream.readUnsignedShort();
+                travelMemoryTexts[1] = readString(inputStream, text2Size);
+
                 cy(3);
             }
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            aY(O, 2, 1, getText(92));
+            showErrorPage(O, 2, 1, getText(92));
         } finally {
-            if (var0 != null) {
+            if (inputStream != null) {
                 try {
-                    var0.close();
-                } catch (Exception var11) {
+                    inputStream.close();
+                } catch (Exception e) {
                 }
             }
 
@@ -2683,13 +2690,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bq(g, canvasWidth / 2, var4 + 4 + 2, 56, af[2] >> 1, true, 10873360);
         }
 
-        boolean var7 = 0 == getSelectedButtonIdx() & (af[2] & 4) != 0;
+        boolean var7 = 0 == getSelectedButtonIndex() & (af[2] & 4) != 0;
         br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
         // 71: Enter the Travel No. shown on your Keitama
         bl(g, x, getText(71), y + 2 + textHeight + 2, af[2], 12, 16056665, 16777215);
         // 18: OK
         cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
-        if (1 == getSelectedButtonIdx()) {
+        if (1 == getSelectedButtonIndex()) {
             aD(g, 35, canvasWidth / 2, y + 240 - 42 + 14 + 1, 100, af[2]);
         }
 
@@ -2717,21 +2724,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
-        int stringWidth = currentFont.stringWidth(ah[0]) + 8;
+        int stringWidth = currentFont.stringWidth(travelMemoryTexts[0]) + 8;
         if (stringWidth < travelMemoryPhoto.getWidth()) {
             stringWidth = travelMemoryPhoto.getWidth();
         }
 
-        drawTextWithBackground(g, ah[0], canvasWidth / 2, y + 2, stringWidth, 2);
+        drawTextWithBackground(g, travelMemoryTexts[0], canvasWidth / 2, y + 2, stringWidth, 2);
         stringWidth = currentFontHeight;
         drawImage(g, travelMemoryPhoto, canvasWidth / 2, y + 2 + fontHeight + 4 + 4, 2);
-        bl(g, x, ah[1], y + 2 + fontHeight + 4 + 4 + travelMemoryPhoto.getHeight() + 7, af[2], 12, 16056665, 16777215);
+        bl(g, x, travelMemoryTexts[1], y + 2 + fontHeight + 4 + 4 + travelMemoryPhoto.getHeight() + 7, af[2], 12, 16056665, 16777215);
 
         for (int i = 0; i < 2; ++i) {
             bk(g, i, aj, 0);
         }
 
-        aD(g, 35, x + bm(aj, getSelectedButtonIdx(), 0), y + bm(aj, getSelectedButtonIdx(), 1) + bm(aj, getSelectedButtonIdx(), 3) / 2 + 1, bm(aj, getSelectedButtonIdx(), 2), af[2]);
+        aD(g, 35, x + bm(aj, getSelectedButtonIndex(), 0), y + bm(aj, getSelectedButtonIndex(), 1) + bm(aj, getSelectedButtonIndex(), 3) / 2 + 1, bm(aj, getSelectedButtonIndex(), 2), af[2]);
     }
 
     public static void cK(Graphics var0, int var1, int var2) {
@@ -2744,7 +2751,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void cO() {
         clearDigitEditor();
         ag(2, true);
-        setSelectedButtonIdx(al[0]);
+        setSelectedButtonIndex(al[0]);
         cN(0);
     }
 
@@ -2759,13 +2766,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 T = false;
                 al[0] = 0;
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
@@ -2775,25 +2782,25 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 4:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
                 selectSoftLabel(1);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
                 selectSoftLabel(1);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 7:
                 selectSoftLabel(1);
                 ag(2, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 8:
@@ -2875,7 +2882,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 al[0] = 1;
             }
 
-            setSelectedButtonIdx(al[0]);
+            setSelectedButtonIndex(al[0]);
         }
     }
 
@@ -2933,7 +2940,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     downloadedImages[0] = readImage(inputStream, imageSize);
                     cN(5);
                 } else {
-                    aY(O, 4, 1, var2);
+                    showErrorPage(O, 4, 1, var2);
                 }
 
             } else {
@@ -2962,7 +2969,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            aY(O, 4, 1, getText(92));
+            showErrorPage(O, 4, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -3095,11 +3102,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         // 72: Enter the Exchange No. shown on your Keitama
         bl(g, x, getText(72), y + 2 + textHeight + 2, al[2], 12, 16056665, 16777215);
-        boolean var7 = 0 == getSelectedButtonIdx() & (al[2] & 4) != 0;
+        boolean var7 = 0 == getSelectedButtonIndex() & (al[2] & 4) != 0;
         br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
         // 18: OK
         cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
-        if (1 == getSelectedButtonIdx()) {
+        if (1 == getSelectedButtonIndex()) {
             aD(g, 30, canvasWidth / 2, y + 240 - 42 + 7 + 1, 100, al[2]);
         }
 
@@ -3235,7 +3242,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bv(g, x, var5, 0, 16777215, 16730112, 16751616, 7786961);
         br(g, canvasWidth / 2, var5 + 4, 62, false, true);
         bp(g, canvasWidth / 2, var5 + 10, 56, al[2] >> 1, false);
-        aD(g, 30, x + bm(ao, getSelectedButtonIdx(), 0), y + bm(ao, getSelectedButtonIdx(), 1) + bm(ao, getSelectedButtonIdx(), 3) / 2 + 1, bm(ao, getSelectedButtonIdx(), 2), al[2]);
+        aD(g, 30, x + bm(ao, getSelectedButtonIndex(), 0), y + bm(ao, getSelectedButtonIndex(), 1) + bm(ao, getSelectedButtonIndex(), 3) / 2 + 1, bm(ao, getSelectedButtonIndex(), 2), al[2]);
     }
 
     public static void exchangePlazaSendViaIR(Graphics var0, int var1, int var2) {
@@ -3324,13 +3331,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ao() {
-        aq[6] = getSelectedButtonIdx();
+        aq[6] = getSelectedButtonIndex();
         aq[7] = getAw1();
         aq[8] = getAw2();
         ag(4, true);
-        setSelectedButtonIdx(0);
+        setSelectedButtonIndex(0);
         ap(0, -1);
-        aq[4] = getSelectedButtonIdx();
+        aq[4] = getSelectedButtonIndex();
         aq[0] = 1;
         aq[5] = 0;
         selectSoftLabel(3);
@@ -3354,18 +3361,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 1:
                 ag(4, true);
-                setSelectedButtonIdx(aq[4]);
+                setSelectedButtonIndex(aq[4]);
                 break;
             case 2:
                 openExplanation(aq[2], aq[3]);
                 break;
             case 3:
                 ag(2, true);
-                setSelectedButtonIdx(1);
+                setSelectedButtonIndex(1);
                 break;
             case 4:
                 ag(2, true);
-                setSelectedButtonIdx(1);
+                setSelectedButtonIndex(1);
         }
 
         aq[5] = 0;
@@ -3406,11 +3413,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void dt() {
         if (isKeyPressed(2097152L)) {
             ag(aq[7], aq[8] != 0);
-            setSelectedButtonIdx(aq[6]);
+            setSelectedButtonIndex(aq[6]);
             selectSoftLabel(currentSoftLabelIdx);
             dr();
         } else {
-            aq[4] = getSelectedButtonIdx();
+            aq[4] = getSelectedButtonIndex();
             switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
                     if (0 < aq[3]) {
@@ -3537,7 +3544,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void drawButton(Graphics g, String text, int buttonIdx, int y) {
         int textColor;
         int backgroundColor;
-        if (buttonIdx == getSelectedButtonIdx()) {
+        if (buttonIdx == getSelectedButtonIndex()) {
             backgroundColor = 16056665;
             textColor = 16777215;
         } else {
@@ -3561,27 +3568,27 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void aY(int var0, int var1, int var2, String var3) {
-        ar[0] = var0;
-        ar[1] = var1;
-        ar[2] = var2;
-        as = var3;
+    public static void showErrorPage(int actionId1, int actionId2, int actionId3, String errorMessage) {
+        errorState[0] = actionId1;
+        errorState[1] = actionId2;
+        errorState[2] = actionId3;
+        errorPageText = errorMessage;
         ag(2, true);
-        setSelectedButtonIdx(1);
+        setSelectedButtonIndex(1);
         aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
         selectSoftLabel(6);
-        ar[3] = 1;
+        errorState[3] = 1; // show error page
     }
 
-    public static void dE() {
-        ar[3] = 0;
-        as = null;
+    public static void closeErrorPage() {
+        errorState[3] = 0;
+        errorPageText = null;
     }
 
     public static void dF(int var0) {
-        O = ar[0];
-        dE();
-        switch (ar[0]) {
+        O = errorState[0];
+        closeErrorPage();
+        switch (errorState[0]) {
             case 7:
                 aL(var0);
                 break;
@@ -3600,12 +3607,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static boolean dG() {
-        return ar[3] != 0;
+    public static boolean shouldShowErrorPage() {
+        return errorState[3] != 0;
     }
 
     public static void dH() {
-        if (dG()) {
+        if (shouldShowErrorPage()) {
             if (isKeyPressed(524288L)) {
                 at -= (currentFontHeight + 1) * 7;
             } else if (isKeyPressed(131072L)) {
@@ -3618,26 +3625,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             switch (aq(isKeyPressed(1048576L), isKeyPressed(65536L), isKeyPressed(262144L))) {
                 case 0:
-                    dF(ar[1]);
+                    dF(errorState[1]);
                     break;
                 case 1:
-                    dF(ar[2]);
+                    dF(errorState[2]);
             }
 
         }
     }
 
-    public static void dI(Graphics g, int x, int y) {
-        if (dG()) {
+    public static void errorPage(Graphics g, int x, int y) {
+        if (shouldShowErrorPage()) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
             drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
-            int lineCount = splitCount(as, "\n");
+            int lineCount = splitCount(errorPageText, "\n");
             int textHeight = (lineCount - 1) * (currentFontHeight + 1) + currentFontHeight + 4;
             int var5 = y + (240 - (textHeight + 4 + 8)) / 2;
             drawBeveledRect(g, (canvasWidth - 232) / 2, var5, 232, textHeight, 16056665, 16056665);
             setColorOfRGBInt(g, 16777215);
-            drawString(g, as, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
+            drawString(g, errorPageText, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
             // 88: Retry
             cb(g, 0, getText(88), canvasWidth / 2 - 8, var5 + textHeight + 4, 100, 28, 1, 0);
             // 9: Back
@@ -3695,7 +3702,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aw[13] = 0;
     }
 
-    public static void setSelectedButtonIdx(int idx) {
+    public static void setSelectedButtonIndex(int idx) {
         aw[0] = idx;
     }
 
@@ -3719,7 +3726,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int aq(boolean var0, boolean var1, boolean var2) {
         int var3 = -1;
         if (aw[13] != 0) {
-            var3 = getSelectedButtonIdx();
+            var3 = getSelectedButtonIndex();
             aw[13] = 0;
             playSound(5, false);
         } else if (var0) {
@@ -3764,7 +3771,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return var3;
     }
 
-    public static int getSelectedButtonIdx() {
+    public static int getSelectedButtonIndex() {
         return aw[0];
     }
 
@@ -3808,7 +3815,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var12;
         int var13;
         int var14;
-        if (var1 == getSelectedButtonIdx()) {
+        if (var1 == getSelectedButtonIndex()) {
             var10 = aw[3];
             var11 = aw[4];
             var12 = aw[5];
@@ -3848,7 +3855,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var12;
         int var13;
         int var14;
-        if (var1 == getSelectedButtonIdx()) {
+        if (var1 == getSelectedButtonIndex()) {
             var11 = aw[3];
             var12 = aw[4];
             var13 = aw[7];
@@ -4431,30 +4438,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 1:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 aN(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 2:
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 break;
             case 3:
                 selectSoftLabel(1);
                 ag(3, true);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 break;
             case 4:
                 irRemoteControl.stop();
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
                 break;
             case 5:
                 irRemoteControl.stop();
                 selectSoftLabel(6);
                 ag(1, false);
-                setSelectedButtonIdx(0);
+                setSelectedButtonIndex(0);
         }
 
         aC[1] = 0;
@@ -4463,34 +4470,33 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void eb() {
         generateDerivedCodeInBankB();
-        dY(0, 96);
-        dY(1, 8);
-        dY(2, 0);
-        dY(3, 0);
+        setByteSentViaIr(0, 96);
+        setByteSentViaIr(1, 8);
+        setByteSentViaIr(2, 0);
+        setByteSentViaIr(3, 0);
 
-        int var1;
-        for (int var0 = 0; var0 < 10; var0 += 2) {
-            var1 = dZ(getDigitBankB(var0)) << 4 | dZ(getDigitBankB(var0 + 1));
-            dY(4 + var0 / 2, var1);
+        for (int i = 0; i < 10; i += 2) {
+            int var1 = dZ(getDigitBankB(i)) << 4 | dZ(getDigitBankB(i + 1));
+            setByteSentViaIr(4 + i / 2, var1);
         }
 
-        dY(9, 0);
-        dY(10, 0);
-        dY(11, 0);
-        dY(12, 0);
-        dY(13, 0);
-        dY(14, 0);
-        var1 = 0;
+        setByteSentViaIr(9, 0);
+        setByteSentViaIr(10, 0);
+        setByteSentViaIr(11, 0);
+        setByteSentViaIr(12, 0);
+        setByteSentViaIr(13, 0);
+        setByteSentViaIr(14, 0);
 
-        for (int var2 = 0; var2 < 15; ++var2) {
-            var1 += ea(aE[var2]);
+        int var1 = 0;
+        for (int i = 0; i < 15; ++i) {
+            var1 += ea(bytesToSendViaIr[i]);
         }
 
-        dY(15, ea(var1 & 255));
+        setByteSentViaIr(15, ea(var1 & 255));
     }
 
-    public static void dY(int var0, int var1) {
-        aE[var0] = (byte) var1;
+    public static void setByteSentViaIr(int index, int value) {
+        bytesToSendViaIr[index] = (byte) value;
     }
 
     public static int dZ(int var0) {
@@ -4533,14 +4539,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             irRemoteControl.setCarrier(131, 131);
             irRemoteControl.setCode0(0, 470, 730);
             irRemoteControl.setCode1(0, 470, 1330);
-            irFrames[0].setFrameData(aE, 128);
+            irFrames[0].setFrameData(bytesToSendViaIr, 128);
             irFrames[0].setRepeatCount(3);
             irFrames[0].setFrameDuration(2500);
             irFrames[0].setStartHighDuration(9600);
             irFrames[0].setStartLowDuration(2400);
             irFrames[0].setStopHighDuration(1200);
             irRemoteControl.send(1, irFrames);
-            aG = (new Date()).getTime();
+            irSendTimestamp = (new Date()).getTime();
             dX(2);
         } catch (Exception e) {
             dX(5);
@@ -4552,7 +4558,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (aq(isKeyPressed(1048576L), false, false) != -1) {
             dX(4);
         } else {
-            if (750L < (new Date()).getTime() - aG) {
+            if (750L < (new Date()).getTime() - irSendTimestamp) {
                 irRemoteControl.stop();
                 playSound(6, false);
                 dX(3);
@@ -4640,7 +4646,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, i, var3, 0);
         }
 
-        aD(g, aC[5], x + bm(var3, getSelectedButtonIdx(), 0), y + bm(var3, getSelectedButtonIdx(), 1) + bm(var3, getSelectedButtonIdx(), 3) / 2, bm(var3, getSelectedButtonIdx(), 2) - 10, aC[1]);
+        aD(g, aC[5], x + bm(var3, getSelectedButtonIndex(), 0), y + bm(var3, getSelectedButtonIndex(), 1) + bm(var3, getSelectedButtonIndex(), 3) / 2, bm(var3, getSelectedButtonIndex(), 2) - 10, aC[1]);
     }
 
     public static void sendViaIR_Interrupted(Graphics g, int x, int y) {
@@ -4670,10 +4676,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (O) {
             case 8:
-                clearDownloadedImagesAndTexts();
+                clearDownloadedParentCallData();
                 break;
             case 9:
-                clearGotchiKingImages();
+                clearDownloadedGotchiKingData();
                 break;
             case 10:
                 cA();
@@ -4731,7 +4737,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         dr();
         exitExplanation();
-        dE();
+        closeErrorPage();
         O = var0;
         Exceptions = false;
         StackMap = true;
@@ -4746,7 +4752,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         if (isMenuOpen()) {
             dw();
-        } else if (dG()) {
+        } else if (shouldShowErrorPage()) {
             dH();
         } else {
             switch (O) {
@@ -4784,7 +4790,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     aT();
                     break;
                 case 8:
-                    bK();
+                    parentCallFlow();
                     break;
                 case 9:
                     gotchiKingFlow();
@@ -4811,8 +4817,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 return;
             }
 
-            if (dG()) {
-                dI(g, rootX, rootY);
+            if (shouldShowErrorPage()) {
+                errorPage(g, rootX, rootY);
                 return;
             }
 
