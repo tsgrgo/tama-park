@@ -30,8 +30,8 @@ enum TextAlign {
 
 public class GameApp extends IApplication implements TimerListener, MediaListener {
     public static boolean aL;
-    public static int Code;
-    public static boolean e;
+    public static int Code; // 0: Idle, 2: Request pending, 3: Currently executing
+    public static boolean running;
     public static boolean Z;
     public static int fps;
     public static boolean Exceptions;
@@ -143,7 +143,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     static {
         new Object();
-        e = true;
+        running = true;
         Z = false;
         Exceptions = false;
         I = false;
@@ -243,7 +243,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         timer.start();
     }
 
-    public static void d() {
+    public static void refresh() {
         Code = 2;
         canvas.repaint();
     }
@@ -458,7 +458,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 inputState[0] = (long) (canvas.getKeypadState() & Integer.MAX_VALUE);
                 inputState[4]++;
             }
-        } catch (Exception ex) {
+        } catch (Exception e) {
         }
 
     }
@@ -532,14 +532,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void loadGameSave() {
         try {
-            DataInputStream stream = Connector.openDataInputStream("scratchpad:///0;pos=0");
+            DataInputStream inputStream = Connector.openDataInputStream("scratchpad:///0;pos=0");
 
             for (int i = 0; i < gameSave.length; ++i) {
-                gameSave[i] = stream.readInt();
+                gameSave[i] = inputStream.readInt();
             }
 
-            stream.close();
-            stream = null;
+            inputStream.close();
+            inputStream = null;
             System.gc();
         } catch (Exception e) {
         }
@@ -562,36 +562,39 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void downloadBinFiles(String path, int var1, int pos) throws Exception {
-        byte[] var6 = new byte[10240];
-        d();
+    public static void downloadGameData(String path, int var1, int pos) throws Exception {
+        byte[] buffer = new byte[10240];
+        refresh();
         pos += gameSave[1] * 10240;
 
         for (int i = gameSave[1]; i < (var1 - 1) / 10240 + 1; ++i) {
-            HttpConnection var3 = (HttpConnection) Connector.open(mediaListener.getSourceURL() + path + i + ".bin", 1, true);
-            var3.setRequestMethod("GET");
-            var3.connect();
+            HttpConnection httpConnection = (HttpConnection) Connector.open(mediaListener.getSourceURL() + path + i + ".bin", 1, true);
+            httpConnection.setRequestMethod("GET");
+            httpConnection.connect();
             System.gc();
-            DataInputStream var5 = new DataInputStream(var3.openInputStream());
-            int var9 = (int) var3.getLength();
-            int var8 = var5.read(var6, 0, var9);
-            var5.close();
-            var3.close();
-            if (var8 != var9) {
+            DataInputStream inputStream = new DataInputStream(httpConnection.openInputStream());
+            int length = (int) httpConnection.getLength();
+            int bytesRead = inputStream.read(buffer, 0, length);
+
+            inputStream.close();
+            httpConnection.close();
+
+            if (bytesRead != length) {
                 throw new Exception("http load error!");
             }
 
             DataOutputStream outputStream = Connector.openDataOutputStream("scratchpad:///0;pos=" + pos);
-            outputStream.write(var6, 0, var9);
+            outputStream.write(buffer, 0, length);
             outputStream.close();
-            pos += var9;
+
+            pos += length;
             gameSave[1]++;
             saveGame();
             ++w;
-            d();
+            refresh();
         }
 
-        var6 = null;
+        buffer = null;
         System.gc();
     }
 
@@ -790,11 +793,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return str.substring(startIndex, currentIndex);
     }
 
-    public static boolean launchCurrentApp(String var0) {
+    public static boolean launchCurrentApp(String arg) {
         boolean success = true;
 
         try {
-            String[] args = new String[]{var0};
+            String[] args = new String[]{arg};
             IApplication.getCurrentApp().launch(1, args);
         } catch (Exception e) {
             success = false;
@@ -824,7 +827,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static boolean S() {
+    public static boolean downloadGameDataIfNeeded() {
         try {
             if (E != gameSave[2]) {
                 gameSave[1] = 0;
@@ -834,19 +837,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (gameSave[1] != 255) {
                 w = gameSave[1];
-                downloadBinFiles("", 72483, 128);
+                downloadGameData("", 72483, 128);
                 gameSave[1] = 255;
                 saveGame();
             }
 
             return true;
-        } catch (Exception var1) {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public static void U() {
-        if (S()) {
+    public static void checkGameData() {
+        if (downloadGameDataIfNeeded()) {
             T(3);
         } else {
             T(-2);
@@ -855,8 +858,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void loadResources() {
-        int var0 = loadImages(128, 0, 93);
-        if (var0 == -1) {
+        int result = loadImages(128, 0, 93);
+        if (result == -1) {
             T(-1);
         } else if (loadSounds() && loadTexts()) {
             T(4);
@@ -866,10 +869,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static int loadImages(int pos, int startIndex, int count) {
-        try {
-            Thread.sleep(200L);
-        } catch (Exception e) {
-        }
+//        try {
+//            Thread.sleep(200L);
+//        } catch (Exception e) {
+//        }
 
         try {
             int[] sizes = loadShortArray(128);
@@ -890,18 +893,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 images[i] = mediaImage.getImage();
                 ++w;
                 pos += sizes[i];
-                d();
+                refresh();
 
-                try {
-                    Thread.sleep(50L);
-                } catch (Exception e) {
-                }
+//                try {
+//                    Thread.sleep(50L);
+//                } catch (Exception e) {
+//                }
             }
 
             stream.close();
             System.gc();
             return pos;
-        } catch (Exception ex) {
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -954,9 +957,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void ae() {
+    public static void exitGameOnSelect() {
         if (isKeyPressed(1048576L)) {
-            e = false;
+            running = false;
         }
 
     }
@@ -1806,8 +1809,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setPasswordDigit(1, 1);
         setPasswordDigit(2, 3);
 
-        for (int var0 = 0; var0 < 10; ++var0) {
-            setPasswordDigit(3 + var0, bR(var0));
+        for (int i = 0; i < 10; ++i) {
+            setPasswordDigit(3 + i, bR(i));
         }
 
     }
@@ -2802,16 +2805,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cP() {
-        int var0;
-        for (var0 = 0; var0 < 2; ++var0) {
-            if (am[var0] != null) {
-                am[var0].dispose();
-                am[var0] = null;
+
+        for (int i = 0; i < 2; ++i) {
+            if (am[i] != null) {
+                am[i].dispose();
+                am[i] = null;
             }
         }
 
-        for (var0 = 0; var0 < 3; ++var0) {
-            an[var0] = null;
+        for (int i = 0; i < 3; ++i) {
+            an[i] = null;
         }
 
         System.gc();
@@ -2912,37 +2915,47 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void cT() {
         cP();
         cZ();
-        DataInputStream var0 = null;
+        DataInputStream inputStream = null;
 
         try {
-            var0 = sendPasswordToServer(14);
-            aW(var0);
-            int var1 = var0.read();
-            int var3;
-            if (0 < var1) {
-                String var2 = readString(var0, var1);
+            // Get response from server
+            inputStream = sendPasswordToServer(14);
+            aW(inputStream);
+
+            int length = inputStream.read();
+
+            if (length > 0) {
+                String var2 = readString(inputStream, length);
+
                 if (var2.compareTo("1") == 0) {
-                    var3 = var0.readUnsignedShort();
-                    am[0] = readImage(var0, var3);
+                    int imageSize = inputStream.readUnsignedShort();
+                    am[0] = readImage(inputStream, imageSize);
                     cN(5);
                 } else {
                     aY(O, 4, 1, var2);
                 }
+
             } else {
-                byte[] var15 = new byte[10];
-                var0.read(var15);
-                var3 = var0.read();
-                an[2] = readString(var0, var3);
-                var3 = var0.read();
-                an[0] = readString(var0, var3);
-                var3 = var0.read();
+                byte[] buffer = new byte[10];
+                inputStream.read(buffer);
+
+                int size = inputStream.read();
+                an[2] = readString(inputStream, size);
+
+                size = inputStream.read();
+                an[0] = readString(inputStream, size);
+
+                size = inputStream.read();
                 // 49: -san
-                an[1] = readString(var0, var3) + getText(49);
-                var3 = var0.readUnsignedShort();
-                am[0] = readImage(var0, var3);
-                var3 = var0.readUnsignedShort();
-                am[1] = readImage(var0, var3);
-                aZ(var15);
+                an[1] = readString(inputStream, size) + getText(49);
+
+                size = inputStream.readUnsignedShort();
+                am[0] = readImage(inputStream, size);
+
+                size = inputStream.readUnsignedShort();
+                am[1] = readImage(inputStream, size);
+
+                aZ(buffer);
                 cN(6);
             }
         } catch (Exception e) {
@@ -2950,9 +2963,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 92: Communication has failed. Would you like to try again?
             aY(O, 4, 1, getText(92));
         } finally {
-            if (var0 != null) {
+            if (inputStream != null) {
                 try {
-                    var0.close();
+                    inputStream.close();
                 } catch (Exception e) {
                 }
             }
@@ -3439,7 +3452,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             switch (aq(isKeyPressed(1048576L), isKeyPressed(196608L), isKeyPressed(786432L))) {
                 case 0:
-                    dx();
+                    exitGame();
                     break;
                 case 1:
                     dq(1);
@@ -3945,19 +3958,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aZ(byte[] var0) {
-        for (int var1 = 0; var1 < 10; ++var1) {
-            dQ(var1, var0[var1]);
+        for (int i = 0; i < 10; ++i) {
+            dQ(i, var0[i]);
         }
 
     }
 
-    public static void dQ(int var0, int var1) {
-        var1 %= 10;
-        int var2 = ax[0 + var0 / 8];
-        int var3 = 4 * (7 - var0 % 8);
+    public static void dQ(int idx, int d) {
+        d %= 10;
+        int var2 = ax[0 + idx / 8];
+        int var3 = 4 * (7 - idx % 8);
         var2 &= ~(15 << var3);
-        var2 |= var1 << var3;
-        ax[0 + var0 / 8] = var2;
+        var2 |= d << var3;
+        ax[0 + idx / 8] = var2;
     }
 
     public static void dR(int var0, int var1) {
@@ -4645,8 +4658,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aD(g, aC[5], canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, aC[1]);
     }
 
-    public static void dx() {
-        e = false;
+    public static void exitGame() {
+        running = false;
     }
 
     public static void T(int var0) {
@@ -4736,7 +4749,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 case -3:
                 case -2:
                 case -1:
-                    ae();
+                    exitGameOnSelect();
                     break;
                 case 0:
                     if (--aJ <= 0) {
@@ -4749,7 +4762,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     T(2);
                     break;
                 case 2:
-                    U();
+                    checkGameData();
                     break;
                 case 3:
                     loadResources();
@@ -4780,7 +4793,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     break;
                 default:
                     if (isKeyPressed(1048576L)) {
-                        e = false;
+                        running = false;
                     }
             }
 
@@ -4905,10 +4918,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 }
 
                 if (Code == 1) {
-                    d();
+                    refresh();
                 }
 
-                if (!e) {
+                if (!running) {
                     IApplication.getCurrentApp().terminate();
                 }
 
