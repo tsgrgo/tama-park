@@ -97,12 +97,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] S;
     public static int[] U;
     public static int[] Y;
-    public static Image[] V;
-    public static String W;
-    public static String X;
+    public static Image[] downloadedImages2;
+    public static String downloadedString;
+    public static String currentDownloadedQuote;
     public static int[] ab;
     public static int[] ae;
-    public static Image[] ac;
+    public static Image[] gotchiKingImages;
     public static int[] aa;
     public static int[] af;
     public static int[] aj;
@@ -110,8 +110,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static Image travelMemoryPhoto;
     public static int[] al;
     public static int[] ao;
-    public static Image[] am;
-    public static String[] an;
+    public static Image[] downloadedImages;
+    public static String[] downloadedTexts;
     public static int[] ak;
     public static int[] explanationState; // [offset, size, current, isOpen]
     public static int[] aq;
@@ -123,13 +123,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int at;
     public static String[] texts;
     public static int[] aw; // [selectedButtonIdx, ...]
-    public static int[] ax;
-    public static int[] ay;
+    public static int[] digitEditorState;
+    public static int[] digitShuffleTable;
     public static int[] az;
     public static int[] aZ;
     public static byte[] ba;
     public static byte[] bb;
-    public static byte[] password;
+    public static byte[] digitsSentToServer;
     public static String bc;
     public static String bd;
     public static byte[] aE;
@@ -189,31 +189,31 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         S = new int[]{120, 144, 190, 28, 93, 2, 120, 176, 190, 28, 16, 2, 120, 208, 190, 28, 15, 2};
         U = new int[7];
         Y = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
-        V = new Image[2];
+        downloadedImages2 = new Image[2];
         ab = new int[6];
         ae = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
-        ac = new Image[2];
+        gotchiKingImages = new Image[2];
         aa = new int[]{58, 59, 60, 71, 89, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 72, 89};
         af = new int[4];
         aj = new int[]{120, 165, 170, 28, 15, 2, 120, 198, 170, 28, 35, 2};
         ah = new String[2];
         al = new int[5];
         ao = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
-        am = new Image[2];
-        an = new String[3];
+        downloadedImages = new Image[2];
+        downloadedTexts = new String[3];
         ak = new int[]{0, 0, 1, 6, 6, 1, 80, 41, 0, 28, 2, 0, 0, 2, 81, 43, 0, 64, 3, 1, 1, 3, 82, 45, -44, 44, 4, 2, 2, 4, 83, 47, -64, 60, 5, 3, 3, 5, 84, 49, -108, 60, 6, 4, 4, 6, 85, 51, -164, 60, 0, 5, 5, 0, 86, 53};
         explanationState = new int[4];
         aq = new int[9];
         ar = new int[4];
         texts = new String[183];
         aw = new int[14];
-        ax = new int[6];
-        ay = new int[]{3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1};
+        digitEditorState = new int[6];
+        digitShuffleTable = new int[]{3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1};
         az = new int[]{15947864, 16777041, 10873427, 7053048, 16777215, 11025351, 16021161};
         aZ = new int[1];
         ba = new byte[1];
         bb = new byte[]{65, 80, 68, 65, 84, 65};
-        password = new byte[14];
+        digitsSentToServer = new byte[14];
         bc = "";
         bd = "";
         aE = new byte[16];
@@ -1366,19 +1366,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aQ() {
         aU();
-        DataInputStream var0 = null;
+        DataInputStream inputStream = null;
 
         try {
-            var0 = sendPasswordToServer(4);
-            aW(var0);
-            int var1 = var0.read();
+            inputStream = sendDigitsToServer(4);
+            unknownOperationOnServerResponse(inputStream);
+            int var1 = inputStream.read();
             if (0 < var1) {
-                String var2 = readString(var0, var1);
+                String var2 = readString(inputStream, var1);
                 aY(O, 2, 1, var2);
             } else {
                 byte[] var14 = new byte[10];
-                var0.read(var14);
-                aZ(var14);
+                inputStream.read(var14);
+                parseAndStoreDownloadedPassword(var14);
                 aL(3);
             }
         } catch (Exception e) {
@@ -1386,10 +1386,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
-            if (var0 != null) {
+            if (inputStream != null) {
                 try {
-                    var0.close();
-                } catch (Exception var11) {
+                    inputStream.close();
+                } catch (Exception e) {
                 }
             }
 
@@ -1399,10 +1399,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aU() {
-        ba();
-        setPasswordDigit(1, 0);
-        setPasswordDigit(2, 3);
-        setPasswordDigit(3, P[0] + 1);
+        setSomeFlagSentToServer();
+        setDigitSentToServer(1, 0);
+        setDigitSentToServer(2, 3);
+        setDigitSentToServer(3, P[0] + 1);
     }
 
     public static void aR() {
@@ -1625,8 +1625,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void br(Graphics var0, int var1, int var2, int var3, boolean var4, boolean var5) {
         int var6 = var1 - 35;
         int var7 = var2 + (var3 - 49) / 2;
-        int var8 = bw();
-        int var9 = bx();
+        int var8 = getCursorIndex();
+        int var9 = getPreviousCursorIndex();
         setColorOfRGBInt(var0, 16777215);
         if (var5) {
             var0.fillRect(var6 - 2, var2, 75, var3);
@@ -1651,8 +1651,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bD() {
-        bA();
-        bB(0);
+        clearDigitEditor();
+        setCursorIndex(0);
         bC(0);
     }
 
@@ -1694,16 +1694,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         U[1] = var0;
     }
 
-    public static void bE() {
-        for (int var0 = 0; var0 < 2; ++var0) {
-            if (V[var0] != null) {
-                V[var0].dispose();
-                V[var0] = null;
+    public static void clearDownloadedImagesAndTexts() {
+        for (int i = 0; i < 2; ++i) {
+            if (downloadedImages2[i] != null) {
+                downloadedImages2[i].dispose();
+                downloadedImages2[i] = null;
             }
         }
 
-        W = null;
-        X = null;
+        downloadedString = null;
+        currentDownloadedQuote = null;
         System.gc();
     }
 
@@ -1741,14 +1741,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     bC(2);
                 } else if (!isKeyPressed(1048576L)) {
                     if (isKeyPressed(196608L)) {
-                        bB(9);
+                        setCursorIndex(9);
                         U[0] = 0;
                     } else if (isKeyPressed(786432L)) {
-                        bB(0);
+                        setCursorIndex(0);
                         U[0] = 0;
                     }
                 }
-            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
+            } else if (handleDigitEditorInput(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 U[0] = 1;
             }
 
@@ -1757,34 +1757,34 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bG() {
-        bE();
+        clearDownloadedImagesAndTexts();
         bN();
         DataInputStream inputStream = null;
 
         try {
-            inputStream = sendPasswordToServer(13);
-            aW(inputStream);
+            inputStream = sendDigitsToServer(13);
+            unknownOperationOnServerResponse(inputStream);
             int var1 = inputStream.read();
             if (0 < var1) {
                 String var2 = readString(inputStream, var1);
                 aY(O, 2, 1, var2);
             } else {
-                byte[] var16 = new byte[10];
-                inputStream.read(var16);
+                byte[] buffer = new byte[10];
+                inputStream.read(buffer);
 
-                int var3;
-                for (int var4 = 0; var4 < 2; ++var4) {
-                    var3 = inputStream.readUnsignedShort();
-                    V[var4] = readImage(inputStream, var3);
+                for (int i = 0; i < 2; ++i) {
+                    int imageSize = inputStream.readUnsignedShort();
+                    downloadedImages2[i] = readImage(inputStream, imageSize);
                 }
 
-                var3 = inputStream.readUnsignedShort();
-                W = readString(inputStream, var3);
+                int stringSize = inputStream.readUnsignedShort();
+                downloadedString = readString(inputStream, stringSize);
+
                 U[2] = 0;
                 U[4] = 0;
-                U[5] = bP(W);
-                X = bQ(W, U[4]);
-                aZ(var16);
+                U[5] = countQuotedSegments(downloadedString);
+                currentDownloadedQuote = findNthQuote(downloadedString, U[4]);
+                parseAndStoreDownloadedPassword(buffer);
                 bC(3);
             }
         } catch (Exception e) {
@@ -1805,12 +1805,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bN() {
-        ba();
-        setPasswordDigit(1, 1);
-        setPasswordDigit(2, 3);
+        setSomeFlagSentToServer();
+        setDigitSentToServer(1, 1);
+        setDigitSentToServer(2, 3);
 
         for (int i = 0; i < 10; ++i) {
-            setPasswordDigit(3 + i, bR(i));
+            setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
     }
@@ -1822,18 +1822,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 var10002 = U[4]++;
                 U[3] = 0;
                 if (U[5] <= U[4]) {
-                    bS();
-                    if (3 < bT(2)) {
+                    generateDerivedCodeInBankB();
+                    if (3 < getDigitBankB(2)) {
                         T(4);
                     } else {
                         bC(4);
                     }
                 } else {
-                    X = bQ(W, U[4]);
+                    currentDownloadedQuote = findNthQuote(downloadedString, U[4]);
                 }
             }
         } else {
-            int var0 = currentFont.stringWidth(X);
+            int var0 = currentFont.stringWidth(currentDownloadedQuote);
             if (var0 + 232 <= U[3] * 12) {
                 U[3] = 0;
             }
@@ -1941,10 +1941,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawTextWithBackground(g, getText(23), canvasWidth / 2, var3, currentFont.stringWidth(getText(23)) + 8, 2);
         int var4 = var3 + currentFontHeight + 8 + 6;
         drawSprite(g, 58, x, var4, 0);
-        drawImage(g, V[U[6] >> 3 & 1], x + 144, var4, 0);
+        drawImage(g, downloadedImages2[U[6] >> 3 & 1], x + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (canvasWidth - 232) / 2;
-        bt(g, X, var6, var5, 232, U[3], 12, 16777215, 16056665);
+        bt(g, currentDownloadedQuote, var6, var5, 232, U[3], 12, 16777215, 16056665);
         setColorOfRGBInt(g, 0);
         g.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
         setColorOfRGBInt(g, 16763955);
@@ -2023,12 +2023,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void ce() {
-        for (int var0 = 0; var0 < aa.length; ++var0) {
-            disposeImage(aa[var0]);
+        for (int i = 0; i < aa.length; ++i) {
+            disposeImage(aa[i]);
         }
 
-        bA();
-        bB(0);
+        clearDigitEditor();
+        setCursorIndex(0);
         cd(0);
     }
 
@@ -2082,11 +2082,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ab[1] = var0;
     }
 
-    public static void cf() {
+    public static void clearGotchiKingImages() {
         for (int i = 0; i < 2; ++i) {
-            if (ac[i] != null) {
-                ac[i].dispose();
-                ac[i] = null;
+            if (gotchiKingImages[i] != null) {
+                gotchiKingImages[i].dispose();
+                gotchiKingImages[i] = null;
             }
         }
 
@@ -2102,7 +2102,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         System.gc();
     }
 
-    public static void co() {
+    public static void gotchiKingFlow() {
         int var10002 = ab[3]++;
         switch (ab[1]) {
             case 0:
@@ -2112,7 +2112,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cg();
                 break;
             case 2:
-                ch();
+                downloadGotchiKingData();
                 break;
             case 3:
                 ci();
@@ -2145,14 +2145,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     cd(2);
                 } else if (!isKeyPressed(1048576L)) {
                     if (isKeyPressed(196608L)) {
-                        bB(9);
+                        setCursorIndex(9);
                         ab[0] = 0;
                     } else if (isKeyPressed(786432L)) {
-                        bB(0);
+                        setCursorIndex(0);
                         ab[0] = 0;
                     }
                 }
-            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
+            } else if (handleDigitEditorInput(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 ab[0] = 1;
             }
 
@@ -2160,32 +2160,33 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void ch() {
-        cf();
+    public static void downloadGotchiKingData() {
+        clearGotchiKingImages();
         cp();
-        DataInputStream var0 = null;
+        DataInputStream inputStream = null;
 
         try {
             ad = 0L;
-            var0 = sendPasswordToServer(13);
-            aW(var0);
-            int var1 = var0.read();
-            if (0 < var1) {
-                String var2 = readString(var0, var1);
-                aY(O, 2, 1, var2);
-            } else {
-                byte[] var16 = new byte[10];
-                var0.read(var16);
+            inputStream = sendDigitsToServer(13);
+            unknownOperationOnServerResponse(inputStream);
 
-                for (int var4 = 0; var4 < 2; ++var4) {
-                    int var3 = var0.readUnsignedShort();
-                    ac[var4] = readImage(var0, var3);
+            int textLength = inputStream.read();
+            if (0 < textLength) {
+                String text = readString(inputStream, textLength);
+                aY(O, 2, 1, text);
+            } else {
+                byte[] passwordData = new byte[10];
+                inputStream.read(passwordData);
+
+                for (int i = 0; i < 2; ++i) {
+                    int imageSize = inputStream.readUnsignedShort();
+                    gotchiKingImages[i] = readImage(inputStream, imageSize);
                 }
 
                 ab[4] = 0;
                 ab[5] = 0;
                 ab[2] = 0;
-                aZ(var16);
+                parseAndStoreDownloadedPassword(passwordData);
                 cd(3);
             }
         } catch (Exception e) {
@@ -2193,10 +2194,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 92: Communication has failed. Would you like to try again?
             aY(O, 2, 1, getText(92));
         } finally {
-            if (var0 != null) {
+            if (inputStream != null) {
                 try {
-                    var0.close();
-                } catch (Exception var13) {
+                    inputStream.close();
+                } catch (Exception e) {
                 }
             }
 
@@ -2206,12 +2207,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cp() {
-        ba();
-        setPasswordDigit(1, 2);
-        setPasswordDigit(2, 3);
+        setSomeFlagSentToServer();
+        setDigitSentToServer(1, 2);
+        setDigitSentToServer(2, 3);
 
-        for (int var0 = 0; var0 < 10; ++var0) {
-            setPasswordDigit(3 + var0, bR(var0));
+        for (int i = 0; i < 10; ++i) {
+            setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
     }
@@ -2392,15 +2393,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = y + 4;
         // 31: Gotchi King Broadcast
         drawTextWithBackground(g, getText(31), canvasWidth / 2, var3, 200, 2);
-        int var4 = y + 68;
-        int var5 = ab[4];
-        drawImage(g, ac[var5], x + 0, var4, 0);
+        int imageY = y + 68;
+        int imageIndex = ab[4];
+        drawImage(g, gotchiKingImages[imageIndex], x + 0, imageY, 0);
         // 32: Invite
         cb(g, 0, getText(32), canvasWidth / 2, y + 240 - 44, 160, 28, 2, 0);
         drawSprite(g, 27, x + 1, y + 1, 0);
         drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
-        drawSprite(g, 37 + (ab[3] >> 1 & 1), x + 240 - 44, var4 + 2, 0);
-        drawSprite(g, 12, x + 240 - 38, var4 + 10, 0);
+        drawSprite(g, 37 + (ab[3] >> 1 & 1), x + 240 - 44, imageY + 2, 0);
+        drawSprite(g, 12, x + 240 - 38, imageY + 10, 0);
         aD(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 160, ab[3]);
     }
 
@@ -2460,8 +2461,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cz() {
-        bA();
-        bB(0);
+        clearDigitEditor();
+        setCursorIndex(0);
         cy(0);
     }
 
@@ -2544,14 +2545,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     cy(2);
                 } else if (!isKeyPressed(1048576L)) {
                     if (isKeyPressed(196608L)) {
-                        bB(9);
+                        setCursorIndex(9);
                         af[0] = 0;
                     } else if (isKeyPressed(786432L)) {
-                        bB(0);
+                        setCursorIndex(0);
                         af[0] = 0;
                     }
                 }
-            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
+            } else if (handleDigitEditorInput(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 af[0] = 1;
             }
 
@@ -2565,8 +2566,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         DataInputStream var0 = null;
 
         try {
-            var0 = sendPasswordToServer(13);
-            aW(var0);
+            var0 = sendDigitsToServer(13);
+            unknownOperationOnServerResponse(var0);
             int var1 = var0.read();
             if (0 < var1) {
                 String var2 = readString(var0, var1);
@@ -2599,17 +2600,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cG() {
-        ba();
+        setSomeFlagSentToServer();
         byte var0 = 4;
         if (ai) {
             var0 = 9;
         }
 
-        setPasswordDigit(1, var0);
-        setPasswordDigit(2, 4);
+        setDigitSentToServer(1, var0);
+        setDigitSentToServer(2, 4);
 
-        for (int var1 = 0; var1 < 10; ++var1) {
-            setPasswordDigit(3 + var1, bR(var1));
+        for (int i = 0; i < 10; ++i) {
+            setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
     }
@@ -2741,7 +2742,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cO() {
-        bA();
+        clearDigitEditor();
         ag(2, true);
         setSelectedButtonIdx(al[0]);
         cN(0);
@@ -2804,17 +2805,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         al[1] = var0;
     }
 
-    public static void cP() {
+    public static void clearDownloadedTextsAndImages() {
 
         for (int i = 0; i < 2; ++i) {
-            if (am[i] != null) {
-                am[i].dispose();
-                am[i] = null;
+            if (downloadedImages[i] != null) {
+                downloadedImages[i].dispose();
+                downloadedImages[i] = null;
             }
         }
 
         for (int i = 0; i < 3; ++i) {
-            an[i] = null;
+            downloadedTexts[i] = null;
         }
 
         System.gc();
@@ -2863,14 +2864,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     cN(2);
                 } else if (!isKeyPressed(1048576L)) {
                     if (isKeyPressed(196608L)) {
-                        bB(9);
+                        setCursorIndex(9);
                         al[0] = 0;
                     } else if (isKeyPressed(786432L)) {
-                        bB(0);
+                        setCursorIndex(0);
                         al[0] = 0;
                     }
                 }
-            } else if (bM(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
+            } else if (handleDigitEditorInput(isKeyPressed(65536L), isKeyPressed(262144L), isKeyPressed(131072L), isKeyPressed(524288L), isKeyPressed(1048576L), getPressedNumber())) {
                 al[0] = 1;
             }
 
@@ -2913,14 +2914,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cT() {
-        cP();
+        clearDownloadedTextsAndImages();
         cZ();
         DataInputStream inputStream = null;
 
         try {
             // Get response from server
-            inputStream = sendPasswordToServer(14);
-            aW(inputStream);
+            inputStream = sendDigitsToServer(14);
+            unknownOperationOnServerResponse(inputStream);
 
             int length = inputStream.read();
 
@@ -2929,7 +2930,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
                 if (var2.compareTo("1") == 0) {
                     int imageSize = inputStream.readUnsignedShort();
-                    am[0] = readImage(inputStream, imageSize);
+                    downloadedImages[0] = readImage(inputStream, imageSize);
                     cN(5);
                 } else {
                     aY(O, 4, 1, var2);
@@ -2940,22 +2941,22 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 inputStream.read(buffer);
 
                 int size = inputStream.read();
-                an[2] = readString(inputStream, size);
+                downloadedTexts[2] = readString(inputStream, size);
 
                 size = inputStream.read();
-                an[0] = readString(inputStream, size);
+                downloadedTexts[0] = readString(inputStream, size);
 
                 size = inputStream.read();
                 // 49: -san
-                an[1] = readString(inputStream, size) + getText(49);
+                downloadedTexts[1] = readString(inputStream, size) + getText(49);
 
                 size = inputStream.readUnsignedShort();
-                am[0] = readImage(inputStream, size);
+                downloadedImages[0] = readImage(inputStream, size);
 
                 size = inputStream.readUnsignedShort();
-                am[1] = readImage(inputStream, size);
+                downloadedImages[1] = readImage(inputStream, size);
 
-                aZ(buffer);
+                parseAndStoreDownloadedPassword(buffer);
                 cN(6);
             }
         } catch (Exception e) {
@@ -2976,15 +2977,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cZ() {
-        ba();
-        setPasswordDigit(1, 5);
-        setPasswordDigit(2, 3);
+        setSomeFlagSentToServer();
+        setDigitSentToServer(1, 5);
+        setDigitSentToServer(2, 3);
 
-        for (int var0 = 0; var0 < 10; ++var0) {
-            setPasswordDigit(3 + var0, bR(var0));
+        for (int i = 0; i < 10; ++i) {
+            setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
-        setPasswordDigit(13, al[3] + 1);
+        setDigitSentToServer(13, al[3] + 1);
     }
 
     public static void cU() {
@@ -3183,7 +3184,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = y + 62;
         drawSprite(g, 4, x + 0, var3, 0);
         drawSprite(g, 4, x + 120, var3, 0);
-        drawImage(g, am[0], canvasWidth / 2, var3 - 12, 2);
+        drawImage(g, downloadedImages[0], canvasWidth / 2, var3 - 12, 2);
         int var4 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var5 = y + 240 - (var4 + 4) - 2;
         // 88: Retry
@@ -3201,17 +3202,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 48: Exchange Success!
         drawTextWithBackground(g, getText(48), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(48)) + 8, 2);
-        drawImage(g, am[0], x + 0, y + 42, 0);
-        drawImage(g, am[1], x + 120, y + 42, 0);
+        drawImage(g, downloadedImages[0], x + 0, y + 42, 0);
+        drawImage(g, downloadedImages[1], x + 120, y + 42, 0);
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var4 = y + 240 - (var3 + 4) - 2;
         // 18: OK
         cb(g, 0, getText(18), canvasWidth / 2, var4 - 38, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var4, 232, var3 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, an[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
-        drawString(g, an[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
-        drawString(g, an[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
+        drawString(g, downloadedTexts[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
+        drawString(g, downloadedTexts[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
+        drawString(g, downloadedTexts[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
         aD(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
@@ -3324,8 +3325,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void ao() {
         aq[6] = getSelectedButtonIdx();
-        aq[7] = dorr();
-        aq[8] = dp();
+        aq[7] = getAw1();
+        aq[8] = getAw2();
         ag(4, true);
         setSelectedButtonIdx(0);
         ap(0, -1);
@@ -3371,12 +3372,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aq[1] = var0;
     }
 
-    public static boolean ds() {
+    public static boolean isMenuOpen() {
         return aq[0] != 0;
     }
 
     public static void dw() {
-        if (ds()) {
+        if (isMenuOpen()) {
             int var10002 = aq[5]++;
             switch (aq[1]) {
                 case 0:
@@ -3461,8 +3462,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void dB(Graphics g, int x, int y) {
-        if (ds()) {
+    public static void drawMenuPages(Graphics g, int x, int y) {
+        if (isMenuOpen()) {
             switch (aq[1]) {
                 case 0:
                 default:
@@ -3549,12 +3550,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawString(g, text, canvasWidth / 2, y + 2, TextAlign.CENTER);
     }
 
-    public static void drawMenuEggs(Graphics g, int var1, int var2, int var3, int var4) {
-        int var5 = var1 - var3;
+    public static void drawMenuEggs(Graphics g, int x, int y, int var3, int var4) {
+        int var5 = x - var3;
 
         for (int i = 0; i < 3; var5 += var3) {
-            int var7 = 69 + (i + (var4 >> 2) & 1);
-            drawSprite(g, var7, var5 - getSpriteWidth(var7) / 2, var2, 0);
+            int spriteIndex = 69 + (i + (var4 >> 2) & 1);
+            drawSprite(g, spriteIndex, var5 - getSpriteWidth(spriteIndex) / 2, y, 0);
             ++i;
         }
 
@@ -3626,21 +3627,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void dI(Graphics var0, int var1, int var2) {
+    public static void dI(Graphics g, int x, int y) {
         if (dG()) {
-            setColorOfRGBInt(var0, 16763955);
-            var0.fillRect(var1, var2, 240, 240);
-            drawSprite(var0, 0, var1, var2 + 240 - getSpriteHeight(0), 0);
+            setColorOfRGBInt(g, 16763955);
+            g.fillRect(x, y, 240, 240);
+            drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
             int lineCount = splitCount(as, "\n");
             int textHeight = (lineCount - 1) * (currentFontHeight + 1) + currentFontHeight + 4;
-            int var5 = var2 + (240 - (textHeight + 4 + 8)) / 2;
-            drawBeveledRect(var0, (canvasWidth - 232) / 2, var5, 232, textHeight, 16056665, 16056665);
-            setColorOfRGBInt(var0, 16777215);
-            drawString(var0, as, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
+            int var5 = y + (240 - (textHeight + 4 + 8)) / 2;
+            drawBeveledRect(g, (canvasWidth - 232) / 2, var5, 232, textHeight, 16056665, 16056665);
+            setColorOfRGBInt(g, 16777215);
+            drawString(g, as, canvasWidth / 2, var5 + 2, TextAlign.CENTER);
             // 88: Retry
-            cb(var0, 0, getText(88), canvasWidth / 2 - 8, var5 + textHeight + 4, 100, 28, 1, 0);
+            cb(g, 0, getText(88), canvasWidth / 2 - 8, var5 + textHeight + 4, 100, 28, 1, 0);
             // 9: Back
-            cb(var0, 1, getText(9), canvasWidth / 2 + 8, var5 + textHeight + 4, 100, 28, 0, 0);
+            cb(g, 1, getText(9), canvasWidth / 2 + 8, var5 + textHeight + 4, 100, 28, 0, 0);
         }
     }
 
@@ -3767,11 +3768,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return aw[0];
     }
 
-    public static int dorr() {
+    public static int getAw1() {
         return aw[1];
     }
 
-    public static int dp() {
+    public static int getAw2() {
         return aw[2];
     }
 
@@ -3944,122 +3945,123 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawBeveledRect(var0, var1, var2, var3, var4, var5, var6);
     }
 
-    public static void bA() {
-        for (int var0 = 0; var0 < 4; ++var0) {
-            ax[var0] = 0;
+    public static void clearDigitEditor() {
+        for (int i = 0; i < 4; ++i) {
+            digitEditorState[i] = 0;
         }
 
-        bB(0);
+        setCursorIndex(0);
     }
 
-    public static void bB(int var0) {
-        ax[5] = ax[4];
-        ax[4] = var0;
+    public static void setCursorIndex(int index) {
+        digitEditorState[5] = digitEditorState[4];
+        digitEditorState[4] = index;
     }
 
-    public static void aZ(byte[] var0) {
+    public static void parseAndStoreDownloadedPassword(byte[] passwordData) {
         for (int i = 0; i < 10; ++i) {
-            dQ(i, var0[i]);
+            setDigitBankA(i, passwordData[i]);
         }
 
     }
 
-    public static void dQ(int idx, int d) {
-        d %= 10;
-        int var2 = ax[0 + idx / 8];
-        int var3 = 4 * (7 - idx % 8);
-        var2 &= ~(15 << var3);
-        var2 |= d << var3;
-        ax[0 + idx / 8] = var2;
+    public static void setDigitBankA(int digitIndex, int digit) {
+        digit %= 10;
+        int packedInt = digitEditorState[0 + digitIndex / 8];
+        int shift = 4 * (7 - digitIndex % 8);
+        packedInt &= ~(15 << shift);
+        packedInt |= digit << shift;
+        digitEditorState[0 + digitIndex / 8] = packedInt;
     }
 
-    public static void dR(int var0, int var1) {
-        var1 %= 10;
-        int var2 = ax[2 + var0 / 8];
-        int var3 = 4 * (7 - var0 % 8);
-        var2 &= ~(15 << var3);
-        var2 |= var1 << var3;
-        ax[2 + var0 / 8] = var2;
+    public static void setDigitBankB(int digitIndex, int digit) {
+        digit %= 10;
+        int packedInt = digitEditorState[2 + digitIndex / 8];
+        int shift = 4 * (7 - digitIndex % 8);
+        packedInt &= ~(15 << shift);
+        packedInt |= digit << shift;
+        digitEditorState[2 + digitIndex / 8] = packedInt;
     }
 
-    public static void bS() {
-        int var0 = bR(1);
+    public static void generateDerivedCodeInBankB() {
+        int keyDigit = getDigitBankA(1);
 
-        for (int var1 = 0; var1 < 10; ++var1) {
-            dR(ay[var0 * 10 + var1], bR(var1));
+        for (int i = 0; i < 10; ++i) {
+            setDigitBankB(digitShuffleTable[keyDigit * 10 + i], getDigitBankA(i));
         }
 
     }
 
-    public static int bR(int var0) {
-        int var1 = ax[0 + var0 / 8] >> 4 * (7 - var0 % 8) & 15;
-        return var1;
+    public static int getDigitBankA(int digitIndex) {
+        int digit = digitEditorState[0 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
+        return digit;
     }
 
-    public static int bT(int var0) {
-        int var1 = ax[2 + var0 / 8] >> 4 * (7 - var0 % 8) & 15;
-        return var1;
+    public static int getDigitBankB(int digitIndex) {
+        int digit = digitEditorState[2 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
+        return digit;
     }
 
-    public static int bw() {
-        return ax[4];
+    public static int getCursorIndex() {
+        return digitEditorState[4];
     }
 
-    public static int bx() {
-        return ax[5];
+    public static int getPreviousCursorIndex() {
+        return digitEditorState[5];
     }
 
-    public static boolean bM(boolean var0, boolean var1, boolean var2, boolean var3, boolean var4, int var5) {
-        int var6 = ax[4];
-        boolean var7 = false;
-        if (var4) {
+    public static boolean handleDigitEditorInput(boolean moveLeft, boolean moveRight, boolean jumpBack5, boolean jumpForward5, boolean incrementDigit, int directDigit) {
+        int cursorIndex = digitEditorState[4];
+        boolean allFilled = false;
+
+        if (incrementDigit) {
             playSound(5, false);
-            dQ(var6, (bR(var6) + 1) % 10);
-        } else if (var1) {
-            ++var6;
-            if (10 <= var6) {
-                var6 = 0;
-                var7 = true;
+            setDigitBankA(cursorIndex, (getDigitBankA(cursorIndex) + 1) % 10);
+        } else if (moveRight) {
+            ++cursorIndex;
+            if (10 <= cursorIndex) {
+                cursorIndex = 0;
+                allFilled = true;
             }
 
-            bB(var6);
-        } else if (var0) {
-            --var6;
-            if (var6 < 0) {
-                var6 = 9;
-                var7 = true;
+            setCursorIndex(cursorIndex);
+        } else if (moveLeft) {
+            --cursorIndex;
+            if (cursorIndex < 0) {
+                cursorIndex = 9;
+                allFilled = true;
             }
 
-            bB(var6);
-        } else if (var2) {
-            var6 -= 5;
-            if (var6 < 0) {
-                var7 = true;
-                var6 += 10;
+            setCursorIndex(cursorIndex);
+        } else if (jumpBack5) {
+            cursorIndex -= 5;
+            if (cursorIndex < 0) {
+                allFilled = true;
+                cursorIndex += 10;
             }
 
-            bB(var6);
-        } else if (var3) {
-            var6 += 5;
-            if (10 <= var6) {
-                var7 = true;
-                var6 -= 10;
+            setCursorIndex(cursorIndex);
+        } else if (jumpForward5) {
+            cursorIndex += 5;
+            if (10 <= cursorIndex) {
+                allFilled = true;
+                cursorIndex -= 10;
             }
 
-            bB(var6);
-        } else if (0 <= var5) {
+            setCursorIndex(cursorIndex);
+        } else if (0 <= directDigit) {
             playSound(5, false);
-            dQ(var6, var5);
-            ++var6;
-            if (10 <= var6) {
-                var6 = 0;
-                var7 = true;
+            setDigitBankA(cursorIndex, directDigit);
+            ++cursorIndex;
+            if (10 <= cursorIndex) {
+                cursorIndex = 0;
+                allFilled = true;
             }
 
-            bB(var6);
+            setCursorIndex(cursorIndex);
         }
 
-        return var7;
+        return allFilled;
     }
 
     public static int getPressedNumber() {
@@ -4109,7 +4111,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var1 -= 75;
         }
 
-        drawString(var0, "" + bR(var4), var1, var2, TextAlign.LEFT);
+        drawString(var0, "" + getDigitBankA(var4), var1, var2, TextAlign.LEFT);
     }
 
     public static void cc(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
@@ -4197,16 +4199,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void setPasswordDigit(int idx, int digit) {
-        password[idx] = (byte) digit;
+    public static void setDigitSentToServer(int index, int digit) {
+        digitsSentToServer[index] = (byte) digit;
     }
 
-    public static void ba() {
-        setPasswordDigit(0, 16);
+    public static void setSomeFlagSentToServer() {
+        setDigitSentToServer(0, 16);
     }
 
-    public static DataInputStream sendPasswordToServer(int length) throws Exception {
-        return sendDataToServer(password, length);
+    public static DataInputStream sendDigitsToServer(int length) throws Exception {
+        return sendDataToServer(digitsSentToServer, length);
     }
 
     public static DataInputStream sendDataToServer(byte[] data, int length) throws Exception {
@@ -4337,68 +4339,70 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return image;
     }
 
-    public static int bP(String var0) {
-        boolean var1 = false;
-        int var2 = 0;
-        int var3 = 0;
+    public static int countQuotedSegments(String text) {
+        boolean insideQuote = false;
+        int searchIndex = 0;
+        int segmentCount = 0;
 
         while (true) {
-            var2 = var0.indexOf(39, var2);
-            if (var2 == -1) {
-                if (var1) {
+            searchIndex = text.indexOf(39, searchIndex);
+            if (searchIndex == -1) {
+                if (insideQuote) {
                     log("Dialogue error: missing closing tag");
                 }
 
-                log("wordsCnt:" + var3);
-                return var3;
+                log("wordsCnt:" + segmentCount);
+                return segmentCount;
             }
 
-            log("numindex:" + var2);
-            if (var1) {
-                ++var3;
-                var1 = false;
+            log("numindex:" + searchIndex);
+            if (insideQuote) {
+                ++segmentCount;
+                insideQuote = false;
             } else {
-                var1 = true;
+                insideQuote = true;
             }
 
-            ++var2;
+            ++searchIndex;
         }
     }
 
-    public static String bQ(String var0, int var1) {
-        int var2 = 0;
-        boolean var3 = false;
-        int var4 = 0;
-        int var5 = 0;
+    public static String findNthQuote(String text, int n) {
+        int currentIndex = 0;
+        boolean insideQuote = false;
+        int wordStart = 0;
+        int searchIndex = 0;
 
-        String var6;
+        String result;
         while (true) {
-            var5 = var0.indexOf(39, var5);
-            if (var5 == -1) {
-                var6 = "";
+            searchIndex = text.indexOf(39, searchIndex);
+            if (searchIndex == -1) {
+                result = "";
                 break;
             }
 
-            if (var3) {
-                if (var1 == var2) {
-                    var6 = var0.substring(var4, var5);
+            if (insideQuote) {
+                if (n == currentIndex) {
+                    result = text.substring(wordStart, searchIndex);
                     break;
                 }
 
-                ++var2;
-                ++var5;
-                var3 = false;
+                ++currentIndex;
+                ++searchIndex;
+                insideQuote = false;
             } else {
-                var3 = true;
-                ++var5;
-                var4 = var5;
+                insideQuote = true;
+                ++searchIndex;
+                wordStart = searchIndex;
             }
         }
 
-        return var6;
+        return result;
     }
 
-    public static void aW(DataInputStream var0) throws Exception {
+    public static void unknownOperationOnServerResponse(DataInputStream var0) throws Exception {
+        // Maybe just a decompilation artifact?
+        // Original: public static void aW(DataInputStream var0) throws Exception
     }
 
     public static IrRemoteControlFrame[] createIrRemoteControlFrames(int n) {
@@ -4458,7 +4462,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void eb() {
-        bS();
+        generateDerivedCodeInBankB();
         dY(0, 96);
         dY(1, 8);
         dY(2, 0);
@@ -4466,7 +4470,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         int var1;
         for (int var0 = 0; var0 < 10; var0 += 2) {
-            var1 = dZ(bT(var0)) << 4 | dZ(bT(var0 + 1));
+            var1 = dZ(getDigitBankB(var0)) << 4 | dZ(getDigitBankB(var0 + 1));
             dY(4 + var0 / 2, var1);
         }
 
@@ -4666,16 +4670,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (O) {
             case 8:
-                bE();
+                clearDownloadedImagesAndTexts();
                 break;
             case 9:
-                cf();
+                clearGotchiKingImages();
                 break;
             case 10:
                 cA();
                 break;
             case 11:
-                cP();
+                clearDownloadedTextsAndImages();
         }
 
         switch (var0) {
@@ -4740,7 +4744,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             saveGame();
         }
 
-        if (ds()) {
+        if (isMenuOpen()) {
             dw();
         } else if (dG()) {
             dH();
@@ -4783,7 +4787,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     bK();
                     break;
                 case 9:
-                    co();
+                    gotchiKingFlow();
                     break;
                 case 10:
                     cF();
@@ -4802,8 +4806,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void Exceptions(Graphics g) {
         try {
-            if (ds()) {
-                dB(g, rootX, rootY);
+            if (isMenuOpen()) {
+                drawMenuPages(g, rootX, rootY);
                 return;
             }
 
