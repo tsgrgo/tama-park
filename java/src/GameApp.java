@@ -91,7 +91,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] L;
     public static int[] M;
     public static int[] N;
-    public static int[] P;
+    public static int[] shoppingCenterState;
     public static int[] R;
     public static int[] Q;
     public static int[] S;
@@ -110,8 +110,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static Image travelMemoryPhoto;
     public static int[] al;
     public static int[] ao;
-    public static Image[] downloadedImages;
-    public static String[] downloadedTexts;
+    public static Image[] exchangePlazaImages;
+    public static String[] exchangePlazaTexts;
     public static int[] ak;
     public static int[] explanationState; // [offset, size, current, isOpen]
     public static int[] aq;
@@ -183,7 +183,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         L = new int[]{120, 132, 230, 26, 20, 19, 2, 120, 168, 230, 26, 18, 17, 2, 120, 204, 230, 26, 11, 10, 2};
         M = new int[3];
         N = new int[]{120, 146, 220, 26, 22, 21, 2, 120, 186, 220, 26, 14, 13, 2};
-        P = new int[4];
+        shoppingCenterState = new int[4];
         R = new int[]{120, 202, 220, 24, 14, 2, 120, 168, 220, 24, 13, 2, 120, 134, 220, 24, 12, 2, 120, 100, 220, 24, 11, 2, 120, 66, 220, 24, 10, 2};
         Q = new int[]{11025351, 1648446, 11025351, 1648446, 7053048, 1648446, 7053048, 1648446, 10873427, 2323575, 10873427, 2323575, 16777041, 16734720, 16777041, 16734720, 16021161, 16777215, 16021161, 16777215};
         S = new int[]{120, 144, 190, 28, 93, 2, 120, 176, 190, 28, 16, 2, 120, 208, 190, 28, 15, 2};
@@ -199,8 +199,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         travelMemoryTexts = new String[2];
         al = new int[5];
         ao = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
-        downloadedImages = new Image[2];
-        downloadedTexts = new String[3];
+        exchangePlazaImages = new Image[2];
+        exchangePlazaTexts = new String[3];
         ak = new int[]{0, 0, 1, 6, 6, 1, 80, 41, 0, 28, 2, 0, 0, 2, 81, 43, 0, 64, 3, 1, 1, 3, 82, 45, -44, 44, 4, 2, 2, 4, 83, 47, -64, 60, 5, 3, 3, 5, 84, 49, -108, 60, 6, 4, 4, 6, 85, 51, -164, 60, 0, 5, 5, 0, 86, 53};
         explanationState = new int[4];
         aq = new int[9];
@@ -1318,14 +1318,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         StackMap = true;
-        P[3] = 0;
-        P[2] = 0;
-        P[1] = var0;
+        shoppingCenterState[3] = 0;
+        shoppingCenterState[2] = 0;
+        shoppingCenterState[1] = var0;
     }
 
-    public static void aT() {
-        int var10002 = P[2]++;
-        switch (P[1]) {
+    public static void shoppingCenterFlow() {
+        int var10002 = shoppingCenterState[2]++;
+        switch (shoppingCenterState[1]) {
             case 0:
                 aL(1);
                 break;
@@ -1333,7 +1333,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aP();
                 break;
             case 2:
-                aQ();
+                downloadShoppingCenterPassword();
                 break;
             case 3:
                 aR();
@@ -1345,16 +1345,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aP() {
-        int var10002 = P[3]++;
+        int var10002 = shoppingCenterState[3]++;
         if (isKeyPressed(2097152L)) {
             ao();
             ap(110, 5);
         } else {
             int var0 = getSelectedButtonIndex();
             int var1 = aq(isKeyPressed(1048576L), isKeyPressed(524288L), isKeyPressed(131072L));
-            P[0] = getSelectedButtonIndex();
-            if (var0 != P[0]) {
-                P[3] = 0;
+            shoppingCenterState[0] = getSelectedButtonIndex();
+            if (var0 != shoppingCenterState[0]) {
+                shoppingCenterState[3] = 0;
             }
 
             if (var1 != -1) {
@@ -1364,21 +1364,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void aQ() {
-        aU();
+    public static void downloadShoppingCenterPassword() {
+        prepareShoppingCenterSentData();
         DataInputStream inputStream = null;
 
         try {
-            inputStream = sendDigitsToServer(4);
+            inputStream = sendPreparedDataToServer(4);
             unknownOperationOnServerResponse(inputStream);
-            int var1 = inputStream.read();
-            if (0 < var1) {
-                String var2 = readString(inputStream, var1);
-                showErrorPage(O, 2, 1, var2);
+
+            int errorMessageLength = inputStream.read();
+
+            if (errorMessageLength > 0) {
+                String errorMessage = readString(inputStream, errorMessageLength);
+                showErrorPage(O, 2, 1, errorMessage);
             } else {
-                byte[] var14 = new byte[10];
-                inputStream.read(var14);
-                parseAndStoreDownloadedPassword(var14);
+                byte[] passwordData = new byte[10];
+                inputStream.read(passwordData);
+                parseAndStoreDownloadedPassword(passwordData);
                 aL(3);
             }
         } catch (Exception e) {
@@ -1398,20 +1400,27 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void aU() {
-        setSomeFlagSentToServer();
+    public static void prepareShoppingCenterSentData() {
+        setSomeCommonFlagSentToServer();
         setDigitSentToServer(1, 0);
         setDigitSentToServer(2, 3);
-        setDigitSentToServer(3, P[0] + 1);
+
+        // shoppingCenterState[0] + 1 --> selected item category
+        // 1 - Elite Items
+        // 2 - Luxury Items
+        // 3 - Fancy Items
+        // 4 - Market Items
+        // 5 - Common Items
+        setDigitSentToServer(3, shoppingCenterState[0] + 1);
     }
 
     public static void aR() {
-        int var10002 = P[3]++;
+        int var10002 = shoppingCenterState[3]++;
         if (isKeyPressed(2097152L)) {
             ao();
             ap(115, 6);
         } else {
-            if (6 < P[2]) {
+            if (6 < shoppingCenterState[2]) {
                 switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
                         aL(4);
@@ -1436,7 +1445,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void shoppingCenterPage(Graphics g, int x, int y) {
-        switch (P[1]) {
+        switch (shoppingCenterState[1]) {
             case 0:
             default:
                 break;
@@ -1471,7 +1480,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         // 26: Use your Gotchi Points from your Keitama to buy Tamagotchi goods! Choose the rank of the item you want and press OK!
-        bl(g, x, getText(26), y + 2 + 34 + 1, P[2], 12, 16056665, 16777215);
+        bl(g, x, getText(26), y + 2 + 34 + 1, shoppingCenterState[2], 12, 16056665, 16777215);
 
         for (var4 = 0; var4 < 5; ++var4) {
             int var5 = bm(R, var4, 1) + 3;
@@ -1481,16 +1490,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (var4 == getSelectedButtonIndex()) {
                 var7 = 61;
                 var8 = false;
-                var6 -= abs((P[3] & 31) - 16);
+                var6 -= abs((shoppingCenterState[3] & 31) - 16);
             } else {
                 var7 = 62;
                 var8 = false;
             }
 
-            int var10 = var7 + (P[3] >> 3 & 1);
+            int var10 = var7 + (shoppingCenterState[3] >> 3 & 1);
             int var9 = y + bm(R, var4, 1);
             var9 += bm(R, var4, 3) / 2 + 2;
-            drawButtonTamas(g, var10, x + bm(R, var4, 0), var9, var6, P[2], 0);
+            drawButtonTamas(g, var10, x + bm(R, var4, 0), var9, var6, shoppingCenterState[2], 0);
         }
 
     }
@@ -1521,13 +1530,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 64: Enter the Ticket No. in your Keitama
-        bl(g, x, getText(64), y + 3 + currentFontHeight + 12, P[2], 12, 16056665, 16777215);
+        bl(g, x, getText(64), y + 3 + currentFontHeight + 12, shoppingCenterState[2], 12, 16056665, 16777215);
         int var3 = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
             bo(g, canvasWidth / 2, var3, 2, 0, 16770972, 16750748, 16770972);
-            bp(g, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false);
+            bp(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false);
         } else {
-            bq(g, canvasWidth / 2, var3 + 10, 56, P[2] >> 1, false, 16770972);
+            bq(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
         }
 
         br(g, canvasWidth / 2, var3 + 4, 62, false, I);
@@ -1536,7 +1545,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, var4, S, 0);
         }
 
-        aD(g, 61, x + bm(S, getSelectedButtonIndex(), 0), y + bm(S, getSelectedButtonIndex(), 1) + bm(S, getSelectedButtonIndex(), 3) / 2, bm(S, getSelectedButtonIndex(), 2) - 10, P[2]);
+        aD(g, 61, x + bm(S, getSelectedButtonIndex(), 0), y + bm(S, getSelectedButtonIndex(), 1) + bm(S, getSelectedButtonIndex(), 3) / 2, bm(S, getSelectedButtonIndex(), 2) - 10, shoppingCenterState[2]);
     }
 
     public static void shoppingCenterSendViaIR(Graphics g, int x, int y) {
@@ -1762,13 +1771,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         DataInputStream inputStream = null;
 
         try {
-            inputStream = sendDigitsToServer(13);
+            inputStream = sendPreparedDataToServer(13);
             unknownOperationOnServerResponse(inputStream);
 
-            int errorTextLength = inputStream.read();
-            if (0 < errorTextLength) {
-                String errorText = readString(inputStream, errorTextLength);
-                showErrorPage(O, 2, 1, errorText);
+            int errorMessageLength = inputStream.read();
+
+            if (errorMessageLength > 0) {
+                String errorMessage = readString(inputStream, errorMessageLength);
+                showErrorPage(O, 2, 1, errorMessage);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -1778,8 +1788,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     parentCallImages[i] = readImage(inputStream, imageSize);
                 }
 
-                int stringSize = inputStream.readUnsignedShort();
-                parentCallText = readString(inputStream, stringSize);
+                int textSize = inputStream.readUnsignedShort();
+                parentCallText = readString(inputStream, textSize);
 
                 U[2] = 0;
                 U[4] = 0;
@@ -1806,7 +1816,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bN() {
-        setSomeFlagSentToServer();
+        setSomeCommonFlagSentToServer();
         setDigitSentToServer(1, 1);
         setDigitSentToServer(2, 3);
 
@@ -2163,18 +2173,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void downloadGotchiKingData() {
         clearDownloadedGotchiKingData();
-        cp();
+        prepareGotchiKingSentData();
         DataInputStream inputStream = null;
 
         try {
             ad = 0L;
-            inputStream = sendDigitsToServer(13);
+            inputStream = sendPreparedDataToServer(13);
             unknownOperationOnServerResponse(inputStream);
 
-            int textLength = inputStream.read();
-            if (0 < textLength) {
-                String text = readString(inputStream, textLength);
-                showErrorPage(O, 2, 1, text);
+            int errorMessageLength = inputStream.read();
+
+            if (errorMessageLength > 0) {
+                String errorMessage = readString(inputStream, errorMessageLength);
+                showErrorPage(O, 2, 1, errorMessage);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -2207,12 +2218,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void cp() {
-        setSomeFlagSentToServer();
+    public static void prepareGotchiKingSentData() {
+        setSomeCommonFlagSentToServer();
         setDigitSentToServer(1, 2);
         setDigitSentToServer(2, 3);
 
         for (int i = 0; i < 10; ++i) {
+            // Copy input digits
             setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
@@ -2502,7 +2514,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         af[1] = var0;
     }
 
-    public static void cA() {
+    public static void clearDownloadedTravelMemoryData() {
         if (travelMemoryPhoto != null) {
             travelMemoryPhoto.dispose();
             travelMemoryPhoto = null;
@@ -2515,7 +2527,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         System.gc();
     }
 
-    public static void cF() {
+    public static void travelMemoryFlow() {
         int var10002 = af[2]++;
         switch (af[1]) {
             case 0:
@@ -2562,17 +2574,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void downloadTraverMemoryData() {
-        cA();
-        cG();
+        clearDownloadedTravelMemoryData();
+        prepareTravelMemorySentData();
         DataInputStream inputStream = null;
 
         try {
-            inputStream = sendDigitsToServer(13);
-            unknownOperationOnServerResponse(inputStream);
+            inputStream = sendPreparedDataToServer(13);
 
             int errorMessageLength = inputStream.read();
 
-            if (0 < errorMessageLength) {
+            if (errorMessageLength > 0) {
                 String errorMessage = readString(inputStream, errorMessageLength);
                 showErrorPage(O, 2, 1, errorMessage);
             } else {
@@ -2606,8 +2617,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void cG() {
-        setSomeFlagSentToServer();
+    public static void prepareTravelMemorySentData() {
+        setSomeCommonFlagSentToServer();
         byte var0 = 4;
         if (ai) {
             var0 = 9;
@@ -2617,6 +2628,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setDigitSentToServer(2, 4);
 
         for (int i = 0; i < 10; ++i) {
+            // Copy input digits
             setDigitSentToServer(3 + i, getDigitBankA(i));
         }
 
@@ -2812,23 +2824,23 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         al[1] = var0;
     }
 
-    public static void clearDownloadedTextsAndImages() {
+    public static void clearDownloadedExchangePlazaData() {
 
         for (int i = 0; i < 2; ++i) {
-            if (downloadedImages[i] != null) {
-                downloadedImages[i].dispose();
-                downloadedImages[i] = null;
+            if (exchangePlazaImages[i] != null) {
+                exchangePlazaImages[i].dispose();
+                exchangePlazaImages[i] = null;
             }
         }
 
         for (int i = 0; i < 3; ++i) {
-            downloadedTexts[i] = null;
+            exchangePlazaTexts[i] = null;
         }
 
         System.gc();
     }
 
-    public static void cY() {
+    public static void exchangePlazaFlow() {
         int var10002 = al[2]++;
         switch (al[1]) {
             case 0:
@@ -2844,7 +2856,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 cS();
                 break;
             case 4:
-                cT();
+                downloadExchangePlazaData();
                 break;
             case 5:
                 cU();
@@ -2920,50 +2932,48 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void cT() {
-        clearDownloadedTextsAndImages();
-        cZ();
+    public static void downloadExchangePlazaData() {
+        clearDownloadedExchangePlazaData();
+        prepareExchangePlazaSentData();
         DataInputStream inputStream = null;
 
         try {
-            // Get response from server
-            inputStream = sendDigitsToServer(14);
+            inputStream = sendPreparedDataToServer(14);
             unknownOperationOnServerResponse(inputStream);
 
-            int length = inputStream.read();
+            int textSize = inputStream.read();
 
-            if (length > 0) {
-                String var2 = readString(inputStream, length);
+            if (textSize > 0) {
+                String errorMessageOr1 = readString(inputStream, textSize);
 
-                if (var2.compareTo("1") == 0) {
+                if (errorMessageOr1.compareTo("1") == 0) {
                     int imageSize = inputStream.readUnsignedShort();
-                    downloadedImages[0] = readImage(inputStream, imageSize);
+                    exchangePlazaImages[0] = readImage(inputStream, imageSize);
                     cN(5);
                 } else {
-                    showErrorPage(O, 4, 1, var2);
+                    showErrorPage(O, 4, 1, errorMessageOr1);
                 }
 
             } else {
-                byte[] buffer = new byte[10];
-                inputStream.read(buffer);
+                byte[] passwordData = new byte[10];
+                inputStream.read(passwordData);
 
                 int size = inputStream.read();
-                downloadedTexts[2] = readString(inputStream, size);
+                exchangePlazaTexts[2] = readString(inputStream, size);
 
                 size = inputStream.read();
-                downloadedTexts[0] = readString(inputStream, size);
+                exchangePlazaTexts[0] = readString(inputStream, size);
 
                 size = inputStream.read();
-                // 49: -san
-                downloadedTexts[1] = readString(inputStream, size) + getText(49);
+                exchangePlazaTexts[1] = readString(inputStream, size) + getText(49); // // 49: -san
 
                 size = inputStream.readUnsignedShort();
-                downloadedImages[0] = readImage(inputStream, size);
+                exchangePlazaImages[0] = readImage(inputStream, size);
 
                 size = inputStream.readUnsignedShort();
-                downloadedImages[1] = readImage(inputStream, size);
+                exchangePlazaImages[1] = readImage(inputStream, size);
 
-                parseAndStoreDownloadedPassword(buffer);
+                parseAndStoreDownloadedPassword(passwordData);
                 cN(6);
             }
         } catch (Exception e) {
@@ -2983,8 +2993,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void cZ() {
-        setSomeFlagSentToServer();
+    public static void prepareExchangePlazaSentData() {
+        setSomeCommonFlagSentToServer();
         setDigitSentToServer(1, 5);
         setDigitSentToServer(2, 3);
 
@@ -3191,7 +3201,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var3 = y + 62;
         drawSprite(g, 4, x + 0, var3, 0);
         drawSprite(g, 4, x + 120, var3, 0);
-        drawImage(g, downloadedImages[0], canvasWidth / 2, var3 - 12, 2);
+        drawImage(g, exchangePlazaImages[0], canvasWidth / 2, var3 - 12, 2);
         int var4 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var5 = y + 240 - (var4 + 4) - 2;
         // 88: Retry
@@ -3209,17 +3219,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 48: Exchange Success!
         drawTextWithBackground(g, getText(48), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(48)) + 8, 2);
-        drawImage(g, downloadedImages[0], x + 0, y + 42, 0);
-        drawImage(g, downloadedImages[1], x + 120, y + 42, 0);
+        drawImage(g, exchangePlazaImages[0], x + 0, y + 42, 0);
+        drawImage(g, exchangePlazaImages[1], x + 120, y + 42, 0);
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         int var4 = y + 240 - (var3 + 4) - 2;
         // 18: OK
         cb(g, 0, getText(18), canvasWidth / 2, var4 - 38, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, var4, 232, var3 + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, downloadedTexts[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
-        drawString(g, downloadedTexts[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
-        drawString(g, downloadedTexts[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
+        drawString(g, exchangePlazaTexts[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
+        drawString(g, exchangePlazaTexts[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
+        drawString(g, exchangePlazaTexts[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
         aD(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, al[2]);
     }
 
@@ -4210,11 +4220,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         digitsSentToServer[index] = (byte) digit;
     }
 
-    public static void setSomeFlagSentToServer() {
+    public static void setSomeCommonFlagSentToServer() {
         setDigitSentToServer(0, 16);
     }
 
-    public static DataInputStream sendDigitsToServer(int length) throws Exception {
+    public static DataInputStream sendPreparedDataToServer(int length) throws Exception {
         return sendDataToServer(digitsSentToServer, length);
     }
 
@@ -4408,8 +4418,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void unknownOperationOnServerResponse(DataInputStream var0) throws Exception {
-        // Maybe just a decompilation artifact?
-        // Original: public static void aW(DataInputStream var0) throws Exception
+        // This is a no-op. Maybe just a decompilation artifact?
+        // (public static void aW(DataInputStream var0) throws Exception)
     }
 
     public static IrRemoteControlFrame[] createIrRemoteControlFrames(int n) {
@@ -4682,10 +4692,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 clearDownloadedGotchiKingData();
                 break;
             case 10:
-                cA();
+                clearDownloadedTravelMemoryData();
                 break;
             case 11:
-                clearDownloadedTextsAndImages();
+                clearDownloadedExchangePlazaData();
         }
 
         switch (var0) {
@@ -4787,7 +4797,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     aJ();
                     break;
                 case 7:
-                    aT();
+                    shoppingCenterFlow();
                     break;
                 case 8:
                     parentCallFlow();
@@ -4796,10 +4806,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     gotchiKingFlow();
                     break;
                 case 10:
-                    cF();
+                    travelMemoryFlow();
                     break;
                 case 11:
-                    cY();
+                    exchangePlazaFlow();
                     break;
                 default:
                     if (isKeyPressed(1048576L)) {
