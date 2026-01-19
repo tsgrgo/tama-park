@@ -52,7 +52,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int E;
     public static boolean k;
     public static long aN;
-    public static int O;
+    public static int currentPage;
     public static int aO;
     public static boolean T;
     public static boolean ai;
@@ -81,7 +81,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int previousSoftLabelIdx;
     public static int currentSoftLabelIdx;
     public static String[] softLabels;
-    public static int w;
+    public static int loadingProgress;
     public static Image[] images;
     public static int[] imageSizes;
     public static int[] G;
@@ -92,8 +92,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] M;
     public static int[] N;
     public static int[] shoppingCenterState; // [itemType, ...]
-    public static int[] R;
-    public static int[] Q;
+    public static int[] shoppingCenterLayoutTable;
+    public static int[] shoppingCenterItemColors;
     public static int[] S;
     public static int[] parentCallState;
     public static int[] Y;
@@ -112,7 +112,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int[] ao;
     public static Image[] exchangePlazaImages;
     public static String[] exchangePlazaTexts;
-    public static int[] ak;
+    public static int[] exchangePlazaTable;
     public static int[] explanationState; // [offset, size, current, isOpen]
     public static int[] aq;
     public static int[] errorState; // [?, ?, ?, showErrorPage] ? = some action id?
@@ -151,11 +151,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         d = 0;
         E = 0;
         k = false;
-        O = 0;
+        currentPage = 0;
         aO = 16;
         totalMemory = Runtime.getRuntime().totalMemory();
         aQ = new long[240];
         aR = 0;
+
         audioPresenters = new AudioPresenter[2];
         loopedSoundIdx = -1;
         aS = 0;
@@ -167,41 +168,83 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         v = new int[2];
         gameSave = new int[7];
         rngState = 0;
+
         aU = new short[]{0, 4, 8, 13, 17, 22, 26, 31, 35, 40, 44, 48, 53, 57, 61, 66, 70, 74, 79, 83, 87, 91, 95, 100, 104, 108, 112, 116, 120, 124, 127, 131, 135, 139, 143, 146, 150, 154, 157, 161, 164, 167, 171, 174, 177, 181, 184, 187, 190, 193, 196, 198, 201, 204, 207, 209, 212, 214, 217, 219, 221, 223, 226, 228, 230, 232, 233, 235, 237, 238, 240, 242, 243, 244, 246, 247, 248, 249, 250, 251, 252, 252, 253, 254, 254, 255, 255, 255, 255, 255, 256};
         aV = new int[]{0, 17, 34, 52, 69, 87, 105, 122, 140, 158, 176, 194, 212, 230, 249, 267, 286, 305, 324, 344, 363, 383, 404, 424, 445, 466, 487, 509, 531, 554, 577, 600, 624, 649, 674, 700, 726, 753, 781, 809, 839, 869, 900, 932, 965, 999, 1035, 1072, 1110, 1150, 1191, 1234, 1279, 1327, 1376, 1428, 1482, 1539, 1600, 1664, 1732, 1804, 1880, 1962, 2050, 2144, 2246, 2355, 2475, 2605, 2747, 2904, 3077, 3270, 3487, 3732, 4010, 4331, 4704, 5144, 5671, 6313, 7115, 8144, 9514, 11430, 14300, 19081, 28636, 57289};
         aW = new boolean[]{false, false};
         aX = new int[2];
         String[] var10000 = new String[2];
+
         previousSoftLabelIdx = 6;
         currentSoftLabelIdx = 6;
         softLabels = new String[]{"Start", "Menu", "Close", "Back", "Title", "Help", ""};
         images = new Image[93];
         G = new int[5];
-        H = new int[]{120, 176, 186, 26, 26, 25, 2, 120, 208, 186, 26, 16, 15, 2};
+        H = new int[]{
+                120, 176, 186, 26, 26, 25, 2,
+                120, 208, 186, 26, 16, 15, 2
+        };
         aY = new int[]{120, 86, 120, 34, 53, 2, 120, 140, 108, 34, 9, 2};
         K = new int[3];
-        L = new int[]{120, 132, 230, 26, 20, 19, 2, 120, 168, 230, 26, 18, 17, 2, 120, 204, 230, 26, 11, 10, 2};
+        L = new int[]{
+                120, 132, 230, 26, 20, 19, 2,
+                120, 168, 230, 26, 18, 17, 2,
+                120, 204, 230, 26, 11, 10, 2
+        };
         M = new int[3];
-        N = new int[]{120, 146, 220, 26, 22, 21, 2, 120, 186, 220, 26, 14, 13, 2};
+        N = new int[]{
+                120, 146, 220, 26, 22, 21, 2,
+                120, 186, 220, 26, 14, 13, 2
+        };
         shoppingCenterState = new int[4];
-        R = new int[]{120, 202, 220, 24, 14, 2, 120, 168, 220, 24, 13, 2, 120, 134, 220, 24, 12, 2, 120, 100, 220, 24, 11, 2, 120, 66, 220, 24, 10, 2};
-        Q = new int[]{11025351, 1648446, 11025351, 1648446, 7053048, 1648446, 7053048, 1648446, 10873427, 2323575, 10873427, 2323575, 16777041, 16734720, 16777041, 16734720, 16021161, 16777215, 16021161, 16777215};
-        S = new int[]{120, 144, 190, 28, 93, 2, 120, 176, 190, 28, 16, 2, 120, 208, 190, 28, 15, 2};
+        shoppingCenterLayoutTable = new int[]{
+                120, 202, 220, 24, 14, 2,
+                120, 168, 220, 24, 13, 2,
+                120, 134, 220, 24, 12, 2,
+                120, 100, 220, 24, 11, 2,
+                120, 66, 220, 24, 10, 2
+        };
+        shoppingCenterItemColors = new int[]{11025351, 1648446, 11025351, 1648446, 7053048, 1648446, 7053048, 1648446, 10873427, 2323575, 10873427, 2323575, 16777041, 16734720, 16777041, 16734720, 16021161, 16777215, 16021161, 16777215};
+        S = new int[]{
+                120, 144, 190, 28, 93, 2,
+                120, 176, 190, 28, 16, 2,
+                120, 208, 190, 28, 15, 2
+        };
         parentCallState = new int[7];
-        Y = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
+        Y = new int[]{
+                120, 165, 170, 28, 93, 2,
+                120, 198, 170, 28, 15, 2
+        };
         parentCallImages = new Image[2];
         gotchiKingState = new int[6];
-        ae = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
+        ae = new int[]{
+                120, 165, 170, 28, 93, 2,
+                120, 198, 170, 28, 15, 2
+        };
         gotchiKingImages = new Image[2];
         imagesToTemporarilyDispose = new int[]{58, 59, 60, 71, 89, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 72, 89};
         travelMemoryState = new int[4];
-        aj = new int[]{120, 165, 170, 28, 15, 2, 120, 198, 170, 28, 35, 2};
+        aj = new int[]{
+                120, 165, 170, 28, 15, 2,
+                120, 198, 170, 28, 35, 2
+        };
         travelMemoryTexts = new String[2];
         exchangePlazaState = new int[5];
-        ao = new int[]{120, 165, 170, 28, 93, 2, 120, 198, 170, 28, 15, 2};
+        ao = new int[]{
+                120, 165, 170, 28, 93, 2,
+                120, 198, 170, 28, 15, 2
+        };
         exchangePlazaImages = new Image[2];
         exchangePlazaTexts = new String[3];
-        ak = new int[]{0, 0, 1, 6, 6, 1, 80, 41, 0, 28, 2, 0, 0, 2, 81, 43, 0, 64, 3, 1, 1, 3, 82, 45, -44, 44, 4, 2, 2, 4, 83, 47, -64, 60, 5, 3, 3, 5, 84, 49, -108, 60, 6, 4, 4, 6, 85, 51, -164, 60, 0, 5, 5, 0, 86, 53};
+        exchangePlazaTable = new int[]{
+                0, 0, 1, 6, 6, 1, 80, 41,
+                0, 28, 2, 0, 0, 2, 81, 43,
+                0, 64, 3, 1, 1, 3, 82, 45,
+                -44, 44, 4, 2, 2, 4, 83, 47,
+                -64, 60, 5, 3, 3, 5, 84, 49,
+                -108, 60, 6, 4, 4, 6, 85, 51,
+                -164, 60, 0, 5, 5, 0, 86, 53
+        };
         explanationState = new int[4];
         aq = new int[9];
         errorState = new int[4];
@@ -220,8 +263,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         irFrames = createIrRemoteControlFrames(1);
         irRemoteControl = IrRemoteControl.getIrRemoteControl();
         irState = new int[6];
-        aI = new int[]{120, 144, 170, 28, 15, 2, 120, 176, 170, 28, 94, 2, 120, 208, 170, 28, 95, 2};
-        aH = new int[]{120, 144, 170, 28, 16, 2, 120, 176, 170, 28, 94, 2, 120, 208, 170, 28, 95, 2};
+        aI = new int[]{
+                120, 144, 170, 28, 15, 2,
+                120, 176, 170, 28, 94, 2,
+                120, 208, 170, 28, 95, 2
+        };
+        aH = new int[]{
+                120, 144, 170, 28, 16, 2,
+                120, 176, 170, 28, 94, 2,
+                120, 208, 170, 28, 95, 2
+        };
     }
 
     public GameApp() {
@@ -590,7 +641,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             pos += length;
             gameSave[1]++;
             saveGame();
-            ++w;
+            ++loadingProgress;
             refresh();
         }
 
@@ -836,7 +887,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             if (gameSave[1] != 255) {
-                w = gameSave[1];
+                loadingProgress = gameSave[1];
                 downloadGameData("", 72483, 128);
                 gameSave[1] = 255;
                 saveGame();
@@ -850,9 +901,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void checkGameData() {
         if (downloadGameDataIfNeeded()) {
-            T(3);
+            goToPage(3);
         } else {
-            T(-2);
+            goToPage(-2);
         }
 
     }
@@ -860,11 +911,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void loadResources() {
         int result = loadImages(128, 0, 93);
         if (result == -1) {
-            T(-1);
+            goToPage(-1);
         } else if (loadSounds() && loadTexts()) {
-            T(4);
+            goToPage(4);
         } else {
-            T(-1);
+            goToPage(-1);
         }
     }
 
@@ -891,7 +942,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 MediaImage mediaImage = MediaManager.getImage(imageData);
                 mediaImage.use();
                 images[i] = mediaImage.getImage();
-                ++w;
+                ++loadingProgress;
                 pos += sizes[i];
                 refresh();
 
@@ -934,25 +985,25 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void downloadingPage(Graphics g, int x, int y) {
-        int var3 = (GameApp.canvasWidth - 200) / 2;
-        int var4 = y + 168;
+        int barX = (GameApp.canvasWidth - 200) / 2;
+        int barY = y + 168;
         setColorOfRGBInt(g, 16777215);
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16763955);
-        g.drawRect(var3, var4, 200, 40);
-        drawString(g, "Downloading", GameApp.canvasWidth / 2, var4 - currentFontHeight - 4, TextAlign.CENTER);
-        int var5 = 200 * w / 8;
-        g.fillRect(var3, var4, var5, 40);
+        g.drawRect(barX, barY, 200, 40);
+        drawString(g, "Downloading", GameApp.canvasWidth / 2, barY - currentFontHeight - 4, TextAlign.CENTER);
+        int progressBarWidth = 200 * loadingProgress / 8;
+        g.fillRect(barX, barY, progressBarWidth, 40);
     }
 
-    public static void ad(Graphics g, int x, int y) {
-        if (3 < w) {
+    public static void loadingPage(Graphics g, int x, int y) {
+        if (3 < loadingProgress) {
             try {
                 Thread.sleep(300L);
             } catch (Exception e) {
             }
 
-            ac(g, x, y, w * 8 / 93, w);
+            loadingAnimation(g, x, y, loadingProgress * 8 / 93, loadingProgress);
         }
 
     }
@@ -1037,10 +1088,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var10000[3] += G[4];
             switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    T(5);
+                    goToPage(5);
                     return;
                 case 1:
-                    T(6);
+                    goToPage(6);
                     return;
                 default:
                     G[0] = getSelectedButtonIndex();
@@ -1048,18 +1099,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void au(Graphics var0, int var1, int var2) {
+    public static void titleScreen(Graphics g, int x, int y) {
         switch (G[1]) {
             case 1:
-                as(var0, var1, var2);
+                titleScreenAnimated(g, x, y);
                 break;
             case 2:
-                at(var0, var1, var2);
+                titleScreenFinished(g, x, y);
         }
 
     }
 
-    public static void as(Graphics g, int x, int y) {
+    public static void titleScreenAnimated(Graphics g, int x, int y) {
         int var3 = (canvasWidth - getSpriteWidth(72)) / 2;
         int var4 = y + 54;
         int var5 = -48 + G[2] * 8;
@@ -1074,43 +1125,42 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
     }
 
-    public static void at(Graphics var0, int var1, int var2) {
+    public static void titleScreenFinished(Graphics g, int x, int y) {
         int var3 = (canvasWidth - getSpriteWidth(72)) / 2;
-        int var4 = var2 + 54;
-        int var5;
+        int var4 = y + 54;
         if (I) {
-            setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2, 240, 240);
-            drawSprite(var0, 23, var1, var2, 0);
-            av(var0, 6, G[3], var1, var2 + 116, 240);
-            setColorOfRGBInt(var0, 7456538);
-            var0.fillRect(var1, var2 + 158, 240, 82);
-            drawSprite(var0, 9, canvasWidth / 2, var2 + 158, 2);
-            drawSprite(var0, 72, var3, var4, 0);
-            drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+            setColorOfRGBInt(g, 6728679);
+            g.fillRect(x, y, 240, 240);
+            drawSprite(g, 23, x, y, 0);
+            av(g, 6, G[3], x, y + 116, 240);
+            setColorOfRGBInt(g, 7456538);
+            g.fillRect(x, y + 158, 240, 82);
+            drawSprite(g, 9, canvasWidth / 2, y + 158, 2);
+            drawSprite(g, 72, var3, var4, 0);
+            drawSprite(g, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
-            for (var5 = 0; var5 < 2; ++var5) {
-                aw(var0, var5, H, 0);
+            for (int i = 0; i < 2; ++i) {
+                aw(g, i, H, 0);
             }
         } else {
-            setColorOfRGBInt(var0, 7456538);
-            var0.fillRect(var1, var2 + 158 + getSpriteHeight(9), 240, 240 - (158 + getSpriteHeight(9)));
-            setColorOfRGBInt(var0, 6728679);
-            var0.fillRect(var1, var2 + 116, 240, getSpriteHeight(6));
-            av(var0, 6, G[3], var1, var2 + 116, 240);
-            drawSprite(var0, 72, var3, var4, 0);
-            drawSprite(var0, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
+            setColorOfRGBInt(g, 7456538);
+            g.fillRect(x, y + 158 + getSpriteHeight(9), 240, 240 - (158 + getSpriteHeight(9)));
+            setColorOfRGBInt(g, 6728679);
+            g.fillRect(x, y + 116, 240, getSpriteHeight(6));
+            av(g, 6, G[3], x, y + 116, 240);
+            drawSprite(g, 72, var3, var4, 0);
+            drawSprite(g, 73 + (G[2] >> 4 & 1), var3 + 23, var4 + 66, 0);
 
-            for (var5 = 0; var5 < 2; ++var5) {
-                aw(var0, var5, H, 0);
+            for (int i = 0; i < 2; ++i) {
+                aw(g, i, H, 0);
             }
         }
 
-        var5 = ax(H, getSelectedButtonIndex(), 1);
-        var5 += ax(H, getSelectedButtonIndex(), 3) / 2;
+        int var5 = getValueFrom7Table(H, getSelectedButtonIndex(), 1);
+        var5 += getValueFrom7Table(H, getSelectedButtonIndex(), 3) / 2;
         var5 -= 10;
-        drawSprite(var0, 75, var1 + 2, var2 + var5, 0);
-        drawSprite(var0, 75, var1 + 240 - (getSpriteWidth(75) - 10), var2 + var5, 0);
+        drawSprite(g, 75, x + 2, y + var5, 0);
+        drawSprite(g, 75, x + 240 - (getSpriteWidth(75) - 10), y + var5, 0);
     }
 
     public static void av(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
@@ -1157,13 +1207,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    T(7);
+                    goToPage(7);
                     return;
                 case 1:
-                    T(8);
+                    goToPage(8);
                     return;
                 case 2:
-                    T(9);
+                    goToPage(9);
                     return;
                 default:
                     K[0] = getSelectedButtonIndex();
@@ -1171,10 +1221,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void aF(Graphics g, int x, int y) {
+    public static void mailboxModePage(Graphics g, int x, int y) {
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 184;
-        int var5;
         if (I) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -1187,19 +1236,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 29: Connect to Tama Planet by phone!
             drawString(g, getText(29), x + 3 + 2, y + 3 + 2, TextAlign.LEFT);
 
-            for (var5 = 0; var5 < 3; ++var5) {
-                aw(g, var5, L, 0);
+            for (int i = 0; i < 3; ++i) {
+                aw(g, i, L, 0);
             }
         } else {
-            for (var5 = 0; var5 < 3; ++var5) {
-                aw(g, var5, L, 0);
+            for (int i = 0; i < 3; ++i) {
+                aw(g, i, L, 0);
             }
         }
 
-        var5 = ax(L, getSelectedButtonIndex(), 2) / 2;
+        int var5 = getValueFrom7Table(L, getSelectedButtonIndex(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(L, getSelectedButtonIndex(), 1) + y;
-        var6 += ax(L, getSelectedButtonIndex(), 3) / 2;
+        int var6 = getValueFrom7Table(L, getSelectedButtonIndex(), 1) + y;
+        var6 += getValueFrom7Table(L, getSelectedButtonIndex(), 3) / 2;
         aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
@@ -1241,10 +1290,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    T(10);
+                    goToPage(10);
                     return;
                 case 1:
-                    T(11);
+                    goToPage(11);
                     return;
                 default:
                     M[0] = getSelectedButtonIndex();
@@ -1255,7 +1304,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void travelModePage(Graphics g, int x, int y) {
         int var3 = (currentFontHeight + 1) * 2 + currentFontHeight;
         short var4 = 192;
-        int var5;
         if (I) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -1268,19 +1316,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 40: Send your Tama on a trip with your phone!
             drawString(g, getText(40), x + 3 + 6, y + 3 + 4, TextAlign.LEFT);
 
-            for (var5 = 0; var5 < 2; ++var5) {
-                aw(g, var5, N, 0);
+            for (int i = 0; i < 2; ++i) {
+                aw(g, i, N, 0);
             }
         } else {
-            for (var5 = 0; var5 < 2; ++var5) {
-                aw(g, var5, N, 0);
+            for (int i = 0; i < 2; ++i) {
+                aw(g, i, N, 0);
             }
         }
 
-        var5 = ax(N, getSelectedButtonIndex(), 2) / 2;
+        int var5 = getValueFrom7Table(N, getSelectedButtonIndex(), 2) / 2;
         var5 -= 10;
-        int var6 = ax(N, getSelectedButtonIndex(), 1) + y;
-        var6 += ax(N, getSelectedButtonIndex(), 3) / 2;
+        int var6 = getValueFrom7Table(N, getSelectedButtonIndex(), 1) + y;
+        var6 += getValueFrom7Table(N, getSelectedButtonIndex(), 3) / 2;
         aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
         if (I) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
@@ -1314,7 +1362,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 4:
-                aO(O, 175, 2, 61);
+                aO(currentPage, 175, 2, 61);
         }
 
         StackMap = true;
@@ -1376,7 +1424,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (errorMessageLength > 0) {
                 String errorMessage = readString(inputStream, errorMessageLength);
-                showErrorPage(O, 2, 1, errorMessage);
+                showErrorPage(currentPage, 2, 1, errorMessage);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -1386,7 +1434,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            showErrorPage(O, 2, 1, getText(92));
+            showErrorPage(currentPage, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -1429,7 +1477,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         aL(0);
                         break;
                     case 2:
-                        T(4);
+                        goToPage(4);
                 }
             }
 
@@ -1472,34 +1520,33 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(2), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(2)) + 8, 2);
         }
 
-        int var4;
         for (int i = 0; i < 5; ++i) {
-            var4 = i * 4;
-            ai(Q[var4 + 0], Q[var4 + 0], Q[var4 + 0], Q[var4 + 1], Q[var4 + 0], Q[var4 + 2], Q[var4 + 2], Q[var4 + 2], Q[var4 + 3], Q[var4 + 2]);
-            bk(g, i, R, 0);
+            int var4 = i * 4;
+            ai(shoppingCenterItemColors[var4 + 0], shoppingCenterItemColors[var4 + 0], shoppingCenterItemColors[var4 + 0], shoppingCenterItemColors[var4 + 1], shoppingCenterItemColors[var4 + 0], shoppingCenterItemColors[var4 + 2], shoppingCenterItemColors[var4 + 2], shoppingCenterItemColors[var4 + 2], shoppingCenterItemColors[var4 + 3], shoppingCenterItemColors[var4 + 2]);
+            bk(g, i, shoppingCenterLayoutTable, 0);
         }
 
         // 26: Use your Gotchi Points from your Keitama to buy Tamagotchi goods! Choose the rank of the item you want and press OK!
         bl(g, x, getText(26), y + 2 + 34 + 1, shoppingCenterState[2], 12, 16056665, 16777215);
 
-        for (var4 = 0; var4 < 5; ++var4) {
-            int var5 = bm(R, var4, 1) + 3;
-            int var6 = bm(R, var4, 2) - 66;
-            byte var7;
+        for (int i = 0; i < 5; ++i) {
+            int var5 = getValueFrom6Table(shoppingCenterLayoutTable, i, 1) + 3;
+            int distance = getValueFrom6Table(shoppingCenterLayoutTable, i, 2) - 66;
+            byte baseSpriteId;
             boolean var8;
-            if (var4 == getSelectedButtonIndex()) {
-                var7 = 61;
+            if (i == getSelectedButtonIndex()) {
+                baseSpriteId = 61;
                 var8 = false;
-                var6 -= abs((shoppingCenterState[3] & 31) - 16);
+                distance -= abs((shoppingCenterState[3] & 31) - 16);
             } else {
-                var7 = 62;
+                baseSpriteId = 62;
                 var8 = false;
             }
 
-            int var10 = var7 + (shoppingCenterState[3] >> 3 & 1);
-            int var9 = y + bm(R, var4, 1);
-            var9 += bm(R, var4, 3) / 2 + 2;
-            drawButtonTamas(g, var10, x + bm(R, var4, 0), var9, var6, shoppingCenterState[2], 0);
+            int spriteId = baseSpriteId + (shoppingCenterState[3] >> 3 & 1);
+            int centerY = y + getValueFrom6Table(shoppingCenterLayoutTable, i, 1);
+            centerY += getValueFrom6Table(shoppingCenterLayoutTable, i, 3) / 2 + 2;
+            drawTamagotchiPair(g, spriteId, x + getValueFrom6Table(shoppingCenterLayoutTable, i, 0), centerY, distance, shoppingCenterState[2], 0);
         }
 
     }
@@ -1525,7 +1572,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(79), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(79)) + 8, 2);
         } else {
             setColorOfRGBInt(g, 16763955);
-            g.fillRect(x, y + bm(S, 0, 1), 240, 240 - (bm(S, 0, 1) + getSpriteHeight(0)));
+            g.fillRect(x, y + getValueFrom6Table(S, 0, 1), 240, 240 - (getValueFrom6Table(S, 0, 1) + getSpriteHeight(0)));
         }
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
@@ -1545,7 +1592,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, var4, S, 0);
         }
 
-        aD(g, 61, x + bm(S, getSelectedButtonIndex(), 0), y + bm(S, getSelectedButtonIndex(), 1) + bm(S, getSelectedButtonIndex(), 3) / 2, bm(S, getSelectedButtonIndex(), 2) - 10, shoppingCenterState[2]);
+        aD(g, 61, x + getValueFrom6Table(S, getSelectedButtonIndex(), 0), y + getValueFrom6Table(S, getSelectedButtonIndex(), 1) + getValueFrom6Table(S, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(S, getSelectedButtonIndex(), 2) - 10, shoppingCenterState[2]);
     }
 
     public static void shoppingCenterSendViaIR(Graphics g, int x, int y) {
@@ -1623,12 +1670,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void aD(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
-        drawButtonTamas(var0, var1, var2, var3, var4, var5, 1);
+        drawTamagotchiPair(var0, var1, var2, var3, var4, var5, 1);
     }
 
-    public static void drawButtonTamas(Graphics var0, int var1, int var2, int var3, int var4, int var5, int var6) {
-        drawSprite(var0, var1 + (var6 & -(var5 >> 2 & 1)), var2 - var4 / 2 - getSpriteWidth(var1) - 2 - 2, var3 - getSpriteHeight(var1) / 2, 0);
-        drawSprite(var0, var1 + (var6 & -((var5 >> 2) + 1 & 1)), var2 + var4 / 2 + 2 + 2, var3 - getSpriteHeight(var1) / 2, 0);
+    public static void drawTamagotchiPair(Graphics g, int spriteId, int centerX, int centerY, int distance, int var5, int var6) {
+        drawSprite(g, spriteId + (var6 & -(var5 >> 2 & 1)), centerX - distance / 2 - getSpriteWidth(spriteId) - 2 - 2, centerY - getSpriteHeight(spriteId) / 2, 0);
+        drawSprite(g, spriteId + (var6 & -((var5 >> 2) + 1 & 1)), centerX + distance / 2 + 2 + 2, centerY - getSpriteHeight(spriteId) / 2, 0);
     }
 
     public static void br(Graphics var0, int var1, int var2, int var3, boolean var4, boolean var5) {
@@ -1695,7 +1742,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
-                aO(O, 177, 2, 55);
+                aO(currentPage, 177, 2, 55);
         }
 
         StackMap = true;
@@ -1778,7 +1825,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (errorMessageLength > 0) {
                 String errorMessage = readString(inputStream, errorMessageLength);
-                showErrorPage(O, 2, 1, errorMessage);
+                showErrorPage(currentPage, 2, 1, errorMessage);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -1801,7 +1848,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            showErrorPage(O, 2, 1, getText(92));
+            showErrorPage(currentPage, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -1835,7 +1882,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 if (parentCallState[5] <= parentCallState[4]) {
                     generateDerivedCodeInBankB();
                     if (3 < getDigitBankB(2)) {
-                        T(4);
+                        goToPage(4);
                     } else {
                         bC(4);
                     }
@@ -1863,7 +1910,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         bC(5);
                         break;
                     case 1:
-                        T(4);
+                        goToPage(4);
                 }
             }
 
@@ -1887,7 +1934,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 parentCallCodeInput(g, x, y);
                 break;
             case 2:
-                bV(g, x, y);
+                connectingToTamaPlanet(g, x, y);
                 break;
             case 3:
                 parentCallExplanation(g, x, y);
@@ -1932,8 +1979,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void bV(Graphics g, int x, int y) {
-        ac(g, x, y, 8, 0);
+    public static void connectingToTamaPlanet(Graphics g, int x, int y) {
+        loadingAnimation(g, x, y, 8, 0);
         drawSprite(g, 24, x + 126, y + 100, 0);
         int spriteWidth = getSpriteWidth(24);
 
@@ -1992,7 +2039,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(67), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(67)) + 8, 2);
         } else {
             setColorOfRGBInt(g, 16763955);
-            g.fillRect(x, y + bm(Y, 0, 1) - 5, 240, 240 - (bm(Y, 0, 1) - 5 + getSpriteHeight(0)));
+            g.fillRect(x, y + getValueFrom6Table(Y, 0, 1) - 5, 240, 240 - (getValueFrom6Table(Y, 0, 1) - 5 + getSpriteHeight(0)));
         }
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
@@ -2006,7 +2053,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         bq(g, canvasWidth / 2, var4 + 5, 56, parentCallState[6] >> 1, false, 16777076);
-        aD(g, 55, x + bm(Y, getSelectedButtonIndex(), 0), y + bm(Y, getSelectedButtonIndex(), 1) + bm(Y, getSelectedButtonIndex(), 3) / 2, bm(Y, getSelectedButtonIndex(), 2), parentCallState[6]);
+        aD(g, 55, x + getValueFrom6Table(Y, getSelectedButtonIndex(), 0), y + getValueFrom6Table(Y, getSelectedButtonIndex(), 1) + getValueFrom6Table(Y, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(Y, getSelectedButtonIndex(), 2), parentCallState[6]);
     }
 
     public static void parentCallSendViaIR(Graphics var0, int var1, int var2) {
@@ -2024,7 +2071,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         br(g, x, y + 2, 67, var3, I);
     }
 
-    public static void ac(Graphics g, int x, int y, int circleCount, int colorOffset) {
+    public static void loadingAnimation(Graphics g, int x, int y, int circleCount, int colorOffset) {
         setColorOfRGBInt(g, 11367);
         g.fillRect(x, y, 240, 240);
         drawSprite(g, 1, x, y + 240 - getSpriteHeight(1), 0);
@@ -2085,7 +2132,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 8:
-                aO(O, 179, 2, 39);
+                aO(currentPage, 179, 2, 39);
         }
 
         StackMap = true;
@@ -2185,7 +2232,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (errorMessageLength > 0) {
                 String errorMessage = readString(inputStream, errorMessageLength);
-                showErrorPage(O, 2, 1, errorMessage);
+                showErrorPage(currentPage, 2, 1, errorMessage);
             } else {
                 byte[] passwordData = new byte[10];
                 inputStream.read(passwordData);
@@ -2204,7 +2251,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            showErrorPage(O, 2, 1, getText(92));
+            showErrorPage(currentPage, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -2280,7 +2327,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         cd(8);
                         break;
                     case 1:
-                        T(4);
+                        goToPage(4);
                 }
             }
 
@@ -2359,7 +2406,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cr(Graphics g, int x, int y) {
-        bV(g, x, y);
+        connectingToTamaPlanet(g, x, y);
     }
 
     public static void gotchiKingBroadcast(Graphics g, int x, int y) {
@@ -2442,8 +2489,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 69: Invite Ticket
             drawTextWithBackground(g, getText(69), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(69)) + 8, 2);
         } else {
-            var4 = y + bm(ae, 0, 1);
-            var4 += bm(ae, 0, 3) / 2;
+            var4 = y + getValueFrom6Table(ae, 0, 1);
+            var4 += getValueFrom6Table(ae, 0, 3) / 2;
             var4 -= getSpriteHeight(39) / 2;
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, var4, 240, 240 - (var4 + getSpriteHeight(39) / 2));
@@ -2466,7 +2513,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         br(g, canvasWidth / 2, var5 + 4, 62, false, I);
-        aD(g, 39, x + bm(ae, getSelectedButtonIndex(), 0), y + bm(ae, getSelectedButtonIndex(), 1) + bm(ae, getSelectedButtonIndex(), 3) / 2 + 1, bm(ae, getSelectedButtonIndex(), 2), gotchiKingState[3]);
+        aD(g, 39, x + getValueFrom6Table(ae, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ae, getSelectedButtonIndex(), 1) + getValueFrom6Table(ae, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ae, getSelectedButtonIndex(), 2), gotchiKingState[3]);
     }
 
     public static void gotchiKingSendViaIR(Graphics g, int x, int y) {
@@ -2585,7 +2632,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (errorMessageLength > 0) {
                 String errorMessage = readString(inputStream, errorMessageLength);
-                showErrorPage(O, 2, 1, errorMessage);
+                showErrorPage(currentPage, 2, 1, errorMessage);
             } else {
                 int text1Size = inputStream.read();
                 travelMemoryTexts[0] = readString(inputStream, text1Size);
@@ -2604,7 +2651,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            showErrorPage(O, 2, 1, getText(92));
+            showErrorPage(currentPage, 2, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -2643,7 +2690,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (6 < travelMemoryState[2]) {
                 switch (aq(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
-                        T(4);
+                        goToPage(4);
                         break;
                     case 1:
                         launchCurrentApp("http://tamapark.gs.keitaiarchive.org/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest");
@@ -2751,14 +2798,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, i, aj, 0);
         }
 
-        aD(g, 35, x + bm(aj, getSelectedButtonIndex(), 0), y + bm(aj, getSelectedButtonIndex(), 1) + bm(aj, getSelectedButtonIndex(), 3) / 2 + 1, bm(aj, getSelectedButtonIndex(), 2), travelMemoryState[2]);
+        aD(g, 35, x + getValueFrom6Table(aj, getSelectedButtonIndex(), 0), y + getValueFrom6Table(aj, getSelectedButtonIndex(), 1) + getValueFrom6Table(aj, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(aj, getSelectedButtonIndex(), 2), travelMemoryState[2]);
     }
 
     public static void cK(Graphics var0, int var1, int var2) {
     }
 
-    public static int cM(int var0, int var1) {
-        return ak[var0 * 8 + var1];
+    public static int getValueFromExchangePlazaTable(int column, int row) {
+        return exchangePlazaTable[column * 8 + row];
     }
 
     public static void cO() {
@@ -2817,7 +2864,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 aN(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 8:
-                aO(O, 181, 2, 30);
+                aO(currentPage, 181, 2, 30);
         }
 
         StackMap = true;
@@ -2915,16 +2962,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             exchangePlazaState[4] = exchangePlazaState[3];
             if (isKeyPressed(65536L)) {
                 playSound(4, false);
-                exchangePlazaState[3] = cM(exchangePlazaState[3], 2);
+                exchangePlazaState[3] = getValueFromExchangePlazaTable(exchangePlazaState[3], 2);
             } else if (isKeyPressed(131072L)) {
                 playSound(4, false);
-                exchangePlazaState[3] = cM(exchangePlazaState[3], 3);
+                exchangePlazaState[3] = getValueFromExchangePlazaTable(exchangePlazaState[3], 3);
             } else if (isKeyPressed(262144L)) {
                 playSound(4, false);
-                exchangePlazaState[3] = cM(exchangePlazaState[3], 4);
+                exchangePlazaState[3] = getValueFromExchangePlazaTable(exchangePlazaState[3], 4);
             } else if (isKeyPressed(524288L)) {
                 playSound(4, false);
-                exchangePlazaState[3] = cM(exchangePlazaState[3], 5);
+                exchangePlazaState[3] = getValueFromExchangePlazaTable(exchangePlazaState[3], 5);
             } else if (isKeyPressed(1048576L)) {
                 playSound(5, false);
                 cN(4);
@@ -2952,7 +2999,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     exchangePlazaImages[0] = readImage(inputStream, imageSize);
                     cN(5);
                 } else {
-                    showErrorPage(O, 4, 1, errorMessageOr1);
+                    showErrorPage(currentPage, 4, 1, errorMessageOr1);
                 }
 
             } else {
@@ -2980,7 +3027,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (Exception e) {
             log("e:" + e);
             // 92: Communication has failed. Would you like to try again?
-            showErrorPage(O, 4, 1, getText(92));
+            showErrorPage(currentPage, 4, 1, getText(92));
         } finally {
             if (inputStream != null) {
                 try {
@@ -3041,7 +3088,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         cN(8);
                         break;
                     case 1:
-                        T(4);
+                        goToPage(4);
                 }
             }
 
@@ -3137,7 +3184,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void exchangePlazaRegionSelect(Graphics g, int x, int y) {
         int var3 = x + 168;
         int var4 = y + 76;
-        int var5;
         if (I) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -3147,34 +3193,34 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 74: Choose a region to trade with and press OK!
             bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
 
-            drawTextWithBackground(g, getText(cM(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
+            drawTextWithBackground(g, getText(getValueFromExchangePlazaTable(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
 
-            for (var5 = 0; var5 < 7; ++var5) {
-                int var6 = cM(var5, 7);
-                if (exchangePlazaState[3] == var5 && (exchangePlazaState[2] & 4) != 0) {
+            for (int column = 0; column < 7; ++column) {
+                int var6 = getValueFromExchangePlazaTable(column, 7);
+                if (exchangePlazaState[3] == column && (exchangePlazaState[2] & 4) != 0) {
                     ++var6;
                 }
 
-                drawSprite(g, var6, var3 + cM(var5, 0), var4 + cM(var5, 1), 0);
+                drawSprite(g, var6, var3 + getValueFromExchangePlazaTable(column, 0), var4 + getValueFromExchangePlazaTable(column, 1), 0);
             }
         } else {
             bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
             if (exchangePlazaState[4] != exchangePlazaState[3]) {
-                drawTextWithBackground(g, getText(cM(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
-                drawSprite(g, cM(exchangePlazaState[4], 7), var3 + cM(exchangePlazaState[4], 0), var4 + cM(exchangePlazaState[4], 1), 0);
-                var5 = cM(exchangePlazaState[3], 7);
+                drawTextWithBackground(g, getText(getValueFromExchangePlazaTable(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
+                drawSprite(g, getValueFromExchangePlazaTable(exchangePlazaState[4], 7), var3 + getValueFromExchangePlazaTable(exchangePlazaState[4], 0), var4 + getValueFromExchangePlazaTable(exchangePlazaState[4], 1), 0);
+                int var5 = getValueFromExchangePlazaTable(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
                     ++var5;
                 }
 
-                drawSprite(g, var5, var3 + cM(exchangePlazaState[3], 0), var4 + cM(exchangePlazaState[3], 1), 0);
+                drawSprite(g, var5, var3 + getValueFromExchangePlazaTable(exchangePlazaState[3], 0), var4 + getValueFromExchangePlazaTable(exchangePlazaState[3], 1), 0);
             } else if ((exchangePlazaState[2] & 3) == 0) {
-                var5 = cM(exchangePlazaState[3], 7);
+                int var5 = getValueFromExchangePlazaTable(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
                     ++var5;
                 }
 
-                drawSprite(g, var5, var3 + cM(exchangePlazaState[3], 0), var4 + cM(exchangePlazaState[3], 1), 0);
+                drawSprite(g, var5, var3 + getValueFromExchangePlazaTable(exchangePlazaState[3], 0), var4 + getValueFromExchangePlazaTable(exchangePlazaState[3], 1), 0);
             }
         }
 
@@ -3253,7 +3299,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         bv(g, x, var5, 0, 16777215, 16730112, 16751616, 7786961);
         br(g, canvasWidth / 2, var5 + 4, 62, false, true);
         bp(g, canvasWidth / 2, var5 + 10, 56, exchangePlazaState[2] >> 1, false);
-        aD(g, 30, x + bm(ao, getSelectedButtonIndex(), 0), y + bm(ao, getSelectedButtonIndex(), 1) + bm(ao, getSelectedButtonIndex(), 3) / 2 + 1, bm(ao, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
+        aD(g, 30, x + getValueFrom6Table(ao, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ao, getSelectedButtonIndex(), 1) + getValueFrom6Table(ao, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ao, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
     }
 
     public static void exchangePlazaSendViaIR(Graphics var0, int var1, int var2) {
@@ -3436,7 +3482,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     }
                     break;
                 case 1:
-                    T(4);
+                    goToPage(4);
                     break;
                 case 2:
                     dq(4);
@@ -3456,7 +3502,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             switch (aq(isKeyPressed(1048576L), isKeyPressed(196608L), isKeyPressed(786432L))) {
                 case 0:
                     dr();
-                    T(4);
+                    goToPage(4);
                     break;
                 case 1:
                     dq(1);
@@ -3597,7 +3643,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void dF(int var0) {
-        O = errorState[0];
+        currentPage = errorState[0];
         closeErrorPage();
         switch (errorState[0]) {
             case 7:
@@ -3795,19 +3841,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void bk(Graphics var0, int var1, int[] var2, int var3) {
-        cb(var0, var1, getText(bm(var2, var1, 4)), rootX + bm(var2, var1, 0), rootY + bm(var2, var1, 1), bm(var2, var1, 2), bm(var2, var1, 3), bm(var2, var1, 5), var3);
+        cb(var0, var1, getText(getValueFrom6Table(var2, var1, 4)), rootX + getValueFrom6Table(var2, var1, 0), rootY + getValueFrom6Table(var2, var1, 1), getValueFrom6Table(var2, var1, 2), getValueFrom6Table(var2, var1, 3), getValueFrom6Table(var2, var1, 5), var3);
     }
 
     public static void aw(Graphics var0, int var1, int[] var2, int var3) {
-        dJ(var0, var1, ax(var2, var1, 4), ax(var2, var1, 5), rootX + ax(var2, var1, 0), rootY + ax(var2, var1, 1), ax(var2, var1, 2), ax(var2, var1, 3), ax(var2, var1, 6), var3);
+        dJ(var0, var1, getValueFrom7Table(var2, var1, 4), getValueFrom7Table(var2, var1, 5), rootX + getValueFrom7Table(var2, var1, 0), rootY + getValueFrom7Table(var2, var1, 1), getValueFrom7Table(var2, var1, 2), getValueFrom7Table(var2, var1, 3), getValueFrom7Table(var2, var1, 6), var3);
     }
 
-    public static int bm(int[] var0, int var1, int var2) {
-        return var0[var1 * 6 + var2];
+    public static int getValueFrom6Table(int[] table, int row, int column) {
+        return table[row * 6 + column];
     }
 
-    public static int ax(int[] var0, int var1, int var2) {
-        return var0[var1 * 7 + var2];
+    public static int getValueFrom7Table(int[] table, int row, int column) {
+        return table[row * 7 + column];
     }
 
     public static void cb(Graphics g, int var1, String str, int x, int y, int var5, int var6, int var7, int var8) {
@@ -4591,7 +4637,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         aL(0);
                     } else {
                         dX(0);
-                        T(4);
+                        goToPage(4);
                     }
                     break;
                 case 1:
@@ -4658,22 +4704,22 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             bk(g, i, var3, 0);
         }
 
-        aD(g, irState[5], x + bm(var3, getSelectedButtonIndex(), 0), y + bm(var3, getSelectedButtonIndex(), 1) + bm(var3, getSelectedButtonIndex(), 3) / 2, bm(var3, getSelectedButtonIndex(), 2) - 10, irState[1]);
+        aD(g, irState[5], x + getValueFrom6Table(var3, getSelectedButtonIndex(), 0), y + getValueFrom6Table(var3, getSelectedButtonIndex(), 1) + getValueFrom6Table(var3, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(var3, getSelectedButtonIndex(), 2) - 10, irState[1]);
     }
 
     public static void sendViaIR_Interrupted(Graphics g, int x, int y) {
         // 96: Interrupted...
         drawTextWithBackground(g, getText(96), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(96)) + 8, 2);
-        ek(g, x, y);
+        transmissionErrorPage(g, x, y);
     }
 
     public static void sendViaIR_TransmissionFailed(Graphics g, int x, int y) {
         // 97: Transmission failed
         drawTextWithBackground(g, getText(97), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(97)) + 8, 2);
-        ek(g, x, y);
+        transmissionErrorPage(g, x, y);
     }
 
-    public static void ek(Graphics g, int x, int y) {
+    public static void transmissionErrorPage(Graphics g, int x, int y) {
         drawSprite(g, 29, canvasWidth / 2, y + 50, 2);
         // 18: OK
         cb(g, 0, getText(18), canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10, currentFont.stringWidth(getText(18)) + 8, currentFontHeight + 4, 2, 0);
@@ -4684,9 +4730,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         running = false;
     }
 
-    public static void T(int var0) {
+    public static void goToPage(int nextPage) {
         T = true;
-        switch (O) {
+        switch (currentPage) {
             case 8:
                 clearDownloadedParentCallData();
                 break;
@@ -4700,12 +4746,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 clearDownloadedExchangePlazaData();
         }
 
-        switch (var0) {
+        switch (nextPage) {
             case 2:
-                w = 0;
+                loadingProgress = 0;
                 break;
             case 3:
-                w = 0;
+                loadingProgress = 0;
                 break;
             case 4:
                 // Resources loaded successfully
@@ -4750,7 +4796,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         dr();
         exitExplanation();
         closeErrorPage();
-        O = var0;
+        currentPage = nextPage;
         Exceptions = false;
         StackMap = true;
     }
@@ -4767,7 +4813,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else if (shouldShowErrorPage()) {
             dH();
         } else {
-            switch (O) {
+            switch (currentPage) {
                 case -3:
                 case -2:
                 case -1:
@@ -4777,11 +4823,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     if (--aJ <= 0) {
                         gameSave[4] = 3;
                         loadGameSave();
-                        T(1);
+                        goToPage(1);
                     }
                     break;
                 case 1:
-                    T(2);
+                    goToPage(2);
                     break;
                 case 2:
                     checkGameData();
@@ -4834,7 +4880,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 return;
             }
 
-            switch (O) {
+            switch (currentPage) {
                 case -3:
                     showError(g, "Authenticating", rootX, rootY);
                     break;
@@ -4851,13 +4897,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     downloadingPage(g, rootX, rootY);
                     break;
                 case 3:
-                    ad(g, rootX, rootY);
+                    loadingPage(g, rootX, rootY);
                     break;
                 case 4:
-                    au(g, rootX, rootY);
+                    titleScreen(g, rootX, rootY);
                     break;
                 case 5:
-                    aF(g, rootX, rootY);
+                    mailboxModePage(g, rootX, rootY);
                     break;
                 case 6:
                     travelModePage(g, rootX, rootY);
