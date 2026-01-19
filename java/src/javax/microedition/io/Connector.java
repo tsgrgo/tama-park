@@ -21,28 +21,28 @@ public final class Connector {
         return new DesktopHttpConnection(url);
     }
 
-    public static InputStream openInputStream(String name) throws IOException {
-        System.out.println("openInputStream: " + name);
-        ParsedUrl u = parse(name);
+    public static InputStream openInputStream(String location) throws IOException {
+        System.out.println("openInputStream: " + location);
+        ParsedUrl u = parse(location);
         // if (!"scratchpad".equals(u.scheme)) return null;
         long pos = u.getLongParam("pos", 0);
         return new ScratchpadInputStream(scratchpadFile, pos);
     }
 
-    public static OutputStream openOutputStream(String name) throws IOException {
-        System.out.println("openOutputStream: " + name);
-        ParsedUrl u = parse(name);
+    public static OutputStream openOutputStream(String location) throws IOException {
+        System.out.println("openOutputStream: " + location);
+        ParsedUrl u = parse(location);
         // if (!"scratchpad".equals(u.scheme)) return null;
         long pos = u.getLongParam("pos", 0);
         return new ScratchpadOutputStream(scratchpadFile, pos);
     }
 
-    public static DataInputStream openDataInputStream(String name) throws IOException {
-        return new DataInputStream(openInputStream(name));
+    public static DataInputStream openDataInputStream(String location) throws IOException {
+        return new DataInputStream(openInputStream(location));
     }
 
-    public static DataOutputStream openDataOutputStream(String name) throws IOException {
-        return new DataOutputStream(openOutputStream(name));
+    public static DataOutputStream openDataOutputStream(String location) throws IOException {
+        return new DataOutputStream(openOutputStream(location));
     }
 
     // -------------------------------------
