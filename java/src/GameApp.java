@@ -1527,7 +1527,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         // 26: Use your Gotchi Points from your Keitama to buy Tamagotchi goods! Choose the rank of the item you want and press OK!
-        bl(g, x, getText(26), y + 2 + 34 + 1, shoppingCenterState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(26), y + 2 + 34 + 1, shoppingCenterState[2], 12, 16056665, 16777215);
 
         for (int i = 0; i < 5; ++i) {
             int var5 = getValueFrom6Table(shoppingCenterLayoutTable, i, 1) + 3;
@@ -1577,11 +1577,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 64: Enter the Ticket No. in your Keitama
-        bl(g, x, getText(64), y + 3 + currentFontHeight + 12, shoppingCenterState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(64), y + 3 + currentFontHeight + 12, shoppingCenterState[2], 12, 16056665, 16777215);
         int var3 = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (I) {
             bo(g, canvasWidth / 2, var3, 2, 0, 16770972, 16750748, 16770972);
-            bp(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false);
         } else {
             bq(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
         }
@@ -1599,30 +1599,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         sendViaIR(g, x, y);
     }
 
-    public static void bl(Graphics g, int var1, String var2, int var3, int var4, int var5, int var6, int var7) {
-        bt(g, var2, var1, var3, 240, var4, var5, var6, var7);
+    public static void drawFullWidthScrollingText(Graphics g, int x, String text, int y, int time, int speed, int textColor, int backgroundColor) {
+        drawScrollingText(g, text, x, y, 240, time, speed, textColor, backgroundColor);
     }
 
-    public static void bt(Graphics g, String text, int var2, int var3, int var4, int var5, int var6, int textColor, int var8) {
-        setColorOfRGBInt(g, var8);
-        g.fillRect(var2, var3, var4, currentFontHeight);
+    public static void drawScrollingText(Graphics g, String text, int x, int y, int width, int time, int speed, int textColor, int backgroundColor) {
+        setColorOfRGBInt(g, backgroundColor);
+        g.fillRect(x, y, width, currentFontHeight);
         setColorOfRGBInt(g, textColor);
-        int var9 = currentFont.stringWidth(text);
-        drawString(g, text, var2 + var4 - var5 * var6 % (var4 + var9), var3, TextAlign.LEFT);
+        int stringWidth = currentFont.stringWidth(text);
+        drawString(g, text, x + width - time * speed % (width + stringWidth), y, TextAlign.LEFT);
     }
 
-    public static void bp(Graphics g, int var1, int var2, int var3, int var4, boolean var5) {
-        drawSprite(g, 32, var1 - (var3 + 6), var2 + 18, 0);
-        drawSprite(g, (!var5 ? 77 : 78) + var4 % 3 * 2, var1 - (var3 + 5), var2, 0);
-        drawSprite(g, 33, var1 + (var3 - 3), var2 + 20, 0);
-        drawSprite(g, (var5 ? 83 : 84) + var4 % 3 * 2, var1 + (var3 - 3), var2, 0);
+    public static void drawDownloadUploadAnimations(Graphics g, int x, int y, int var3, int time, boolean dir) {
+        drawSprite(g, 32, x - (var3 + 6), y + 18, 0);
+        drawSprite(g, (!dir ? 77 : 78) + time % 3 * 2, x - (var3 + 5), y, 0);
+        drawSprite(g, 33, x + (var3 - 3), y + 20, 0);
+        drawSprite(g, (dir ? 83 : 84) + time % 3 * 2, x + (var3 - 3), y, 0);
     }
 
     public static void bq(Graphics g, int var1, int var2, int var3, int var4, boolean var5, int var6) {
         setColorOfRGBInt(g, var6);
         g.fillRect(var1 - (var3 + 6), var2, getSpriteWidth(32), 18 + getSpriteHeight(32));
         g.fillRect(var1 + (var3 - 3), var2, getSpriteWidth(33), 20 + getSpriteHeight(33));
-        bp(g, var1, var2, var3, var4, var5);
+        drawDownloadUploadAnimations(g, var1, var2, var3, var4, var5);
     }
 
     public static void drawTextWithBackground(Graphics g, String text, int x, int y, int width, int align) {
@@ -1961,14 +1961,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 65: Enter the Address No. shown on your Keitama
-        bl(g, x, getText(65), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(65), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
         int var5 = y + 3 + textHeight + 3 + currentFontHeight + 4 + 20;
         boolean var6 = 0 == getSelectedButtonIndex() & (parentCallState[6] & 4) != 0;
         ca(g, canvasWidth / 2, var5, var6);
         // 18: OK
         cb(g, 1, getText(18), canvasWidth / 2, var4, 100, 28, 2, 0);
         if (I) {
-            bp(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true);
         } else {
             bq(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true, 16777076);
         }
@@ -2002,7 +2002,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawImage(g, parentCallImages[parentCallState[6] >> 3 & 1], x + 144, var4, 0);
         int var5 = var4 + 130 + 1;
         int var6 = (canvasWidth - 232) / 2;
-        bt(g, parentCallQuote, var6, var5, 232, parentCallState[3], 12, 16777215, 16056665);
+        drawScrollingText(g, parentCallQuote, var6, var5, 232, parentCallState[3], 12, 16777215, 16056665);
         setColorOfRGBInt(g, 0);
         g.drawRect(var6, var5 - 1, 231, currentFontHeight + 1);
         setColorOfRGBInt(g, 16763955);
@@ -2044,7 +2044,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 66: Enter the Allowance Ticket No. in your Keitama!
-        bl(g, x, getText(66), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(66), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
         int var4 = y + 3 + textHeight + 3 + currentFontHeight + 12;
         ca(g, canvasWidth / 2, var4, false);
 
@@ -2384,7 +2384,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 68: Enter the Gotchi King Address No. shown on your Keitama
-        bl(g, x, getText(68), y + 2 + textHeight + 2, gotchiKingState[3], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(68), y + 2 + textHeight + 2, gotchiKingState[3], 12, 16056665, 16777215);
         boolean var4 = 0 == getSelectedButtonIndex() & (gotchiKingState[3] & 4) != 0;
         int var5 = y + 2 + textHeight + 2 + currentFontHeight + 3;
         ca(g, canvasWidth / 2, var5, var4);
@@ -2394,7 +2394,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (I) {
-            bp(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true);
         } else {
             bq(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true, 16777076);
         }
@@ -2498,7 +2498,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 70: Enter the Invitation Ticket No. in your Keitama!
-        bl(g, x, getText(70), y + 3 + textHeight + 3, gotchiKingState[3], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(70), y + 3 + textHeight + 3, gotchiKingState[3], 12, 16056665, 16777215);
 
         for (var4 = 0; var4 < 2; ++var4) {
             bk(g, var4, ae, 0);
@@ -2507,7 +2507,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
         if (I) {
             bo(g, canvasWidth / 2, var5, 2, 0, 16756418, 13722050, 16756418);
-            bp(g, canvasWidth / 2, var5 + 10, 56, gotchiKingState[3] >> 1, false);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 10, 56, gotchiKingState[3] >> 1, false);
         } else {
             bq(g, canvasWidth / 2, var5 + 10, 56, gotchiKingState[3] >> 1, false, 16756418);
         }
@@ -2745,7 +2745,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         if (I) {
             bv(g, x, var4, 0, 16777215, 2210832, 10873360, 7786961);
-            bp(g, canvasWidth / 2, var4 + 4 + 2, 56, travelMemoryState[2] >> 1, true);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var4 + 4 + 2, 56, travelMemoryState[2] >> 1, true);
         } else {
             bq(g, canvasWidth / 2, var4 + 4 + 2, 56, travelMemoryState[2] >> 1, true, 10873360);
         }
@@ -2753,7 +2753,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         boolean var7 = 0 == getSelectedButtonIndex() & (travelMemoryState[2] & 4) != 0;
         br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
         // 71: Enter the Travel No. shown on your Keitama
-        bl(g, x, getText(71), y + 2 + textHeight + 2, travelMemoryState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(71), y + 2 + textHeight + 2, travelMemoryState[2], 12, 16056665, 16777215);
         // 18: OK
         cb(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
         if (1 == getSelectedButtonIndex()) {
@@ -2792,7 +2792,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawTextWithBackground(g, travelMemoryTexts[0], canvasWidth / 2, y + 2, stringWidth, 2);
         stringWidth = currentFontHeight;
         drawImage(g, travelMemoryPhoto, canvasWidth / 2, y + 2 + fontHeight + 4 + 4, 2);
-        bl(g, x, travelMemoryTexts[1], y + 2 + fontHeight + 4 + 4 + travelMemoryPhoto.getHeight() + 7, travelMemoryState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, travelMemoryTexts[1], y + 2 + fontHeight + 4 + 4 + travelMemoryPhoto.getHeight() + 7, travelMemoryState[2], 12, 16056665, 16777215);
 
         for (int i = 0; i < 2; ++i) {
             bk(g, i, aj, 0);
@@ -3153,13 +3153,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         if (I) {
             bv(g, x, var4, 0, 16777215, 3429838, 6728678, 7786961);
-            bp(g, canvasWidth / 2, var4 + 4 + 2, 56, exchangePlazaState[2] >> 1, true);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, var4 + 4 + 2, 56, exchangePlazaState[2] >> 1, true);
         } else {
             bq(g, canvasWidth / 2, var4 + 4 + 2, 56, exchangePlazaState[2] >> 1, true, 6728678);
         }
 
         // 72: Enter the Exchange No. shown on your Keitama
-        bl(g, x, getText(72), y + 2 + textHeight + 2, exchangePlazaState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(72), y + 2 + textHeight + 2, exchangePlazaState[2], 12, 16056665, 16777215);
         boolean var7 = 0 == getSelectedButtonIndex() & (exchangePlazaState[2] & 4) != 0;
         br(g, canvasWidth / 2, var4 + 4, 62, var7, I);
         // 18: OK
@@ -3191,7 +3191,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 6: Exchange Plaza
             drawTextWithBackground(g, getText(6), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(6)) + 8, 2);
             // 74: Choose a region to trade with and press OK!
-            bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
+            drawFullWidthScrollingText(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
 
             drawTextWithBackground(g, getText(getValueFromExchangePlazaTable(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
 
@@ -3204,7 +3204,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 drawSprite(g, var6, var3 + getValueFromExchangePlazaTable(column, 0), var4 + getValueFromExchangePlazaTable(column, 1), 0);
             }
         } else {
-            bl(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
+            drawFullWidthScrollingText(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
             if (exchangePlazaState[4] != exchangePlazaState[3]) {
                 drawTextWithBackground(g, getText(getValueFromExchangePlazaTable(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
                 drawSprite(g, getValueFromExchangePlazaTable(exchangePlazaState[4], 7), var3 + getValueFromExchangePlazaTable(exchangePlazaState[4], 0), var4 + getValueFromExchangePlazaTable(exchangePlazaState[4], 1), 0);
@@ -3289,7 +3289,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawTextWithBackground(g, getText(51), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(51)) + 8, 2);
 
         // 91: Enter the Exchange Ticket No. in your Keitama!
-        bl(g, x, getText(91), y + 2 + textHeight + 2, exchangePlazaState[2], 12, 16056665, 16777215);
+        drawFullWidthScrollingText(g, x, getText(91), y + 2 + textHeight + 2, exchangePlazaState[2], 12, 16056665, 16777215);
 
         for (int i = 0; i < 2; ++i) {
             bk(g, i, ao, 0);
@@ -3298,7 +3298,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
         bv(g, x, var5, 0, 16777215, 16730112, 16751616, 7786961);
         br(g, canvasWidth / 2, var5 + 4, 62, false, true);
-        bp(g, canvasWidth / 2, var5 + 10, 56, exchangePlazaState[2] >> 1, false);
+        drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 10, 56, exchangePlazaState[2] >> 1, false);
         aD(g, 30, x + getValueFrom6Table(ao, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ao, getSelectedButtonIndex(), 1) + getValueFrom6Table(ao, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ao, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
     }
 
