@@ -7,29 +7,29 @@ public class GameScreen extends Canvas {
 
     @Override
     public void processEvent(int type, int param) {
-        GameApp.Code(type, param);
+        GameApp.processEvent(type, param);
     }
 
     @Override
     public void paint(Graphics g) {
-        if (GameApp.Code == 2) {
-            GameApp.Code = 3;
+        if (GameApp.drawState == 2) {
+            GameApp.drawState = 3;
             if (GameApp.Exceptions) {
                 g.lock();
-                GameApp.I = GameApp.StackMap;
-                GameApp.StackMap = false;
-                if (GameApp.Z) {
-                    GameApp.Z = false;
+                GameApp.fullDraw = GameApp.fullDrawOnNextPaint;
+                GameApp.fullDrawOnNextPaint = false;
+                if (GameApp.resumedDraw) {
+                    GameApp.resumedDraw = false;
                 }
 
                 g.setFont(GameApp.currentFont);
-                GameApp.Exceptions(g);
+                GameApp.draw(g);
                 g.unlock(true);
             } else {
                 GameApp.Exceptions = true;
             }
 
-            GameApp.Code = 0;
+            GameApp.drawState = 0;
         }
 
     }
