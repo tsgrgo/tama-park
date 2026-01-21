@@ -2,7 +2,7 @@ package com.nttdocomo.ui;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,15 +31,27 @@ public class Font {
     public static final int SIZE_MEDIUM =       0x70000200; // 0111 0000 00000000 00000010 00000000
     public static final int SIZE_LARGE =        0x70000300; // 0111 0000 00000000 00000011 00000000
     public static final int SIZE_TINY =         0x70000400; // 0111 0000 00000000 00000100 00000000
-    // @formatter:on
 
     public static final int DEFAULT_FONT = FACE_SYSTEM | SIZE_TINY | STYLE_PLAIN;
 
+    private static final int FACE_MASK =        0xFF000000;
+    private static final int STYLE_MASK =       0xF0FF0000;
+    private static final int SIZE_MASK =        0xF000FF00;
+    // @formatter:on
+
     // Metrics helper
-    private static final BufferedImage METRICS_IMG =
-            new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-    private static final java.awt.Graphics METRICS_G =
-            METRICS_IMG.getGraphics();
+    private static final BufferedImage METRICS_IMG = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+    private static final java.awt.Graphics METRICS_G = METRICS_IMG.getGraphics();
+
+    private static final java.awt.Font BASE_SYSTEM;
+    private static final java.awt.Font BASE_MONO;
+    private static final java.awt.Font BASE_PROP;
+
+    static {
+        BASE_SYSTEM = loadBundledFont("/fonts/msgothic.ttc");
+        BASE_MONO = new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12);
+        BASE_PROP = new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 12);
+    }
 
     private static final Map<Integer, Font> CACHE = new ConcurrentHashMap<>();
 
@@ -55,7 +67,7 @@ public class Font {
     }
 
     public int getHeight() {
-        return metrics().getHeight();
+        return metrics().getAscent() + metrics().getDescent();
     }
 
     public int getDescent() {
@@ -90,15 +102,15 @@ public class Font {
         }
 
         // FACE|STYLE|SIZE form
-        int face = spec & 0x0F000000;
-        int style = spec & 0x00FF0000;
-        int size = spec & 0x0000FF00;
+        int face = spec & FACE_MASK;
+        int style = spec & STYLE_MASK;
+        int size = spec & SIZE_MASK;
 
-        String family = mapFace(face);
+        java.awt.Font base = getBaseForFace(face);
         int awtStyle = mapStyle(style);
         int fontSize = mapSize(size);
 
-        return new Font(new java.awt.Font(family, awtStyle, fontSize));
+        return new Font(base.deriveFont(awtStyle, fontSize));
     }
 
     private static Font createTypeFont(int type) {
@@ -116,13 +128,12 @@ public class Font {
         };
     }
 
-    private static String mapFace(int face) {
-        // TODO: check why default is selected
+    private static java.awt.Font getBaseForFace(int face) {
         return switch (face) {
-            case FACE_SYSTEM -> "DialogInput";
-            case FACE_MONOSPACE -> "Monospaced";
-            case FACE_PROPORTIONAL -> "SansSerif";
-            default -> "DialogInput";
+            case FACE_SYSTEM -> BASE_SYSTEM;
+            case FACE_MONOSPACE -> BASE_MONO;
+            case FACE_PROPORTIONAL -> BASE_PROP;
+            default -> BASE_SYSTEM;
         };
     }
 
@@ -138,11 +149,25 @@ public class Font {
 
     private static int mapSize(int size) {
         return switch (size) {
-            case SIZE_TINY -> 16;
-            case SIZE_SMALL -> 20;
+            case SIZE_TINY -> 12;
+            case SIZE_SMALL -> 18;
             case SIZE_MEDIUM -> 24;
             case SIZE_LARGE -> 26;
-            default -> 16;
+            default -> 12;
         };
     }
+
+    private static java.awt.Font loadBundledFont(String resourcePath) {
+        try (InputStream in = Font.class.getResourceAsStream(resourcePath)) {
+            if (in == null) throw new RuntimeException("Font resource not found: " + resourcePath);
+            java.awt.Font base = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, in);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(base);
+            return base;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12);
+        }
+    }
+
 }
