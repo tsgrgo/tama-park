@@ -2,6 +2,7 @@ package com.nttdocomo.ui;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -101,62 +102,47 @@ public class Font {
     }
 
     private static Font createTypeFont(int type) {
-        switch (type) {
-            case TYPE_HEADING:
-                return new Font(new java.awt.Font(
-                        "Dialog",
-                        java.awt.Font.BOLD,
-                        18
-                ));
-
-            case TYPE_DEFAULT:
-            default:
-                return new Font(new java.awt.Font(
-                        "Dialog",
-                        java.awt.Font.PLAIN,
-                        10
-                ));
-        }
+        return switch (type) {
+            case TYPE_HEADING -> new Font(new java.awt.Font(
+                    "Dialog",
+                    java.awt.Font.BOLD,
+                    18
+            ));
+            default -> new Font(new java.awt.Font(
+                    "Dialog",
+                    java.awt.Font.PLAIN,
+                    10
+            ));
+        };
     }
 
     private static String mapFace(int face) {
-        switch (face) {
-            case FACE_MONOSPACE:
-                return "Monospaced";
-            case FACE_PROPORTIONAL:
-                return "SansSerif";
-            case FACE_SYSTEM:
-            default:
-                return "DialogInput";
-        }
+        // TODO: check why default is selected
+        return switch (face) {
+            case FACE_SYSTEM -> "DialogInput";
+            case FACE_MONOSPACE -> "Monospaced";
+            case FACE_PROPORTIONAL -> "SansSerif";
+            default -> "DialogInput";
+        };
     }
 
     private static int mapStyle(int style) {
-        switch (style) {
-            case STYLE_BOLD:
-                return java.awt.Font.BOLD;
-            case STYLE_ITALIC:
-                return java.awt.Font.ITALIC;
-            case STYLE_BOLDITALIC:
-                return java.awt.Font.BOLD | java.awt.Font.ITALIC;
-            case STYLE_PLAIN:
-            default:
-                return java.awt.Font.PLAIN;
-        }
+        return switch (style) {
+            case STYLE_PLAIN -> java.awt.Font.PLAIN;
+            case STYLE_BOLD -> java.awt.Font.BOLD;
+            case STYLE_ITALIC -> java.awt.Font.ITALIC;
+            case STYLE_BOLDITALIC -> java.awt.Font.BOLD | java.awt.Font.ITALIC;
+            default -> java.awt.Font.PLAIN;
+        };
     }
 
     private static int mapSize(int size) {
-        switch (size) {
-            case SIZE_SMALL:
-                return 20;
-            case SIZE_MEDIUM:
-                return 24;
-            case SIZE_LARGE:
-                return 26;
-            case SIZE_TINY:
-            default:
-                return 16;
-        }
+        return switch (size) {
+            case SIZE_TINY -> 16;
+            case SIZE_SMALL -> 20;
+            case SIZE_MEDIUM -> 24;
+            case SIZE_LARGE -> 26;
+            default -> 16;
+        };
     }
-
 }
