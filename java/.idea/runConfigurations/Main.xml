@@ -2,7 +2,7 @@
   <configuration default="false" name="Main" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="decompilation" />
-    <option name="VM_PARAMETERS" value="-Dfile.encoding=Shift_JIS" />
+    <option name="VM_PARAMETERS" value="-Dfile.encoding=Shift_JIS -Dsun.java2d.uiScale=2" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
