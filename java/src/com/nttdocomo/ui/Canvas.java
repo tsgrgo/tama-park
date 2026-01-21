@@ -3,6 +3,7 @@ package com.nttdocomo.ui;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 public abstract class Canvas {
     // Event type constants
@@ -30,16 +31,19 @@ public abstract class Canvas {
 
     private static final int CANVAS_WIDTH = 240;
     private static final int CANVAS_HEIGHT = 240;
-    private final java.awt.Canvas awtCanvas;
 
     private volatile int keypadStateBits = 0;
 
+    private final java.awt.Canvas awtCanvas;
+    private final BufferedImage buffer;
+    private final Graphics bufferG;
+
     protected Canvas() {
-        this.awtCanvas = new java.awt.Canvas() {
+        awtCanvas = new java.awt.Canvas() {
             @Override
             public void paint(java.awt.Graphics g) {
-                com.nttdocomo.ui.Graphics wrappedG = new com.nttdocomo.ui.Graphics(g, awtCanvas);
-                Canvas.this.paint(wrappedG);
+                Canvas.this.paint(bufferG);
+                g.drawImage(buffer, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, null);
             }
 
             @Override
@@ -47,6 +51,9 @@ public abstract class Canvas {
                 paint(g);
             }
         };
+
+        buffer = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        bufferG = new Graphics(buffer.createGraphics());
 
         awtCanvas.setBackground(Color.BLACK);
         awtCanvas.setFocusable(true);
@@ -70,12 +77,11 @@ public abstract class Canvas {
             public void keyReleased(KeyEvent e) {
                 int dojaKeyCode = mapAwtToDojaKey(e);
                 updateKeypadState(dojaKeyCode, false);
-                processEvent(KEY_RELEASED_EVENT, e.getKeyCode());
+                processEvent(KEY_RELEASED_EVENT, dojaKeyCode);
             }
         });
 
     }
-
 
     protected abstract void paint(Graphics g);
 
