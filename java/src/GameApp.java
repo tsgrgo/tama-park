@@ -29,6 +29,32 @@ enum TextAlign {
 }
 
 public class GameApp extends IApplication implements TimerListener, MediaListener {
+    // @formatter:off
+    private static final int PAGE_AUTHENTICATING   = -3;
+    private static final int PAGE_COMMUNICATING    = -2;
+    private static final int PAGE_PREPARING        = -1;
+    private static final int PAGE_NONE_0           = 0;
+    private static final int PAGE_NONE_1           = 1;
+    private static final int PAGE_DOWNLOADING      = 2;
+    private static final int PAGE_LOADING          = 3;
+    private static final int PAGE_TITLE            = 4;
+    private static final int PAGE_MAILBOX_MODE     = 5;
+    private static final int PAGE_TRAVEL_MODE      = 6;
+    private static final int PAGE_SHOPPING_CENTER  = 7;
+    private static final int PAGE_PARENT_CALL      = 8;
+    private static final int PAGE_GOTCHI_KING      = 9;
+    private static final int PAGE_TRAVEL_MEMORY    = 10;
+    private static final int PAGE_EXCHANGE_PLAZA   = 11;
+
+    private static final int SOFT_LABEL_START = 0;
+    private static final int SOFT_LABEL_MENU  = 1;
+    private static final int SOFT_LABEL_CLOSE = 2;
+    private static final int SOFT_LABEL_BACK  = 3;
+    private static final int SOFT_LABEL_TITLE = 4;
+    private static final int SOFT_LABEL_HELP  = 5;
+    private static final int SOFT_LABEL_EMPTY = 6;
+    // @formatter:on
+
     public static boolean aL;
     public static int drawState; // 0: Idle, 2: Request pending, 3: Currently drawing
     public static boolean running;
@@ -901,9 +927,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void checkGameData() {
         if (downloadGameDataIfNeeded()) {
-            goToPage(3);
+            goToPage(PAGE_LOADING);
         } else {
-            goToPage(-2);
+            goToPage(PAGE_COMMUNICATING);
         }
 
     }
@@ -911,11 +937,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void loadResources() {
         int result = loadImages(128, 0, 93);
         if (result == -1) {
-            goToPage(-1);
+            goToPage(PAGE_PREPARING);
         } else if (loadSounds() && loadTexts()) {
-            goToPage(4);
+            goToPage(PAGE_TITLE);
         } else {
-            goToPage(-1);
+            goToPage(PAGE_PREPARING);
         }
     }
 
@@ -1088,10 +1114,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             var10000[3] += G[4];
             switch (getPressedButtonIndex(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    goToPage(5);
+                    goToPage(PAGE_MAILBOX_MODE);
                     return;
                 case 1:
-                    goToPage(6);
+                    goToPage(PAGE_TRAVEL_MODE);
                     return;
                 default:
                     G[0] = getSelectedButtonIndex();
@@ -1207,13 +1233,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             switch (getPressedButtonIndex(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    goToPage(7);
+                    goToPage(PAGE_SHOPPING_CENTER);
                     return;
                 case 1:
-                    goToPage(8);
+                    goToPage(PAGE_PARENT_CALL);
                     return;
                 case 2:
-                    goToPage(9);
+                    goToPage(PAGE_GOTCHI_KING);
                     return;
                 default:
                     K[0] = getSelectedButtonIndex();
@@ -1290,10 +1316,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } else {
             switch (getPressedButtonIndex(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                 case 0:
-                    goToPage(10);
+                    goToPage(PAGE_TRAVEL_MEMORY);
                     return;
                 case 1:
-                    goToPage(11);
+                    goToPage(PAGE_EXCHANGE_PLAZA);
                     return;
                 default:
                     M[0] = getSelectedButtonIndex();
@@ -1344,19 +1370,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void aL(int var0) {
         switch (var0) {
             case 0:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
                 ag(5, true);
                 setSelectedButtonIndex(4);
                 setButtonTheme2(16750848, 16750848, 16763955, 16777215, 16750848, 16777164, 16750848, 16750848);
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 3:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(3, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
@@ -1477,7 +1503,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         aL(0);
                         break;
                     case 2:
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                 }
             }
 
@@ -1716,10 +1742,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (var0) {
             case 0:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 ag(2, true);
                 setSelectedButtonIndex(0);
@@ -1727,16 +1753,16 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 parentCallState[0] = 0;
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 3:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -1882,7 +1908,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 if (parentCallState[5] <= parentCallState[4]) {
                     generateDerivedCodeInBankB();
                     if (3 < getDigitBankB(2)) {
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                     } else {
                         bC(4);
                     }
@@ -1910,7 +1936,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         bC(5);
                         break;
                     case 1:
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                 }
             }
 
@@ -2094,10 +2120,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (var0) {
             case 0:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 gotchiKingState[0] = 0;
                 ag(2, true);
@@ -2105,28 +2131,28 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 3:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 5:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 7:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -2327,7 +2353,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         cd(8);
                         break;
                     case 1:
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                 }
             }
 
@@ -2530,10 +2556,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (var0) {
             case 0:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 travelMemoryState[0] = 0;
                 ag(2, true);
@@ -2541,19 +2567,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
         }
 
         fullDrawOnNextPaint = true;
@@ -2690,7 +2716,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (6 < travelMemoryState[2]) {
                 switch (getPressedButtonIndex(isKeyPressed(1048576L), isKeyPressed(131072L), isKeyPressed(524288L))) {
                     case 0:
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                         break;
                     case 1:
                         launchCurrentApp("http://tamapark.gs.keitaiarchive.org/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest");
@@ -2819,10 +2845,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         T = true;
         switch (var0) {
             case 0:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 exchangePlazaState[0] = 0;
                 ag(2, true);
@@ -2830,35 +2856,35 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
                 exchangePlazaState[3] = 0;
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 break;
             case 4:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 7:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
@@ -3088,7 +3114,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         cN(8);
                         break;
                     case 1:
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                 }
             }
 
@@ -3311,7 +3337,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         explanationState[1] = var1;
         explanationState[2] = 0;
         explanationState[3] = 1;
-        selectSoftLabel(3);
+        selectSoftLabel(SOFT_LABEL_BACK);
     }
 
     public static void closeExplanation() {
@@ -3397,7 +3423,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aq[4] = getSelectedButtonIndex();
         aq[0] = 1;
         aq[5] = 0;
-        selectSoftLabel(3);
+        selectSoftLabel(SOFT_LABEL_BACK);
         dq(0);
     }
 
@@ -3482,7 +3508,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     }
                     break;
                 case 1:
-                    goToPage(4);
+                    goToPage(PAGE_TITLE);
                     break;
                 case 2:
                     dq(4);
@@ -3502,7 +3528,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             switch (getPressedButtonIndex(isKeyPressed(1048576L), isKeyPressed(196608L), isKeyPressed(786432L))) {
                 case 0:
                     closeMenu();
-                    goToPage(4);
+                    goToPage(PAGE_TITLE);
                     break;
                 case 1:
                     dq(1);
@@ -3633,7 +3659,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ag(2, true);
         setSelectedButtonIndex(1);
         setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
-        selectSoftLabel(6);
+        selectSoftLabel(SOFT_LABEL_EMPTY);
         errorState[3] = 1; // show error page
     }
 
@@ -4073,7 +4099,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return digitEditorState[5];
     }
 
-    public static boolean handleDigitEditorInput(boolean moveLeft, boolean moveRight, boolean jumpBack5, boolean jumpForward5, boolean incrementDigit, int directDigit) {
+    public static boolean handleDigitEditorInput(boolean moveLeft, boolean moveRight, boolean moveUp, boolean moveDown, boolean incrementDigit, int directDigit) {
         int cursorIndex = digitEditorState[4];
         boolean allFilled = false;
 
@@ -4096,7 +4122,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             setCursorIndex(cursorIndex);
-        } else if (jumpBack5) {
+        } else if (moveUp) {
             cursorIndex -= 5;
             if (cursorIndex < 0) {
                 allFilled = true;
@@ -4104,7 +4130,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             setCursorIndex(cursorIndex);
-        } else if (jumpForward5) {
+        } else if (moveDown) {
             cursorIndex += 5;
             if (10 <= cursorIndex) {
                 allFilled = true;
@@ -4493,30 +4519,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 irRemoteControl.stop();
                 break;
             case 1:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 2:
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 break;
             case 3:
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ag(3, true);
                 setSelectedButtonIndex(0);
                 break;
             case 4:
                 irRemoteControl.stop();
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
                 break;
             case 5:
                 irRemoteControl.stop();
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
                 ag(1, false);
                 setSelectedButtonIndex(0);
         }
@@ -4636,7 +4662,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         aL(0);
                     } else {
                         dX(0);
-                        goToPage(4);
+                        goToPage(PAGE_TITLE);
                     }
                     break;
                 case 1:
@@ -4732,64 +4758,64 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void goToPage(int nextPage) {
         T = true;
         switch (currentPage) {
-            case 8:
+            case PAGE_PARENT_CALL:
                 clearDownloadedParentCallData();
                 break;
-            case 9:
+            case PAGE_GOTCHI_KING:
                 clearDownloadedGotchiKingData();
                 break;
-            case 10:
+            case PAGE_TRAVEL_MEMORY:
                 clearDownloadedTravelMemoryData();
                 break;
-            case 11:
+            case PAGE_EXCHANGE_PLAZA:
                 clearDownloadedExchangePlazaData();
         }
 
         switch (nextPage) {
-            case 2:
+            case PAGE_DOWNLOADING:
                 loadingProgress = 0;
                 break;
-            case 3:
+            case PAGE_LOADING:
                 loadingProgress = 0;
                 break;
-            case 4:
+            case PAGE_TITLE:
                 // Resources loaded successfully
-                selectSoftLabel(1);
+                selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 ak();
                 break;
-            case 5:
-                selectSoftLabel(1);
+            case PAGE_MAILBOX_MODE:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 az();
                 break;
-            case 6:
-                selectSoftLabel(1);
+            case PAGE_TRAVEL_MODE:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 aH();
                 break;
-            case 7:
-                selectSoftLabel(1);
+            case PAGE_SHOPPING_CENTER:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 aM();
                 break;
-            case 8:
-                selectSoftLabel(1);
+            case PAGE_PARENT_CALL:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 bD();
                 break;
-            case 9:
-                selectSoftLabel(1);
+            case PAGE_GOTCHI_KING:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 ce();
                 break;
-            case 10:
-                selectSoftLabel(1);
+            case PAGE_TRAVEL_MEMORY:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 cz();
                 break;
-            case 11:
-                selectSoftLabel(1);
+            case PAGE_EXCHANGE_PLAZA:
+                selectSoftLabel(SOFT_LABEL_MENU);
                 cO();
                 break;
             default:
                 // Failed to load resources
                 T = false;
-                selectSoftLabel(6);
+                selectSoftLabel(SOFT_LABEL_EMPTY);
         }
 
         closeMenu();
@@ -4813,49 +4839,49 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             dH();
         } else {
             switch (currentPage) {
-                case -3:
-                case -2:
-                case -1:
+                case PAGE_AUTHENTICATING:
+                case PAGE_COMMUNICATING:
+                case PAGE_PREPARING:
                     exitGameOnSelect();
                     break;
-                case 0:
+                case PAGE_NONE_0:
                     if (--aJ <= 0) {
                         gameSave[4] = 3;
                         loadGameSave();
-                        goToPage(1);
+                        goToPage(PAGE_NONE_1);
                     }
                     break;
-                case 1:
-                    goToPage(2);
+                case PAGE_NONE_1:
+                    goToPage(PAGE_DOWNLOADING);
                     break;
-                case 2:
+                case PAGE_DOWNLOADING:
                     checkGameData();
                     break;
-                case 3:
+                case PAGE_LOADING:
                     loadResources();
                     break;
-                case 4:
+                case PAGE_TITLE:
                     an();
                     break;
-                case 5:
+                case PAGE_MAILBOX_MODE:
                     aB();
                     break;
-                case 6:
+                case PAGE_TRAVEL_MODE:
                     aJ();
                     break;
-                case 7:
+                case PAGE_SHOPPING_CENTER:
                     shoppingCenterFlow();
                     break;
-                case 8:
+                case PAGE_PARENT_CALL:
                     parentCallFlow();
                     break;
-                case 9:
+                case PAGE_GOTCHI_KING:
                     gotchiKingFlow();
                     break;
-                case 10:
+                case PAGE_TRAVEL_MEMORY:
                     travelMemoryFlow();
                     break;
-                case 11:
+                case PAGE_EXCHANGE_PLAZA:
                     exchangePlazaFlow();
                     break;
                 default:
@@ -4880,46 +4906,46 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             switch (currentPage) {
-                case -3:
+                case PAGE_AUTHENTICATING:
                     showError(g, "Authenticating", rootX, rootY);
                     break;
-                case -2:
+                case PAGE_COMMUNICATING:
                     showError(g, "Communicating", rootX, rootY);
                     break;
-                case -1:
+                case PAGE_PREPARING:
                     showError(g, "Preparing", rootX, rootY);
-                case 0:
-                case 1:
+                case PAGE_NONE_0:
+                case PAGE_NONE_1:
                 default:
                     break;
-                case 2:
+                case PAGE_DOWNLOADING:
                     downloadingPage(g, rootX, rootY);
                     break;
-                case 3:
+                case PAGE_LOADING:
                     loadingPage(g, rootX, rootY);
                     break;
-                case 4:
+                case PAGE_TITLE:
                     titleScreen(g, rootX, rootY);
                     break;
-                case 5:
+                case PAGE_MAILBOX_MODE:
                     mailboxModePage(g, rootX, rootY);
                     break;
-                case 6:
+                case PAGE_TRAVEL_MODE:
                     travelModePage(g, rootX, rootY);
                     break;
-                case 7:
+                case PAGE_SHOPPING_CENTER:
                     shoppingCenterPage(g, rootX, rootY);
                     break;
-                case 8:
+                case PAGE_PARENT_CALL:
                     parentCallPage(g, rootX, rootY);
                     break;
-                case 9:
+                case PAGE_GOTCHI_KING:
                     gotchiKingPage(g, rootX, rootY);
                     break;
-                case 10:
+                case PAGE_TRAVEL_MEMORY:
                     travelMemoryPage(g, rootX, rootY);
                     break;
-                case 11:
+                case PAGE_EXCHANGE_PLAZA:
                     exchangePlazaPage(g, rootX, rootY);
             }
         } catch (Exception e) {
