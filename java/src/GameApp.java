@@ -112,12 +112,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int aR;
     public static AudioPresenter[] audioPresenters;
     public static MediaSound[] mediaSounds;
-    public static int loopedSoundIdx;
+    public static int loopedSoundId;
     public static int aS;
     public static int aT;
-    public static int p;
-    public static boolean r;
-    public static boolean q;
+    public static int previousMusicId;
+    public static boolean shouldRestartMusic;
+    public static boolean previousMusicParam;
     public static long[] inputState;
     public static int t;
     public static int u;
@@ -152,7 +152,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static String parentCallText;
     public static String parentCallQuote;
     public static int[] gotchiKingState;
-    public static int[] ae;
+    public static int[] gotchingInviteTicketLayout;
     public static Image[] gotchiKingImages;
     public static int[] imagesToTemporarilyDispose;
     public static int[] travelMemoryState; // [?, flowStep, ...]
@@ -164,8 +164,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static Image[] exchangePlazaImages;
     public static String[] exchangePlazaTexts;
     public static int[] exchangePlazaTable;
-    public static int[] explanationState; // [offset, size, current, isOpen]
-    public static int[] aq; // [isMenuOpen, ...]
+    public static int[] explanationState; // [index, numberOfPages, current, isOpen]
+    public static int[] menuState; // [isMenuOpen, menuPage, explanationIndex, numberOfExplanationPages...]
     public static int[] errorState; // [?, ?, ?, showErrorPage] ? = some action id?
     public static String errorPageText;
     public static long aB;
@@ -174,7 +174,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int at;
     public static String[] texts;
     public static int[] buttonState; // [0: selectedButtonIdx, 1, 2, 3: selectedOutlineColor, 4: selectedColor, 5, 6: selectedTextColor, 7: selectedShadowColor, 8: outlineColor, 9: color, 10, 11: textColor, 12: shadowColor, 13: isPressed]
-    public static int[] digitEditorState;
+    public static int[] codeInputState;
     public static int[] digitShuffleTable;
     public static int[] rainbowColors;
     public static int[] aZ;
@@ -209,10 +209,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aR = 0;
 
         audioPresenters = new AudioPresenter[2];
-        loopedSoundIdx = -1;
+        loopedSoundId = -1;
         aS = 0;
         aT = -1;
-        p = -1;
+        previousMusicId = -1;
         inputState = new long[7];
         t = 0;
         u = 0;
@@ -268,7 +268,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         };
         parentCallImages = new Image[2];
         gotchiKingState = new int[6];
-        ae = new int[]{
+        gotchingInviteTicketLayout = new int[]{
                 120, 165, 170, 28, 93, 2,
                 120, 198, 170, 28, 15, 2
         };
@@ -297,11 +297,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 -164, 60, 0, 5, 5, 0, 86, 53
         };
         explanationState = new int[4];
-        aq = new int[9];
+        menuState = new int[9];
         errorState = new int[4];
         texts = new String[183];
         buttonState = new int[14];
-        digitEditorState = new int[6];
+        codeInputState = new int[6];
         digitShuffleTable = new int[]{3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 3, 8, 4, 0, 1, 5, 6, 7, 2, 9, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 4, 8, 1, 6, 2, 3, 9, 5, 0, 7, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 0, 6, 2, 7, 3, 9, 1, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 5, 8, 7, 1, 6, 3, 0, 2, 9, 4, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1, 6, 8, 5, 3, 0, 9, 7, 2, 4, 1};
         rainbowColors = new int[]{15947864, 16777041, 10873427, 7053048, 16777215, 11025351, 16021161};
         aZ = new int[1];
@@ -462,38 +462,38 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void StackMap(int soundIdx, boolean var1) {
-        if (gameSave[3] == 0 && soundIdx >= 0) {
+    public static void playMusic(int musicId, boolean musicParam) {
+        if (gameSave[3] == 0 && musicId >= 0) {
             stopSound(0);
-            playSoundInternal(soundIdx, 0, var1);
+            playSoundInternal(musicId, 0, musicParam);
         }
 
-        loopedSoundIdx = soundIdx;
-        p = soundIdx;
-        q = var1;
+        loopedSoundId = musicId;
+        previousMusicId = musicId;
+        previousMusicParam = musicParam;
     }
 
-    public static void o() {
-        if (r) {
-            n();
-            r = false;
+    public static void checkMusic() {
+        if (shouldRestartMusic) {
+            restartMusic();
+            shouldRestartMusic = false;
         }
 
     }
 
-    public static void Z() {
-        r = true;
+    public static void restartMusicOnNext() {
+        shouldRestartMusic = true;
     }
 
     public static void toggleSound() {
         gameSave[3] = 1 - gameSave[3];
         stopAllSounds();
-        n();
+        restartMusic();
     }
 
-    public static void n() {
-        if (q) {
-            StackMap(p, q);
+    public static void restartMusic() {
+        if (previousMusicParam) {
+            playMusic(previousMusicId, previousMusicParam);
         }
 
     }
@@ -812,8 +812,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         Object var10 = null;
     }
 
-    public static void setCurrentFont(int i) {
-        switch (i) {
+    public static void setCurrentFont(int fontIndex) {
+        switch (fontIndex) {
             case 0:                                           //      face style    size     no type
                 currentFont = Font.getFont(1895826432); // 0111 0001 00000000 00000100 00000000
                 break;
@@ -828,7 +828,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         currentFontHeight = currentFont.getHeight();
-        currentFontIdx = i;
+        currentFontIdx = fontIndex;
     }
 
     public static int rand(int max) {
@@ -1079,7 +1079,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ag(2, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
-        StackMap(1, true);
+        playMusic(1, true);
         G[2] = 0;
         G[3] = 0;
         G[4] = 0;
@@ -1123,8 +1123,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void am() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(100, 5);
+            openMenu();
+            setCurrentExplanation(100, 5);
         } else {
             int[] var10000;
             if (G[3] <= 32) {
@@ -1230,7 +1230,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ag(3, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
-        StackMap(2, true);
+        playMusic(2, true);
         ay(0);
     }
 
@@ -1253,8 +1253,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aA() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(105, 3);
+            openMenu();
+            setCurrentExplanation(105, 3);
         } else {
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
@@ -1300,7 +1300,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         var5 -= 10;
         int var6 = getValueFrom7Table(L, getSelectedButtonIndex(), 1) + y;
         var6 += getValueFrom7Table(L, getSelectedButtonIndex(), 3) / 2;
-        aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
+        drawMirroredTamagotchiPair(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, K[2]);
         if (fullDraw) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
             drawSprite(g, 89, x + 240 + 2 - getSpriteWidth(89), y + 54, 0);
@@ -1313,7 +1313,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         ag(2, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
-        StackMap(0, true);
+        playMusic(0, true);
         aG(0);
     }
 
@@ -1336,8 +1336,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void aI() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(108, 2);
+            openMenu();
+            setCurrentExplanation(108, 2);
         } else {
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
@@ -1380,7 +1380,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         var5 -= 10;
         int var6 = getValueFrom7Table(N, getSelectedButtonIndex(), 1) + y;
         var6 += getValueFrom7Table(N, getSelectedButtonIndex(), 3) / 2;
-        aD(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
+        drawMirroredTamagotchiPair(g, 64, canvasWidth / 2, var6, (var5 - getSpriteWidth(64)) * 2, M[2]);
         if (fullDraw) {
             drawSprite(g, 90, x + 3 + var4 - 1, y + 3 + var3 / 2 - 5, 0);
             drawSprite(g, 57, x + 240 - getSpriteWidth(57) - 2, y + 68, 0);
@@ -1446,8 +1446,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void aP() {
         int var10002 = shoppingCenterState[3]++;
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(110, 5);
+            openMenu();
+            setCurrentExplanation(110, 5);
         } else {
             int var0 = getSelectedButtonIndex();
             int var1 = getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_UP));
@@ -1516,8 +1516,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void aR() {
         int var10002 = shoppingCenterState[3]++;
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(115, 6);
+            openMenu();
+            setCurrentExplanation(115, 6);
         } else {
             if (6 < shoppingCenterState[2]) {
                 switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
@@ -1629,21 +1629,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 64: Enter the Ticket No. in your Keitama
         drawFullWidthScrollingText(g, x, getText(64), y + 3 + currentFontHeight + 12, shoppingCenterState[2], 12, 16056665, 16777215);
-        int var3 = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
+        int codeInputY = y + 3 + currentFontHeight + 12 + currentFontHeight + 4;
         if (fullDraw) {
-            bo(g, canvasWidth / 2, var3, 2, 0, 16770972, 16750748, 16770972);
-            drawDownloadUploadAnimations(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false);
+            drawCodeInputBackground(g, canvasWidth / 2, codeInputY, 2, 0, 16770972, 16750748, 16770972);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 10, 56, shoppingCenterState[2] >> 1, false);
         } else {
-            bq(g, canvasWidth / 2, var3 + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
+            bq(g, canvasWidth / 2, codeInputY + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
         }
 
-        br(g, canvasWidth / 2, var3 + 4, 62, false, fullDraw);
+        drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, fullDraw);
 
         for (int var4 = 0; var4 < 3; ++var4) {
             drawLayoutTextButton(g, var4, S, 0);
         }
 
-        aD(g, 61, x + getValueFrom6Table(S, getSelectedButtonIndex(), 0), y + getValueFrom6Table(S, getSelectedButtonIndex(), 1) + getValueFrom6Table(S, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(S, getSelectedButtonIndex(), 2) - 10, shoppingCenterState[2]);
+        drawMirroredTamagotchiPair(g, 61, x + getValueFrom6Table(S, getSelectedButtonIndex(), 0), y + getValueFrom6Table(S, getSelectedButtonIndex(), 1) + getValueFrom6Table(S, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(S, getSelectedButtonIndex(), 2) - 10, shoppingCenterState[2]);
     }
 
     public static void shoppingCenterSendViaIR(Graphics g, int x, int y) {
@@ -1696,20 +1696,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return (currentFontHeight + 1) * (splitCount(text, "\n") - 1) + currentFontHeight + 4;
     }
 
-    public static void bo(Graphics g, int x, int y, int var3, int var4, int var5, int var6, int var7) {
-        if (var3 == 2) {
+    public static void drawCodeInputBackground(Graphics g, int x, int y, int align, int outerBorderColor, int outerFillColor, int innerBorderColor, int innerFillColor) {
+        if (align == 2) {
             x -= 88;
-        } else if (var3 == 1) {
+        } else if (align == 1) {
             x -= 176;
         }
 
-        drawBeveledRect(g, x, y, 176, 70, var4, var5);
-        drawBeveledRect(g, x + 3, y + 3, 170, 64, var6, var7);
+        drawBeveledRect(g, x, y, 176, 70, outerBorderColor, outerFillColor);
+        drawBeveledRect(g, x + 3, y + 3, 170, 64, innerBorderColor, innerFillColor);
     }
 
-    public static void bv(Graphics g, int x, int y, int var3, int var4, int var5, int var6, int var7) {
+    public static void drawCodeInputBackgroundWithHorizontalLine(Graphics g, int x, int y, int outerBorderColor, int outerFillColor, int innerBorderColor, int innerFillColor, int var7) {
         byte width = 32;
         int newY = y + 24;
+
         setColorOfRGBInt(g, var7);
         g.fillRect(x, newY, width, 2);
         g.fillRect(x, newY + 2 + 1, width, 16);
@@ -1717,48 +1718,53 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(x + width + 176, newY, width, 2);
         g.fillRect(x + width + 176, newY + 2 + 1, width, 16);
         g.fillRect(x + width + 176, newY + 2 + 1 + 16 + 1, width, 2);
-        bo(g, canvasWidth / 2, y, 2, var3, var4, var5, var6);
+
+        drawCodeInputBackground(g, canvasWidth / 2, y, 2, outerBorderColor, outerFillColor, innerBorderColor, innerFillColor);
     }
 
-    public static void aD(Graphics var0, int var1, int var2, int var3, int var4, int var5) {
-        drawTamagotchiPair(var0, var1, var2, var3, var4, var5, 1);
+    public static void drawMirroredTamagotchiPair(Graphics g, int baseSpriteId, int centerX, int centerY, int distance, int var5) {
+        drawTamagotchiPair(g, baseSpriteId, centerX, centerY, distance, var5, 1);
     }
 
-    public static void drawTamagotchiPair(Graphics g, int spriteId, int centerX, int centerY, int distance, int var5, int var6) {
-        drawSprite(g, spriteId + (var6 & -(var5 >> 2 & 1)), centerX - distance / 2 - getSpriteWidth(spriteId) - 2 - 2, centerY - getSpriteHeight(spriteId) / 2, 0);
-        drawSprite(g, spriteId + (var6 & -((var5 >> 2) + 1 & 1)), centerX + distance / 2 + 2 + 2, centerY - getSpriteHeight(spriteId) / 2, 0);
+    public static void drawTamagotchiPair(Graphics g, int baseSpriteId, int centerX, int centerY, int distance, int time, int offsetAnimation) {
+        drawSprite(g, baseSpriteId + (offsetAnimation & -(time >> 2 & 1)), centerX - distance / 2 - getSpriteWidth(baseSpriteId) - 2 - 2, centerY - getSpriteHeight(baseSpriteId) / 2, 0);
+        drawSprite(g, baseSpriteId + (offsetAnimation & -((time >> 2) + 1 & 1)), centerX + distance / 2 + 2 + 2, centerY - getSpriteHeight(baseSpriteId) / 2, 0);
     }
 
-    public static void br(Graphics var0, int var1, int var2, int var3, boolean var4, boolean var5) {
-        int var6 = var1 - 35;
-        int var7 = var2 + (var3 - 49) / 2;
-        int var8 = getCursorIndex();
-        int var9 = getPreviousCursorIndex();
-        setColorOfRGBInt(var0, 16777215);
-        if (var5) {
-            var0.fillRect(var6 - 2, var2, 75, var3);
+    public static void drawCodeInput(Graphics g, int x, int y, int height, boolean showCursor, boolean redraw) {
+        int rightX = x - 35;
+        int topY = y + (height - 49) / 2;
+
+        int cursorIndex = getCursorIndex();
+        int previousCursorIndex = getPreviousCursorIndex();
+
+        setColorOfRGBInt(g, 16777215);
+
+        if (redraw) {
+            g.fillRect(rightX - 2, y, 75, height);
         } else {
-            var0.fillRect(var6 + var9 % 5 * 15, var7 + var9 / 5 * 26, 11, 24);
-            var0.fillRect(var6 + var8 % 5 * 15, var7 + var8 / 5 * 26, 11, 24);
+            g.fillRect(rightX + previousCursorIndex % 5 * 15, topY + previousCursorIndex / 5 * 26, 11, 24);
+            g.fillRect(rightX + cursorIndex % 5 * 15, topY + cursorIndex / 5 * 26, 11, 24);
         }
 
-        if (var4) {
-            setColorOfRGBInt(var0, 13619071);
-            var0.fillRect(var6 + var8 % 5 * 15, var7 + var8 / 5 * 26, 11, 24);
+        if (showCursor) {
+            setColorOfRGBInt(g, 13619071);
+            g.fillRect(rightX + cursorIndex % 5 * 15, topY + cursorIndex / 5 * 26, 11, 24);
         }
 
-        setColorOfRGBInt(var0, 0);
-        if (var5) {
-            by(var0, var1, var7, 2);
+        setColorOfRGBInt(g, 0);
+
+        if (redraw) {
+            drawAllDigits(g, x, topY, 2);
         } else {
-            bz(var0, var1, var7, 2, var9);
-            bz(var0, var1, var7, 2, var8);
+            drawDigit(g, x, topY, 2, previousCursorIndex);
+            drawDigit(g, x, topY, 2, cursorIndex);
         }
 
     }
 
     public static void bD() {
-        clearDigitEditor();
+        clearCodeInput();
         setCursorIndex(0);
         bC(0);
     }
@@ -1840,8 +1846,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void bF() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(121, 6);
+            openMenu();
+            setCurrentExplanation(121, 6);
         } else {
             if (parentCallState[0] != 0) {
                 if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
@@ -1855,7 +1861,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         parentCallState[0] = 0;
                     }
                 }
-            } else if (handleDigitEditorInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
+            } else if (handleCodeInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
                 parentCallState[0] = 1;
             }
 
@@ -1865,7 +1871,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void downloadParentCallData() {
         clearDownloadedParentCallData();
-        bN();
+        prepareParentCallSentData();
         DataInputStream inputStream = null;
 
         try {
@@ -1913,7 +1919,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void bN() {
+    public static void prepareParentCallSentData() {
         setSomeCommonFlagSentToServer();
         setDigitSentToServer(1, 1);
         setDigitSentToServer(2, 3);
@@ -1952,8 +1958,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void bI() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(127, 6);
+            openMenu();
+            setCurrentExplanation(127, 6);
         } else {
             if (6 < parentCallState[6]) {
                 switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
@@ -2015,7 +2021,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawFullWidthScrollingText(g, x, getText(65), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
         int var5 = y + 3 + textHeight + 3 + currentFontHeight + 4 + 20;
         boolean var6 = 0 == getSelectedButtonIndex() & (parentCallState[6] & 4) != 0;
-        ca(g, canvasWidth / 2, var5, var6);
+        drawCodeInputWithSimpleBackground(g, canvasWidth / 2, var5, var6);
         // 18: OK
         drawTextButton(g, 1, getText(18), canvasWidth / 2, var4, 100, 28, 2, 0);
         if (fullDraw) {
@@ -2025,7 +2031,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (1 == getSelectedButtonIndex()) {
-            aD(g, 55, canvasWidth / 2, y + 240 - 42 + 14, 120, parentCallState[6]);
+            drawMirroredTamagotchiPair(g, 55, canvasWidth / 2, y + 240 - 42 + 14, 120, parentCallState[6]);
         }
 
     }
@@ -2063,21 +2069,22 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(var6 + 232, var5, 4, currentFontHeight);
         g.fillRect(var6 - 1, var5 - 1, 1, 1);
         g.fillRect(var6 + 232 - 1, var5 + currentFontHeight, 1, 1);
-        byte var7;
+
+        byte textIndex;
         if (parentCallState[5] - 1 <= parentCallState[4]) {
-            var7 = 22;
+            textIndex = 22;
         } else {
-            var7 = 87;
+            textIndex = 87;
         }
 
         // 7: Explanation
-        drawTextButton(g, 0, getText(var7), canvasWidth / 2, y + 240 - 36, 160, 28, 2, 0);
+        drawTextButton(g, 0, getText(textIndex), canvasWidth / 2, y + 240 - 36, 160, 28, 2, 0);
         drawSprite(g, 27, x + 1, y + 1, 0);
         drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
         drawSprite(g, 37 + (parentCallState[6] >> 1 & 1), x + 240 - 44, y + var4 + 1, 0);
         drawSprite(g, 12, x + 240 - 38, var4 + 9, 0);
         drawSprite(g, 92, x + 140, var5 - 16, 0);
-        aD(g, 55, canvasWidth / 2, y + 240 - 36 + getSpriteHeight(55) / 2, 160, parentCallState[6]);
+        drawMirroredTamagotchiPair(g, 55, canvasWidth / 2, y + 240 - 36 + getSpriteHeight(55) / 2, 160, parentCallState[6]);
     }
 
     public static void parentCallAllowanceTicket(Graphics g, int x, int y) {
@@ -2097,21 +2104,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 66: Enter the Allowance Ticket No. in your Keitama!
         drawFullWidthScrollingText(g, x, getText(66), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
         int var4 = y + 3 + textHeight + 3 + currentFontHeight + 12;
-        ca(g, canvasWidth / 2, var4, false);
+        drawCodeInputWithSimpleBackground(g, canvasWidth / 2, var4, false);
 
         for (int i = 0; i < 2; ++i) {
             drawLayoutTextButton(g, i, Y, 0);
         }
 
         bq(g, canvasWidth / 2, var4 + 5, 56, parentCallState[6] >> 1, false, 16777076);
-        aD(g, 55, x + getValueFrom6Table(Y, getSelectedButtonIndex(), 0), y + getValueFrom6Table(Y, getSelectedButtonIndex(), 1) + getValueFrom6Table(Y, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(Y, getSelectedButtonIndex(), 2), parentCallState[6]);
+        drawMirroredTamagotchiPair(g, 55, x + getValueFrom6Table(Y, getSelectedButtonIndex(), 0), y + getValueFrom6Table(Y, getSelectedButtonIndex(), 1) + getValueFrom6Table(Y, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(Y, getSelectedButtonIndex(), 2), parentCallState[6]);
     }
 
-    public static void parentCallSendViaIR(Graphics var0, int var1, int var2) {
-        sendViaIR(var0, var1, var2);
+    public static void parentCallSendViaIR(Graphics g, int x, int y) {
+        sendViaIR(g, x, y);
     }
 
-    public static void ca(Graphics g, int x, int y, boolean var3) {
+    public static void drawCodeInputWithSimpleBackground(Graphics g, int x, int y, boolean showCursor) {
         int newX = x - 88;
         if (fullDraw) {
             setColorOfRGBInt(g, 16777076);
@@ -2119,7 +2126,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             g.fillRect(newX + 2, y + 2, 173, 67);
         }
 
-        br(g, x, y + 2, 67, var3, fullDraw);
+        drawCodeInput(g, x, y + 2, 67, showCursor, fullDraw);
     }
 
     public static void loadingAnimation(Graphics g, int x, int y, int circleCount, int colorOffset) {
@@ -2136,7 +2143,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             disposeImage(imagesToTemporarilyDispose[i]);
         }
 
-        clearDigitEditor();
+        clearCodeInput();
         setCursorIndex(0);
         cd(0);
     }
@@ -2246,8 +2253,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cg() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(133, 6);
+            openMenu();
+            setCurrentExplanation(133, 6);
         } else {
             if (gotchiKingState[0] != 0) {
                 if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
@@ -2261,7 +2268,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         gotchiKingState[0] = 0;
                     }
                 }
-            } else if (handleDigitEditorInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
+            } else if (handleCodeInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
                 gotchiKingState[0] = 1;
             }
 
@@ -2369,8 +2376,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cm() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(139, 6);
+            openMenu();
+            setCurrentExplanation(139, 6);
         } else {
             if (6 < gotchiKingState[3]) {
                 switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
@@ -2438,7 +2445,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawFullWidthScrollingText(g, x, getText(68), y + 2 + textHeight + 2, gotchiKingState[3], 12, 16056665, 16777215);
         boolean var4 = 0 == getSelectedButtonIndex() & (gotchiKingState[3] & 4) != 0;
         int var5 = y + 2 + textHeight + 2 + currentFontHeight + 3;
-        ca(g, canvasWidth / 2, var5, var4);
+        drawCodeInputWithSimpleBackground(g, canvasWidth / 2, var5, var4);
         // 18: OK
         drawTextButton(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
         if (fullDraw) {
@@ -2451,7 +2458,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (1 == getSelectedButtonIndex()) {
-            aD(g, 39, canvasWidth / 2, y + 240 - 42 + getSpriteHeight(39) / 2, 100, gotchiKingState[3]);
+            drawMirroredTamagotchiPair(g, 39, canvasWidth / 2, y + 240 - 42 + getSpriteHeight(39) / 2, 100, gotchiKingState[3]);
         }
 
     }
@@ -2489,7 +2496,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (gotchiKingState[1] == 3) {
             // 75: Enter
             drawTextButton(g, 0, getText(75), canvasWidth / 2, y + 240 - 44, 100, 28, 2, 0);
-            aD(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 100, gotchiKingState[3]);
+            drawMirroredTamagotchiPair(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 100, gotchiKingState[3]);
         }
 
         drawSprite(g, 27, x + 1, y + 1, 0);
@@ -2513,7 +2520,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
         drawSprite(g, 37 + (gotchiKingState[3] >> 1 & 1), x + 240 - 44, imageY + 2, 0);
         drawSprite(g, 12, x + 240 - 38, imageY + 10, 0);
-        aD(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 160, gotchiKingState[3]);
+        drawMirroredTamagotchiPair(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 160, gotchiKingState[3]);
     }
 
     public static void gotchiKingIssuingInvitation(Graphics g, int x, int y) {
@@ -2533,38 +2540,38 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void gotchiKingInviteTicket(Graphics g, int x, int y) {
         // 69: Invite Ticket
         int textHeight = calculateTextHeight(getText(69));
-        int var4;
+        int newY;
         if (fullDraw) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
             // 69: Invite Ticket
             drawTextWithBackground(g, getText(69), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(69)) + 8, 2);
         } else {
-            var4 = y + getValueFrom6Table(ae, 0, 1);
-            var4 += getValueFrom6Table(ae, 0, 3) / 2;
-            var4 -= getSpriteHeight(39) / 2;
+            newY = y + getValueFrom6Table(gotchingInviteTicketLayout, 0, 1);
+            newY += getValueFrom6Table(gotchingInviteTicketLayout, 0, 3) / 2;
+            newY -= getSpriteHeight(39) / 2;
             setColorOfRGBInt(g, 16763955);
-            g.fillRect(x, var4, 240, 240 - (var4 + getSpriteHeight(39) / 2));
+            g.fillRect(x, newY, 240, 240 - (newY + getSpriteHeight(39) / 2));
         }
 
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 70: Enter the Invitation Ticket No. in your Keitama!
         drawFullWidthScrollingText(g, x, getText(70), y + 3 + textHeight + 3, gotchiKingState[3], 12, 16056665, 16777215);
 
-        for (var4 = 0; var4 < 2; ++var4) {
-            drawLayoutTextButton(g, var4, ae, 0);
+        for (int i = 0; i < 2; ++i) {
+            drawLayoutTextButton(g, i, gotchingInviteTicketLayout, 0);
         }
 
-        int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
+        int codeInputY = y + 3 + textHeight + 3 + currentFontHeight + 12;
         if (fullDraw) {
-            bo(g, canvasWidth / 2, var5, 2, 0, 16756418, 13722050, 16756418);
-            drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 10, 56, gotchiKingState[3] >> 1, false);
+            drawCodeInputBackground(g, canvasWidth / 2, codeInputY, 2, 0, 16756418, 13722050, 16756418);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 10, 56, gotchiKingState[3] >> 1, false);
         } else {
-            bq(g, canvasWidth / 2, var5 + 10, 56, gotchiKingState[3] >> 1, false, 16756418);
+            bq(g, canvasWidth / 2, codeInputY + 10, 56, gotchiKingState[3] >> 1, false, 16756418);
         }
 
-        br(g, canvasWidth / 2, var5 + 4, 62, false, fullDraw);
-        aD(g, 39, x + getValueFrom6Table(ae, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ae, getSelectedButtonIndex(), 1) + getValueFrom6Table(ae, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ae, getSelectedButtonIndex(), 2), gotchiKingState[3]);
+        drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, fullDraw);
+        drawMirroredTamagotchiPair(g, 39, x + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 0), y + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 1) + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 2), gotchiKingState[3]);
     }
 
     public static void gotchiKingSendViaIR(Graphics g, int x, int y) {
@@ -2572,7 +2579,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cz() {
-        clearDigitEditor();
+        clearCodeInput();
         setCursorIndex(0);
         cy(0);
     }
@@ -2648,8 +2655,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cB() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(145, 6);
+            openMenu();
+            setCurrentExplanation(145, 6);
         } else {
             if (travelMemoryState[0] != 0) {
                 if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
@@ -2663,7 +2670,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         travelMemoryState[0] = 0;
                     }
                 }
-            } else if (handleDigitEditorInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
+            } else if (handleCodeInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
                 travelMemoryState[0] = 1;
             }
 
@@ -2735,8 +2742,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cD() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(151, 7);
+            openMenu();
+            setCurrentExplanation(151, 7);
         } else {
             if (6 < travelMemoryState[2]) {
                 switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
@@ -2777,7 +2784,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void travelMemoryCodeInput(Graphics g, int x, int y) {
         // 36: Let's look at travel memories from your trips!
         int textHeight = calculateTextHeight(getText(36));
-        int var4 = y + 2 + textHeight + 2 + currentFontHeight + 3;
+        int codeInputY = y + 2 + textHeight + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (fullDraw) {
@@ -2795,20 +2802,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (fullDraw) {
-            bv(g, x, var4, 0, 16777215, 2210832, 10873360, 7786961);
-            drawDownloadUploadAnimations(g, canvasWidth / 2, var4 + 4 + 2, 56, travelMemoryState[2] >> 1, true);
+            drawCodeInputBackgroundWithHorizontalLine(g, x, codeInputY, 0, 16777215, 2210832, 10873360, 7786961);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 4 + 2, 56, travelMemoryState[2] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, var4 + 4 + 2, 56, travelMemoryState[2] >> 1, true, 10873360);
+            bq(g, canvasWidth / 2, codeInputY + 4 + 2, 56, travelMemoryState[2] >> 1, true, 10873360);
         }
 
         boolean var7 = 0 == getSelectedButtonIndex() & (travelMemoryState[2] & 4) != 0;
-        br(g, canvasWidth / 2, var4 + 4, 62, var7, fullDraw);
+        drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, var7, fullDraw);
         // 71: Enter the Travel No. shown on your Keitama
         drawFullWidthScrollingText(g, x, getText(71), y + 2 + textHeight + 2, travelMemoryState[2], 12, 16056665, 16777215);
         // 18: OK
         drawTextButton(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
         if (1 == getSelectedButtonIndex()) {
-            aD(g, 35, canvasWidth / 2, y + 240 - 42 + 14 + 1, 100, travelMemoryState[2]);
+            drawMirroredTamagotchiPair(g, 35, canvasWidth / 2, y + 240 - 42 + 14 + 1, 100, travelMemoryState[2]);
         }
 
     }
@@ -2849,7 +2856,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawLayoutTextButton(g, i, aj, 0);
         }
 
-        aD(g, 35, x + getValueFrom6Table(aj, getSelectedButtonIndex(), 0), y + getValueFrom6Table(aj, getSelectedButtonIndex(), 1) + getValueFrom6Table(aj, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(aj, getSelectedButtonIndex(), 2), travelMemoryState[2]);
+        drawMirroredTamagotchiPair(g, 35, x + getValueFrom6Table(aj, getSelectedButtonIndex(), 0), y + getValueFrom6Table(aj, getSelectedButtonIndex(), 1) + getValueFrom6Table(aj, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(aj, getSelectedButtonIndex(), 2), travelMemoryState[2]);
     }
 
     public static void cK(Graphics var0, int var1, int var2) {
@@ -2860,7 +2867,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void cO() {
-        clearDigitEditor();
+        clearCodeInput();
         ag(2, true);
         setSelectedButtonIndex(exchangePlazaState[0]);
         cN(0);
@@ -2974,8 +2981,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cQ() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(158, 6);
+            openMenu();
+            setCurrentExplanation(158, 6);
         } else {
             if (exchangePlazaState[0] != 0) {
                 if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
@@ -2989,7 +2996,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                         exchangePlazaState[0] = 0;
                     }
                 }
-            } else if (handleDigitEditorInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
+            } else if (handleCodeInput(isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN), isKeyPressed(KEY_SELECT), getPressedNumber())) {
                 exchangePlazaState[0] = 1;
             }
 
@@ -3007,8 +3014,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cS() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(164, 2);
+            openMenu();
+            setCurrentExplanation(164, 2);
         } else {
             exchangePlazaState[4] = exchangePlazaState[3];
             if (isKeyPressed(KEY_LEFT)) {
@@ -3106,8 +3113,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cU() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(167, 1);
+            openMenu();
+            setCurrentExplanation(167, 1);
         } else {
             if (6 < exchangePlazaState[2] && getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT)) != -1) {
                 cN(3);
@@ -3118,8 +3125,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cV() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(166, 1);
+            openMenu();
+            setCurrentExplanation(166, 1);
         } else {
             if (6 < exchangePlazaState[2] && getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT)) != -1) {
                 cN(7);
@@ -3130,8 +3137,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void cW() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(168, 7);
+            openMenu();
+            setCurrentExplanation(168, 7);
         } else {
             if (6 < exchangePlazaState[2]) {
                 switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
@@ -3189,7 +3196,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void exchangePlazaCodeInput(Graphics g, int x, int y) {
         // 41: Trade the regional specialty items you've collected!
         int textHeight = calculateTextHeight(getText(41));
-        int var4 = y + 2 + textHeight + 2 + currentFontHeight + 3;
+        int codeInputY = y + 2 + textHeight + 2 + currentFontHeight + 3;
         boolean var5 = true;
         boolean var6 = true;
         if (fullDraw) {
@@ -3203,20 +3210,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (fullDraw) {
-            bv(g, x, var4, 0, 16777215, 3429838, 6728678, 7786961);
-            drawDownloadUploadAnimations(g, canvasWidth / 2, var4 + 4 + 2, 56, exchangePlazaState[2] >> 1, true);
+            drawCodeInputBackgroundWithHorizontalLine(g, x, codeInputY, 0, 16777215, 3429838, 6728678, 7786961);
+            drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 4 + 2, 56, exchangePlazaState[2] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, var4 + 4 + 2, 56, exchangePlazaState[2] >> 1, true, 6728678);
+            bq(g, canvasWidth / 2, codeInputY + 4 + 2, 56, exchangePlazaState[2] >> 1, true, 6728678);
         }
 
         // 72: Enter the Exchange No. shown on your Keitama
         drawFullWidthScrollingText(g, x, getText(72), y + 2 + textHeight + 2, exchangePlazaState[2], 12, 16056665, 16777215);
         boolean var7 = 0 == getSelectedButtonIndex() & (exchangePlazaState[2] & 4) != 0;
-        br(g, canvasWidth / 2, var4 + 4, 62, var7, fullDraw);
+        drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, var7, fullDraw);
         // 18: OK
         drawTextButton(g, 1, getText(18), canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
         if (1 == getSelectedButtonIndex()) {
-            aD(g, 30, canvasWidth / 2, y + 240 - 42 + 7 + 1, 100, exchangePlazaState[2]);
+            drawMirroredTamagotchiPair(g, 30, canvasWidth / 2, y + 240 - 42 + 7 + 1, 100, exchangePlazaState[2]);
         }
 
     }
@@ -3308,7 +3315,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setColorOfRGBInt(g, 16777215);
         // 90: No trading partners were found in that region.
         drawString(g, getText(90), canvasWidth / 2, var5 + 2, TextAlign.CENTER);
-        aD(g, 30, canvasWidth / 2, var5 - 44 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
+        drawMirroredTamagotchiPair(g, 30, canvasWidth / 2, var5 - 44 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
     }
 
     public static void exchangePlazaExchangeSuccess(Graphics g, int x, int y) {
@@ -3328,7 +3335,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawString(g, exchangePlazaTexts[0], canvasWidth / 2, var4 + 2, TextAlign.CENTER);
         drawString(g, exchangePlazaTexts[1], canvasWidth / 2, var4 + 2 + currentFontHeight + 1, TextAlign.CENTER);
         drawString(g, exchangePlazaTexts[2], canvasWidth / 2, var4 + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
-        aD(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
+        drawMirroredTamagotchiPair(g, 30, canvasWidth / 2, var4 - 38 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
     }
 
     public static void exchangePlazaExchangeTicket(Graphics g, int x, int y) {
@@ -3346,20 +3353,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawLayoutTextButton(g, i, ao, 0);
         }
 
-        int var5 = y + 3 + textHeight + 3 + currentFontHeight + 12;
-        bv(g, x, var5, 0, 16777215, 16730112, 16751616, 7786961);
-        br(g, canvasWidth / 2, var5 + 4, 62, false, true);
-        drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 10, 56, exchangePlazaState[2] >> 1, false);
-        aD(g, 30, x + getValueFrom6Table(ao, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ao, getSelectedButtonIndex(), 1) + getValueFrom6Table(ao, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ao, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
+        int codeInputY = y + 3 + textHeight + 3 + currentFontHeight + 12;
+        drawCodeInputBackgroundWithHorizontalLine(g, x, codeInputY, 0, 16777215, 16730112, 16751616, 7786961);
+        drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, true);
+        drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 10, 56, exchangePlazaState[2] >> 1, false);
+        drawMirroredTamagotchiPair(g, 30, x + getValueFrom6Table(ao, getSelectedButtonIndex(), 0), y + getValueFrom6Table(ao, getSelectedButtonIndex(), 1) + getValueFrom6Table(ao, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(ao, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
     }
 
     public static void exchangePlazaSendViaIR(Graphics var0, int var1, int var2) {
         sendViaIR(var0, var1, var2);
     }
 
-    public static void openExplanation(int idx, int var1) {
-        explanationState[0] = idx;
-        explanationState[1] = var1;
+    public static void openExplanation(int index, int numberOfPages) {
+        explanationState[0] = index;
+        explanationState[1] = numberOfPages;
         explanationState[2] = 0;
         explanationState[3] = 1;
         selectSoftLabel(SOFT_LABEL_BACK);
@@ -3438,28 +3445,28 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void ao() {
-        aq[6] = getSelectedButtonIndex();
-        aq[7] = getAw1();
-        aq[8] = getAw2();
+    public static void openMenu() {
+        menuState[6] = getSelectedButtonIndex();
+        menuState[7] = getAw1();
+        menuState[8] = getAw2();
         ag(4, true);
         setSelectedButtonIndex(0);
-        ap(0, -1);
-        aq[4] = getSelectedButtonIndex();
-        aq[0] = 1;
-        aq[5] = 0;
+        setCurrentExplanation(0, -1);
+        menuState[4] = getSelectedButtonIndex();
+        menuState[0] = 1; // isMenuOpen
+        menuState[5] = 0;
         selectSoftLabel(SOFT_LABEL_BACK);
         dq(0);
     }
 
-    public static void ap(int var0, int var1) {
-        aq[2] = var0;
-        aq[3] = var1;
+    public static void setCurrentExplanation(int index, int numberOfPages) {
+        menuState[2] = index;
+        menuState[3] = numberOfPages;
     }
 
     public static void closeMenu() {
         fullDrawOnNextPaint = true;
-        aq[0] = 0;
+        menuState[0] = 0;
     }
 
     public static void dq(int var0) {
@@ -3469,10 +3476,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 1:
                 ag(4, true);
-                setSelectedButtonIndex(aq[4]);
+                setSelectedButtonIndex(menuState[4]);
                 break;
             case 2:
-                openExplanation(aq[2], aq[3]);
+                openExplanation(menuState[2], menuState[3]);
                 break;
             case 3:
                 ag(2, true);
@@ -3483,18 +3490,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 setSelectedButtonIndex(1);
         }
 
-        aq[5] = 0;
-        aq[1] = var0;
+        menuState[5] = 0;
+        menuState[1] = var0;
     }
 
     public static boolean isMenuOpen() {
-        return aq[0] != 0;
+        return menuState[0] != 0;
     }
 
     public static void dw() {
         if (isMenuOpen()) {
-            int var10002 = aq[5]++;
-            switch (aq[1]) {
+            int var10002 = menuState[5]++;
+            switch (menuState[1]) {
                 case 0:
                     dq(1);
                     break;
@@ -3520,15 +3527,15 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void dt() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ag(aq[7], aq[8] != 0);
-            setSelectedButtonIndex(aq[6]);
+            ag(menuState[7], menuState[8] != 0);
+            setSelectedButtonIndex(menuState[6]);
             selectSoftLabel(currentSoftLabelIdx);
             closeMenu();
         } else {
-            aq[4] = getSelectedButtonIndex();
+            menuState[4] = getSelectedButtonIndex();
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
-                    if (0 < aq[3]) {
+                    if (0 < menuState[3]) {
                         dq(2);
                     }
                     break;
@@ -3579,12 +3586,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void drawMenuPages(Graphics g, int x, int y) {
         if (isMenuOpen()) {
-            switch (aq[1]) {
+            switch (menuState[1]) {
                 case 0:
                 default:
                     break;
                 case 1:
-                    menuPage(g, x, y);
+                    mainMenu(g, x, y);
                     break;
                 case 2:
                     if (isExplanationOpen()) {
@@ -3601,7 +3608,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void menuPage(Graphics g, int x, int y) {
+    public static void mainMenu(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         int newX = x + 120;
         int newY = y + 5;
@@ -3618,7 +3625,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 59: Sound  OFF
         drawButton(g, getText(58 + gameSave[3]), 3, newY + 2 + (currentFontHeight + 6) * 5);
 
-        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, menuState[5]);
     }
 
     public static void returnToTitlePage(Graphics g, int x, int y) {
@@ -3632,7 +3639,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawButton(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
         // 63: No
         drawButton(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
-        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, menuState[5]);
     }
 
     public static void closeAppPage(Graphics g, int x, int y) {
@@ -3646,7 +3653,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawButton(g, getText(62), 0, newY + 2 + (currentFontHeight + 6) * 2);
         // 63: No
         drawButton(g, getText(63), 1, newY + 2 + (currentFontHeight + 6) * 3);
-        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, aq[5]);
+        drawMenuEggs(g, GameApp.canvasWidth / 2, newY + 2 + currentFontHeight + 6 + 2, 86, menuState[5]);
     }
 
     public static void drawButton(Graphics g, String text, int buttonIdx, int y) {
@@ -4059,17 +4066,17 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawBeveledRect(g, x, y, width, height, borderColor, color);
     }
 
-    public static void clearDigitEditor() {
+    public static void clearCodeInput() {
         for (int i = 0; i < 4; ++i) {
-            digitEditorState[i] = 0;
+            codeInputState[i] = 0;
         }
 
         setCursorIndex(0);
     }
 
     public static void setCursorIndex(int index) {
-        digitEditorState[5] = digitEditorState[4];
-        digitEditorState[4] = index;
+        codeInputState[5] = codeInputState[4];
+        codeInputState[4] = index;
     }
 
     public static void parseAndStoreDownloadedPassword(byte[] passwordData) {
@@ -4081,20 +4088,20 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void setDigitBankA(int digitIndex, int digit) {
         digit %= 10;
-        int packedInt = digitEditorState[0 + digitIndex / 8];
+        int packedInt = codeInputState[0 + digitIndex / 8];
         int shift = 4 * (7 - digitIndex % 8);
         packedInt &= ~(15 << shift);
         packedInt |= digit << shift;
-        digitEditorState[0 + digitIndex / 8] = packedInt;
+        codeInputState[0 + digitIndex / 8] = packedInt;
     }
 
     public static void setDigitBankB(int digitIndex, int digit) {
         digit %= 10;
-        int packedInt = digitEditorState[2 + digitIndex / 8];
+        int packedInt = codeInputState[2 + digitIndex / 8];
         int shift = 4 * (7 - digitIndex % 8);
         packedInt &= ~(15 << shift);
         packedInt |= digit << shift;
-        digitEditorState[2 + digitIndex / 8] = packedInt;
+        codeInputState[2 + digitIndex / 8] = packedInt;
     }
 
     public static void generateDerivedCodeInBankB() {
@@ -4107,25 +4114,25 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static int getDigitBankA(int digitIndex) {
-        int digit = digitEditorState[0 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
+        int digit = codeInputState[0 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
         return digit;
     }
 
     public static int getDigitBankB(int digitIndex) {
-        int digit = digitEditorState[2 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
+        int digit = codeInputState[2 + digitIndex / 8] >> 4 * (7 - digitIndex % 8) & 15;
         return digit;
     }
 
     public static int getCursorIndex() {
-        return digitEditorState[4];
+        return codeInputState[4];
     }
 
     public static int getPreviousCursorIndex() {
-        return digitEditorState[5];
+        return codeInputState[5];
     }
 
-    public static boolean handleDigitEditorInput(boolean moveLeft, boolean moveRight, boolean moveUp, boolean moveDown, boolean incrementDigit, int directDigit) {
-        int cursorIndex = digitEditorState[4];
+    public static boolean handleCodeInput(boolean moveLeft, boolean moveRight, boolean moveUp, boolean moveDown, boolean incrementDigit, int directDigit) {
+        int cursorIndex = codeInputState[4];
         boolean allFilled = false;
 
         if (incrementDigit) {
@@ -4205,27 +4212,27 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return number;
     }
 
-    public static void by(Graphics g, int x, int y, int var3) {
+    public static void drawAllDigits(Graphics g, int x, int y, int align) {
         for (int i = 0; i < 10; ++i) {
-            bz(g, x, y, var3, i);
+            drawDigit(g, x, y, align, i);
         }
 
     }
 
-    public static void bz(Graphics g, int x, int y, int var3, int var4) {
-        if (var3 == 2) {
+    public static void drawDigit(Graphics g, int x, int y, int align, int index) {
+        if (align == 2) {
             x -= 35;
-        } else if (var3 == 1) {
+        } else if (align == 1) {
             x -= 71;
         }
 
-        x += var4 * 15;
-        if (5 <= var4) {
+        x += index * 15;
+        if (5 <= index) {
             y += 26;
             x -= 75;
         }
 
-        drawString(g, "" + getDigitBankA(var4), x, y, TextAlign.LEFT);
+        drawString(g, "" + getDigitBankA(index), x, y, TextAlign.LEFT);
     }
 
     public static void drawRainbowCircles(Graphics g, int x, int y, int stepX, int stepY, int radius, int startColorOffset, int circleCount) {
@@ -4677,8 +4684,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void ee() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ao();
-            ap(irState[3], irState[4]);
+            openMenu();
+            setCurrentExplanation(irState[3], irState[4]);
         } else {
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
@@ -4736,7 +4743,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 38: End
         drawTextButton(g, 0, getText(38), canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10, currentFont.stringWidth(getText(38)) + 8, currentFontHeight + 4, 2, 0);
         // 18: OK
-        aD(g, irState[5], canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, irState[1]);
+        drawMirroredTamagotchiPair(g, irState[5], canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, irState[1]);
     }
 
     public static void sendViaIR_SendingComplete(Graphics g, int x, int y) {
@@ -4754,7 +4761,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawLayoutTextButton(g, i, var3, 0);
         }
 
-        aD(g, irState[5], x + getValueFrom6Table(var3, getSelectedButtonIndex(), 0), y + getValueFrom6Table(var3, getSelectedButtonIndex(), 1) + getValueFrom6Table(var3, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(var3, getSelectedButtonIndex(), 2) - 10, irState[1]);
+        drawMirroredTamagotchiPair(g, irState[5], x + getValueFrom6Table(var3, getSelectedButtonIndex(), 0), y + getValueFrom6Table(var3, getSelectedButtonIndex(), 1) + getValueFrom6Table(var3, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(var3, getSelectedButtonIndex(), 2) - 10, irState[1]);
     }
 
     public static void sendViaIR_Interrupted(Graphics g, int x, int y) {
@@ -4773,7 +4780,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 29, canvasWidth / 2, y + 50, 2);
         // 18: OK
         drawTextButton(g, 0, getText(18), canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10, currentFont.stringWidth(getText(18)) + 8, currentFontHeight + 4, 2, 0);
-        aD(g, irState[5], canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, irState[1]);
+        drawMirroredTamagotchiPair(g, irState[5], canvasWidth / 2, y + 50 + getSpriteHeight(29) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, irState[1]);
     }
 
     public static void exitGame() {
@@ -4852,7 +4859,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void b() {
-        o();
+        checkMusic();
         if (isKeyPressed(KEY_ASTERISK)) {
             toggleSound();
             saveGame();
@@ -4995,7 +5002,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public void mediaAction(MediaPresenter source, int type, int param) {
         if (type == 3) {
-            StackMap(loopedSoundIdx, true);
+            playMusic(loopedSoundId, true);
         }
 
     }
@@ -5012,7 +5019,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         } catch (InterruptedException e) {
         }
 
-        Z();
+        restartMusicOnNext();
         resumedDraw = true;
         fullDrawOnNextPaint = true;
     }
