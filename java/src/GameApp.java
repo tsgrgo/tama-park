@@ -173,7 +173,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static boolean au;
     public static int at;
     public static String[] texts;
-    public static int[] buttonState; // [0: selectedButtonIdx, 1, 2, 3: selectedOutlineColor, 4: selectedColor, 5, 6: selectedTextColor, 7: selectedShadowColor, 8: outlineColor, 9: color, 10, 11: textColor, 12: shadowColor, 13: isPressed]
+    public static int[] buttonState; // [0: selectedButtonIdx, 1: numberOfButtons, 2: canLoopAround, 3: selectedOutlineColor, 4: selectedColor, 5, 6: selectedTextColor, 7: selectedShadowColor, 8: outlineColor, 9: color, 10, 11: textColor, 12: shadowColor, 13: isPressed]
     public static int[] codeInputState;
     public static int[] digitShuffleTable;
     public static int[] rainbowColors;
@@ -1078,8 +1078,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawString(g, "Confirm:Exit", GameApp.canvasWidth / 2, y + 240 - 10 - currentFontHeight, TextAlign.CENTER);
     }
 
-    public static void ak() {
-        ag(2, true);
+    public static void resetTitleScreenState() {
+        setButtonConfig(2, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         playMusic(1, true);
@@ -1245,8 +1245,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void az() {
-        ag(3, true);
+    public static void resetMailboxModeState() {
+        setButtonConfig(3, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         playMusic(2, true);
@@ -1336,8 +1336,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void aH() {
-        ag(2, true);
+    public static void resetTravelModeSate() {
+        setButtonConfig(2, true);
         setSelectedButtonIndex(0);
         setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 16777215, 16353930, 16777215, 13816530);
         playMusic(0, true);
@@ -1422,7 +1422,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void aM() {
+    public static void resetShoppingCenterState() {
         nextShoppingCenterState(0);
     }
 
@@ -1432,7 +1432,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 selectSoftLabel(SOFT_LABEL_EMPTY);
                 break;
             case 1:
-                ag(5, true);
+                setButtonConfig(5, true);
                 setSelectedButtonIndex(4);
                 setButtonTheme2(16750848, 16750848, 16763955, 16777215, 16750848, 16777164, 16750848, 16750848);
                 selectSoftLabel(SOFT_LABEL_MENU);
@@ -1442,7 +1442,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 3:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(3, true);
+                setButtonConfig(3, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
@@ -1639,6 +1639,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void shoppingCenterIssuingItemTicket(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         setColorOfRGBInt(g, 6728679);
         g.fillRect(x, y + 110, 240, getSpriteHeight(6));
@@ -1663,6 +1664,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             g.fillRect(x, y + getValueFrom6Table(itemTicketLayout, 0, 1), 240, 240 - (getValueFrom6Table(itemTicketLayout, 0, 1) + getSpriteHeight(0)));
         }
 
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
 
         // 64: Enter the Ticket No. in your Keitama
@@ -1672,7 +1674,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawCodeInputBackground(g, canvasWidth / 2, codeInputY, 2, 0, 16770972, 16750748, 16770972);
             drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 10, 56, shoppingCenterState[2] >> 1, false);
         } else {
-            bq(g, canvasWidth / 2, codeInputY + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, codeInputY + 10, 56, shoppingCenterState[2] >> 1, false, 16770972);
         }
 
         drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, fullDraw);
@@ -1700,18 +1702,18 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawString(g, text, x + width - time * speed % (width + stringWidth), y, TextAlign.LEFT);
     }
 
-    public static void drawDownloadUploadAnimations(Graphics g, int x, int y, int var3, int time, boolean dir) {
-        drawSprite(g, 32, x - (var3 + 6), y + 18, 0);
-        drawSprite(g, (!dir ? 77 : 78) + time % 3 * 2, x - (var3 + 5), y, 0);
-        drawSprite(g, 33, x + (var3 - 3), y + 20, 0);
-        drawSprite(g, (dir ? 83 : 84) + time % 3 * 2, x + (var3 - 3), y, 0);
+    public static void drawDownloadUploadAnimations(Graphics g, int x, int y, int distance, int time, boolean dir) {
+        drawSprite(g, 32, x - (distance + 6), y + 18, 0);
+        drawSprite(g, (!dir ? 77 : 78) + time % 3 * 2, x - (distance + 5), y, 0);
+        drawSprite(g, 33, x + (distance - 3), y + 20, 0);
+        drawSprite(g, (dir ? 83 : 84) + time % 3 * 2, x + (distance - 3), y, 0);
     }
 
-    public static void bq(Graphics g, int var1, int var2, int var3, int var4, boolean var5, int var6) {
-        setColorOfRGBInt(g, var6);
-        g.fillRect(var1 - (var3 + 6), var2, getSpriteWidth(32), 18 + getSpriteHeight(32));
-        g.fillRect(var1 + (var3 - 3), var2, getSpriteWidth(33), 20 + getSpriteHeight(33));
-        drawDownloadUploadAnimations(g, var1, var2, var3, var4, var5);
+    public static void drawDownloadUploadAnimationsWithBackground(Graphics g, int x, int y, int distance, int time, boolean dir, int backgroundColor) {
+        setColorOfRGBInt(g, backgroundColor);
+        g.fillRect(x - (distance + 6), y, getSpriteWidth(32), 18 + getSpriteHeight(32));
+        g.fillRect(x + (distance - 3), y, getSpriteWidth(33), 20 + getSpriteHeight(33));
+        drawDownloadUploadAnimations(g, x, y, distance, time, dir);
     }
 
     public static void drawTextWithBackground(Graphics g, String text, int x, int y, int width, int align) {
@@ -1801,7 +1803,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void bD() {
+    public static void resetParentCallState() {
         clearCodeInput();
         setCursorIndex(0);
         nextParentCallState(0);
@@ -1816,7 +1818,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             case 1:
                 selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 parentCallState[0] = 0;
@@ -1826,13 +1828,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 3:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 4:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2054,6 +2056,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(17), canvasWidth / 2, y + 3, 232, 2);
         }
 
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 65: Enter the Address No. shown on your Keitama
         drawFullWidthScrollingText(g, x, getText(65), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
@@ -2065,7 +2068,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (fullDraw) {
             drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true, 16777076);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, var5 + 5, 56, parentCallState[6] >> 1, true, 16777076);
         }
 
         if (1 == getSelectedButtonIndex()) {
@@ -2076,6 +2079,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void connectingToTamaPlanet(Graphics g, int x, int y) {
         loadingAnimation(g, x, y, 8, 0);
+        // Connecting to Tama Planet
         drawSprite(g, 24, x + 126, y + 100, 0);
         int spriteWidth = getSpriteWidth(24);
 
@@ -2138,7 +2142,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             g.fillRect(x, y + getValueFrom6Table(Y, 0, 1) - 5, 240, 240 - (getValueFrom6Table(Y, 0, 1) - 5 + getSpriteHeight(0)));
         }
 
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+
         // 66: Enter the Allowance Ticket No. in your Keitama!
         drawFullWidthScrollingText(g, x, getText(66), y + 3 + textHeight + 3, parentCallState[6], 12, 16056665, 16777215);
         int var4 = y + 3 + textHeight + 3 + currentFontHeight + 12;
@@ -2148,7 +2154,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawLayoutTextButton(g, i, Y, 0);
         }
 
-        bq(g, canvasWidth / 2, var4 + 5, 56, parentCallState[6] >> 1, false, 16777076);
+        drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, var4 + 5, 56, parentCallState[6] >> 1, false, 16777076);
         drawMirroredTamagotchiPair(g, 55, x + getValueFrom6Table(Y, getSelectedButtonIndex(), 0), y + getValueFrom6Table(Y, getSelectedButtonIndex(), 1) + getValueFrom6Table(Y, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(Y, getSelectedButtonIndex(), 2), parentCallState[6]);
     }
 
@@ -2176,7 +2182,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawRainbowCircles(g, x + 50, y + 108, 12, -8, 5, colorOffset, circleCount);
     }
 
-    public static void ce() {
+    public static void resetGotchiKingState() {
         for (int i = 0; i < imagesToTemporarilyDispose.length; ++i) {
             disposeImage(imagesToTemporarilyDispose[i]);
         }
@@ -2196,7 +2202,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 gotchiKingState[0] = 0;
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2205,7 +2211,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 3:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2214,7 +2220,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 5:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2223,7 +2229,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 7:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2275,7 +2281,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 gotchiKingBroadcastFlow2();
                 break;
             case 5:
-                ck();
+                gotchiKingInviteFlow();
                 break;
             case 6:
                 gotchiKingIssuingInvitationFlow();
@@ -2387,7 +2393,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void ck() {
+    public static void gotchiKingInviteFlow() {
         int var10002;
         if (6 <= gotchiKingState[5]) {
             gotchiKingState[5] = 0;
@@ -2447,14 +2453,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 gotchiKingCodeInput(g, x, y);
                 break;
             case 2:
-                cr(g, x, y);
+                gotchiKingConnecting(g, x, y);
                 break;
             case 3:
             case 4:
                 gotchiKingBroadcast(g, x, y);
                 break;
             case 5:
-                ct(g, x, y);
+                gotchiKingInvite(g, x, y);
                 break;
             case 6:
                 gotchiKingIssuingInvitation(g, x, y);
@@ -2478,7 +2484,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(30), canvasWidth / 2, y + 2, 230, 2);
         }
 
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+
         // 68: Enter the Gotchi King Address No. shown on your Keitama
         drawFullWidthScrollingText(g, x, getText(68), y + 2 + textHeight + 2, gotchiKingState[3], 12, 16056665, 16777215);
         boolean var4 = 0 == getSelectedButtonIndex() & (gotchiKingState[3] & 4) != 0;
@@ -2492,7 +2500,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (fullDraw) {
             drawDownloadUploadAnimations(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true, 16777076);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, var5 + 5, 56, gotchiKingState[3] >> 1, true, 16777076);
         }
 
         if (1 == getSelectedButtonIndex()) {
@@ -2501,7 +2509,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void cr(Graphics g, int x, int y) {
+    public static void gotchiKingConnecting(Graphics g, int x, int y) {
         connectingToTamaPlanet(g, x, y);
     }
 
@@ -2543,7 +2551,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawSprite(g, 12, x + 240 - 38, var3 + 10, 0);
     }
 
-    public static void ct(Graphics g, int x, int y) {
+    public static void gotchiKingInvite(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
         int var3 = y + 4;
@@ -2554,9 +2562,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawImage(g, gotchiKingImages[imageIndex], x + 0, imageY, 0);
         // 32: Invite
         drawTextButton(g, 0, getText(32), canvasWidth / 2, y + 240 - 44, 160, 28, 2, 0);
+        // Antennas
         drawSprite(g, 27, x + 1, y + 1, 0);
         drawSprite(g, 28, x + 240 - 1 - getSpriteWidth(28), y + 1, 0);
+        // Blue Z
         drawSprite(g, 37 + (gotchiKingState[3] >> 1 & 1), x + 240 - 44, imageY + 2, 0);
+        // LIVE
         drawSprite(g, 12, x + 240 - 38, imageY + 10, 0);
         drawMirroredTamagotchiPair(g, 39, canvasWidth / 2, y + 240 - 44 + getSpriteHeight(39) / 2, 160, gotchiKingState[3]);
     }
@@ -2564,6 +2575,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void gotchiKingIssuingInvitation(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 77: Issuing Invitation
         drawTextWithBackground(g, getText(77), canvasWidth / 2, y + 2, 200, 2);
@@ -2592,6 +2604,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             g.fillRect(x, newY, 240, 240 - (newY + getSpriteHeight(39) / 2));
         }
 
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 70: Enter the Invitation Ticket No. in your Keitama!
         drawFullWidthScrollingText(g, x, getText(70), y + 3 + textHeight + 3, gotchiKingState[3], 12, 16056665, 16777215);
@@ -2605,7 +2618,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawCodeInputBackground(g, canvasWidth / 2, codeInputY, 2, 0, 16756418, 13722050, 16756418);
             drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 10, 56, gotchiKingState[3] >> 1, false);
         } else {
-            bq(g, canvasWidth / 2, codeInputY + 10, 56, gotchiKingState[3] >> 1, false, 16756418);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, codeInputY + 10, 56, gotchiKingState[3] >> 1, false, 16756418);
         }
 
         drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, fullDraw);
@@ -2616,7 +2629,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         sendViaIR(g, x, y);
     }
 
-    public static void cz() {
+    public static void resetTravelMemoryState() {
         clearCodeInput();
         setCursorIndex(0);
         nextTravelMemoryState(0);
@@ -2632,19 +2645,19 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 travelMemoryState[0] = 0;
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 3:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2843,7 +2856,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawCodeInputBackgroundWithHorizontalLine(g, x, codeInputY, 0, 16777215, 2210832, 10873360, 7786961);
             drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 4 + 2, 56, travelMemoryState[2] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, codeInputY + 4 + 2, 56, travelMemoryState[2] >> 1, true, 10873360);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, codeInputY + 4 + 2, 56, travelMemoryState[2] >> 1, true, 10873360);
         }
 
         boolean var7 = 0 == getSelectedButtonIndex() & (travelMemoryState[2] & 4) != 0;
@@ -2861,12 +2874,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void printingPhoto(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         int newY = y + 4;
         // 37: Printing Photo
         drawTextWithBackground(g, getText(37), canvasWidth / 2, y + 2, 200, 2);
         setColorOfRGBInt(g, 16770939);
         g.fillRect(x, y + 46, 240, 108);
+        // Photo house
         drawSprite(g, 60, canvasWidth / 2, y + 46, 2);
         byte stepX = 16;
         byte radius = 6;
@@ -2879,7 +2894,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int fontHeight = currentFontHeight;
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
+
         int stringWidth = currentFont.stringWidth(travelMemoryTexts[0]) + 8;
         if (stringWidth < travelMemoryPhoto.getWidth()) {
             stringWidth = travelMemoryPhoto.getWidth();
@@ -2904,9 +2922,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return regionSelectLayout[column * 8 + row];
     }
 
-    public static void cO() {
+    public static void resetExchangePlazaState() {
         clearCodeInput();
-        ag(2, true);
+        setButtonConfig(2, true);
         setSelectedButtonIndex(exchangePlazaState[0]);
         nextExchangePlazaState(0);
     }
@@ -2921,13 +2939,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
                 exchangePlazaState[0] = 0;
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 2:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -2937,25 +2955,25 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 4:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 5:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 6:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
             case 7:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
                 break;
@@ -3251,7 +3269,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawCodeInputBackgroundWithHorizontalLine(g, x, codeInputY, 0, 16777215, 3429838, 6728678, 7786961);
             drawDownloadUploadAnimations(g, canvasWidth / 2, codeInputY + 4 + 2, 56, exchangePlazaState[2] >> 1, true);
         } else {
-            bq(g, canvasWidth / 2, codeInputY + 4 + 2, 56, exchangePlazaState[2] >> 1, true, 6728678);
+            drawDownloadUploadAnimationsWithBackground(g, canvasWidth / 2, codeInputY + 4 + 2, 56, exchangePlazaState[2] >> 1, true, 6728678);
         }
 
         // 72: Enter the Exchange No. shown on your Keitama
@@ -3269,9 +3287,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void exchangePlazaLoadingScreen(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 73: To Exchange Plaza!
         drawTextWithBackground(g, getText(73), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(73)) + 8, 2);
+        // Tama park card
         drawSprite(g, 59, canvasWidth / 2, y + 50, 2);
         short width = 176;
         drawRainbowCircles(g, (canvasWidth - width) / 2, y + 160, 16, 0, 6, exchangePlazaState[2], 11);
@@ -3283,6 +3303,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (fullDraw) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
+            // Tama park banner
             drawSprite(g, 71, x, y + 240 - getSpriteHeight(71), 0);
             // 6: Exchange Plaza
             drawTextWithBackground(g, getText(6), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(6)) + 8, 2);
@@ -3292,31 +3313,31 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
 
             for (int column = 0; column < 7; ++column) {
-                int var6 = getRegionSelectLayout(column, 7);
+                int spriteIndex = getRegionSelectLayout(column, 7);
                 if (exchangePlazaState[3] == column && (exchangePlazaState[2] & 4) != 0) {
-                    ++var6;
+                    ++spriteIndex;
                 }
 
-                drawSprite(g, var6, var3 + getRegionSelectLayout(column, 0), var4 + getRegionSelectLayout(column, 1), 0);
+                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(column, 0), var4 + getRegionSelectLayout(column, 1), 0);
             }
         } else {
             drawFullWidthScrollingText(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
             if (exchangePlazaState[4] != exchangePlazaState[3]) {
                 drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
                 drawSprite(g, getRegionSelectLayout(exchangePlazaState[4], 7), var3 + getRegionSelectLayout(exchangePlazaState[4], 0), var4 + getRegionSelectLayout(exchangePlazaState[4], 1), 0);
-                int var5 = getRegionSelectLayout(exchangePlazaState[3], 7);
+                int spriteIndex = getRegionSelectLayout(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
-                    ++var5;
+                    ++spriteIndex;
                 }
 
-                drawSprite(g, var5, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
+                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
             } else if ((exchangePlazaState[2] & 3) == 0) {
-                int var5 = getRegionSelectLayout(exchangePlazaState[3], 7);
+                int spriteIndex = getRegionSelectLayout(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
-                    ++var5;
+                    ++spriteIndex;
                 }
 
-                drawSprite(g, var5, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
+                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
             }
         }
 
@@ -3325,23 +3346,28 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void exchangePlazaLoadingShip(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         setColorOfRGBInt(g, 6728679);
         g.fillRect(x, y + 114, 240, getSpriteHeight(6));
+        // Background city
         drawSprite(g, 6, x, y + 114, 0);
         drawSprite(g, 6, x + 120, y + 114, 0);
         // 43: Landing ship...
         drawTextWithBackground(g, getText(43), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(43)) + 8, 2);
+        // Ufo
         drawSprite(g, 76, canvasWidth / 2, y + 102, 2);
     }
 
     public static void exchangePlazaExchangeFailed(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 89: Exchanged Failed
         drawTextWithBackground(g, getText(89), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(89)) + 8, 2);
         int var3 = y + 62;
+        // Dotted background
         drawSprite(g, 4, x + 0, var3, 0);
         drawSprite(g, 4, x + 120, var3, 0);
         drawImage(g, exchangePlazaImages[0], canvasWidth / 2, var3 - 12, 2);
@@ -3359,6 +3385,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void exchangePlazaExchangeSuccess(Graphics g, int x, int y) {
         setColorOfRGBInt(g, 16763955);
         g.fillRect(x, y, 240, 240);
+        // Bottom decoration
         drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
         // 48: Exchange Success!
         drawTextWithBackground(g, getText(48), canvasWidth / 2, y + 2, currentFont.stringWidth(getText(48)) + 8, 2);
@@ -3438,63 +3465,73 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void explanationPage(Graphics g, int x, int y) {
-        if (isExplanationOpen()) {
-            setColorOfRGBInt(g, 16763955);
-            g.fillRect(x, y, 240, 240);
-            drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
-            int var3 = x + 4;
-            int var4 = y + (240 - (currentFontHeight + 1) * 7) / 2;
-            drawBeveledRect(g, x + 2, var4 - 1, 236, (currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
-            String text = getText(explanationState[0] + explanationState[2]);
-            int lineCount = splitCount(text, "\n");
-            setColorOfRGBInt(g, 16777215);
+        if (!isExplanationOpen()) return;
 
-            for (int i = 0; i < lineCount; ++i) {
-                String var8 = substringBetweenDelimiters(text, i, 1, "\n");
-                int var9 = var8.indexOf("$");
-                if (var9 == -1) {
-                    drawString(g, var8, var3, var4, TextAlign.LEFT);
-                } else {
-                    int var10 = var3;
+        setColorOfRGBInt(g, 16763955);
+        g.fillRect(x, y, 240, 240);
 
-                    do {
-                        String var11 = var8.substring(0, var9);
-                        drawString(g, var11, var10, var4, TextAlign.LEFT);
-                        var10 += currentFont.stringWidth(var11);
-                        if (var8.length() - 1 <= var9) {
-                            break;
-                        }
+        // Bottom decoration
+        drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
 
-                        byte var12 = 0;
-                        int var13 = var12 | Integer.parseInt(var8.substring(var9 + 1, var9 + 1 + 3)) << 16;
-                        var13 |= Integer.parseInt(var8.substring(var9 + 4, var9 + 4 + 3)) << 8;
-                        var13 |= Integer.parseInt(var8.substring(var9 + 7, var9 + 7 + 3));
-                        setColorOfRGBInt(g, var13);
-                        var8 = var8.substring(var9 + 10);
-                        var9 = var8.indexOf("$");
-                    } while (var9 != -1);
+        int lineX = x + 4;
+        int lineY = y + (240 - (currentFontHeight + 1) * 7) / 2;
 
-                    drawString(g, var8, var10, var4, TextAlign.LEFT);
-                }
+        drawBeveledRect(g, x + 2, lineY - 1, 236, (currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
 
-                var4 += currentFontHeight + 1;
+        String text = getText(explanationState[0] + explanationState[2]);
+        int lineCount = splitCount(text, "\n");
+
+        setColorOfRGBInt(g, 16777215);
+
+        for (int i = 0; i < lineCount; ++i) {
+            String line = substringBetweenDelimiters(text, i, 1, "\n");
+            int colorIndex = line.indexOf("$");
+
+            if (colorIndex == -1) {
+                drawString(g, line, lineX, lineY, TextAlign.LEFT);
+            } else {
+                int currentLineX = lineX;
+
+                do {
+                    String linePart = line.substring(0, colorIndex);
+                    drawString(g, linePart, currentLineX, lineY, TextAlign.LEFT);
+
+                    currentLineX += currentFont.stringWidth(linePart);
+                    if (line.length() - 1 <= colorIndex) {
+                        break;
+                    }
+
+                    byte baseColor = 0;
+                    int parsedColor = baseColor | Integer.parseInt(line.substring(colorIndex + 1, colorIndex + 1 + 3)) << 16;
+                    parsedColor |= Integer.parseInt(line.substring(colorIndex + 4, colorIndex + 4 + 3)) << 8;
+                    parsedColor |= Integer.parseInt(line.substring(colorIndex + 7, colorIndex + 7 + 3));
+
+                    setColorOfRGBInt(g, parsedColor);
+
+                    line = line.substring(colorIndex + 10);
+                    colorIndex = line.indexOf("$");
+
+                } while (colorIndex != -1);
+
+                drawString(g, line, currentLineX, lineY, TextAlign.LEFT);
             }
 
+            lineY += currentFontHeight + 1;
         }
     }
 
     public static void openMenu() {
         menuState[6] = getSelectedButtonIndex();
-        menuState[7] = getAw1();
-        menuState[8] = getAw2();
-        ag(4, true);
+        menuState[7] = getCurrentNumberOfButtons();
+        menuState[8] = getCanButtonsLoopAround();
+        setButtonConfig(4, true);
         setSelectedButtonIndex(0);
         setCurrentExplanation(0, -1);
         menuState[4] = getSelectedButtonIndex();
         menuState[0] = 1; // isMenuOpen
         menuState[5] = 0;
         selectSoftLabel(SOFT_LABEL_BACK);
-        dq(0);
+        nextMenuState(0);
     }
 
     public static void setCurrentExplanation(int index, int numberOfPages) {
@@ -3507,65 +3544,65 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         menuState[0] = 0; // isMenuOpen
     }
 
-    public static void dq(int var0) {
-        switch (var0) {
+    public static void nextMenuState(int nextState) {
+        switch (nextState) {
             case 0:
             default:
                 break;
             case 1:
-                ag(4, true);
+                setButtonConfig(4, true);
                 setSelectedButtonIndex(menuState[4]);
                 break;
             case 2:
                 openExplanation(menuState[2], menuState[3]);
                 break;
             case 3:
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(1);
                 break;
             case 4:
-                ag(2, true);
+                setButtonConfig(2, true);
                 setSelectedButtonIndex(1);
         }
 
         menuState[5] = 0;
-        menuState[1] = var0;
+        menuState[1] = nextState;
     }
 
     public static boolean isMenuOpen() {
         return menuState[0] != 0;
     }
 
-    public static void mainMenuFlow() {
+    public static void menuFlow() {
         if (isMenuOpen()) {
             int var10002 = menuState[5]++;
             switch (menuState[1]) {
                 case 0:
-                    dq(1);
+                    nextMenuState(1);
                     break;
                 case 1:
-                    dt();
+                    mainMenuFlow();
                     break;
                 case 2:
                     if (isExplanationOpen()) {
                         scrollExplanation();
                     } else {
-                        dq(1);
+                        nextMenuState(1);
                     }
                     break;
                 case 3:
-                    du();
+                    returnToTitlePageFlow();
                     break;
                 case 4:
-                    dv();
+                    closeAppPageFlow();
             }
 
         }
     }
 
-    public static void dt() {
+    public static void mainMenuFlow() {
         if (isKeyPressed(KEY_SOFT1)) {
-            ag(menuState[7], menuState[8] != 0);
+            setButtonConfig(menuState[7], menuState[8] != 0);
             setSelectedButtonIndex(menuState[6]);
             selectSoftLabel(currentSoftLabelIdx);
             closeMenu();
@@ -3574,14 +3611,14 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
                     if (0 < menuState[3]) {
-                        dq(2);
+                        nextMenuState(2);
                     }
                     break;
                 case 1:
                     goToPage(PAGE_TITLE);
                     break;
                 case 2:
-                    dq(4);
+                    nextMenuState(4);
                     break;
                 case 3:
                     toggleSound();
@@ -3591,9 +3628,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void du() {
+    public static void returnToTitlePageFlow() {
         if (isKeyPressed(KEY_SOFT1)) {
-            dq(1);
+            nextMenuState(1);
         } else {
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP_LEFT), isKeyPressed(KEY_DOWN_RIGHT))) {
                 case 0:
@@ -3601,22 +3638,22 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     goToPage(PAGE_TITLE);
                     break;
                 case 1:
-                    dq(1);
+                    nextMenuState(1);
             }
 
         }
     }
 
-    public static void dv() {
+    public static void closeAppPageFlow() {
         if (isKeyPressed(KEY_SOFT1)) {
-            dq(1);
+            nextMenuState(1);
         } else {
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP_LEFT), isKeyPressed(KEY_DOWN_RIGHT))) {
                 case 0:
                     exitGame();
                     break;
                 case 1:
-                    dq(1);
+                    nextMenuState(1);
             }
 
         }
@@ -3726,7 +3763,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         errorState[1] = actionId1;
         errorState[2] = actionId2;
         errorPageText = errorMessage;
-        ag(2, true);
+        setButtonConfig(2, true);
         setSelectedButtonIndex(1);
         setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
         selectSoftLabel(SOFT_LABEL_EMPTY);
@@ -3734,7 +3771,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void closeErrorPage() {
-        errorState[3] = 0;
+        errorState[3] = 0; // hide error page
         errorPageText = null;
     }
 
@@ -3791,6 +3828,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (shouldShowErrorPage()) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
+            // Bottom decoration
             drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
             int lineCount = splitCount(errorPageText, "\n");
             int textHeight = (lineCount - 1) * (currentFontHeight + 1) + currentFontHeight + 4;
@@ -3848,9 +3886,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return success;
     }
 
-    public static void ag(int var0, boolean var1) {
-        buttonState[1] = var0;
-        buttonState[2] = var1 ? 1 : 0;
+    public static void setButtonConfig(int numberOfButtons, boolean canLoopAround) {
+        buttonState[1] = numberOfButtons;
+        buttonState[2] = canLoopAround ? 1 : 0;
         buttonState[13] = 0; // not pressed
     }
 
@@ -3885,35 +3923,37 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             buttonState[13] = 1; // pressed
             fullDrawOnNextPaint = true;
         } else {
-            boolean var4 = false;
+            boolean buttonIndexChanged = false;
             int var10002;
+
             if (decrementButtonIndex) {
-                var4 = true;
+                buttonIndexChanged = true;
                 var10002 = buttonState[0]--;
                 if (buttonState[0] < 0) {
                     if (buttonState[2] != 0) {
+                        // selectedButtonIdx = numberOfButtons - 1
                         buttonState[0] = buttonState[1] - 1;
                     } else {
-                        var4 = false;
+                        buttonIndexChanged = false;
                         buttonState[0] = 0;
                     }
                 }
             }
 
             if (incrementButtonIndex) {
-                var4 = true;
+                buttonIndexChanged = true;
                 var10002 = buttonState[0]++;
                 if (buttonState[1] <= buttonState[0]) {
                     if (buttonState[2] != 0) {
                         buttonState[0] = 0;
                     } else {
-                        var4 = false;
+                        buttonIndexChanged = false;
                         buttonState[0] = buttonState[1] - 1;
                     }
                 }
             }
 
-            if (var4) {
+            if (buttonIndexChanged) {
                 playSound(4, false);
             }
 
@@ -3927,11 +3967,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return buttonState[0];
     }
 
-    public static int getAw1() {
+    public static int getCurrentNumberOfButtons() {
         return buttonState[1];
     }
 
-    public static int getAw2() {
+    public static int getCanButtonsLoopAround() {
         return buttonState[2];
     }
 
@@ -4590,30 +4630,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 break;
             case 1:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 setButtonTheme2(16777215, 7786961, 6594720, 16777215, 16777215, 6594720, 16763955, 13158600);
                 break;
             case 2:
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 break;
             case 3:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ag(3, true);
+                setButtonConfig(3, true);
                 setSelectedButtonIndex(0);
                 break;
             case 4:
                 irRemoteControl.stop();
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
                 break;
             case 5:
                 irRemoteControl.stop();
                 selectSoftLabel(SOFT_LABEL_EMPTY);
-                ag(1, false);
+                setButtonConfig(1, false);
                 setSelectedButtonIndex(0);
         }
 
@@ -4756,6 +4796,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (bc()) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
+            // Bottom decoration
             drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
             switch (irState[0]) {
                 case 2:
@@ -4853,35 +4894,35 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 // Resources loaded successfully
                 selectSoftLabel(SOFT_LABEL_MENU);
                 T = false;
-                ak();
+                resetTitleScreenState();
                 break;
             case PAGE_MAILBOX_MODE:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                az();
+                resetMailboxModeState();
                 break;
             case PAGE_TRAVEL_MODE:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                aH();
+                resetTravelModeSate();
                 break;
             case PAGE_SHOPPING_CENTER:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                aM();
+                resetShoppingCenterState();
                 break;
             case PAGE_PARENT_CALL:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                bD();
+                resetParentCallState();
                 break;
             case PAGE_GOTCHI_KING:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                ce();
+                resetGotchiKingState();
                 break;
             case PAGE_TRAVEL_MEMORY:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                cz();
+                resetTravelMemoryState();
                 break;
             case PAGE_EXCHANGE_PLAZA:
                 selectSoftLabel(SOFT_LABEL_MENU);
-                cO();
+                resetExchangePlazaState();
                 break;
             default:
                 // Failed to load resources
@@ -4905,7 +4946,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         if (isMenuOpen()) {
-            mainMenuFlow();
+            menuFlow();
         } else if (shouldShowErrorPage()) {
             errorPageFlow();
         } else {
