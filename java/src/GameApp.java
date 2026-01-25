@@ -24,21 +24,21 @@ import javax.microedition.io.Connector;
 
 public class GameApp extends IApplication implements TimerListener, MediaListener {
     // @formatter:off
-    private static final int PAGE_AUTH_ERROR   = -3;
-    private static final int PAGE_COM_ERROR    = -2;
-    private static final int PAGE_PREP_ERROR        = -1;
-    private static final int PAGE_NONE_0           = 0;
-    private static final int PAGE_NONE_1           = 1;
-    private static final int PAGE_DOWNLOADING      = 2;
-    private static final int PAGE_LOADING          = 3;
-    private static final int PAGE_TITLE            = 4;
-    private static final int PAGE_MAILBOX_MODE     = 5;
-    private static final int PAGE_TRAVEL_MODE      = 6;
-    private static final int PAGE_SHOPPING_CENTER  = 7;
-    private static final int PAGE_PARENT_CALL      = 8;
-    private static final int PAGE_GOTCHI_KING      = 9;
-    private static final int PAGE_TRAVEL_MEMORY    = 10;
-    private static final int PAGE_EXCHANGE_PLAZA   = 11;
+    private static final int PAGE_AUTH_ERROR      = -3;
+    private static final int PAGE_COM_ERROR       = -2;
+    private static final int PAGE_PREP_ERROR      = -1;
+    private static final int PAGE_NONE_0          = 0;
+    private static final int PAGE_NONE_1          = 1;
+    private static final int PAGE_DOWNLOADING     = 2;
+    private static final int PAGE_LOADING         = 3;
+    private static final int PAGE_TITLE           = 4;
+    private static final int PAGE_MAILBOX_MODE    = 5;
+    private static final int PAGE_TRAVEL_MODE     = 6;
+    private static final int PAGE_SHOPPING_CENTER = 7;
+    private static final int PAGE_PARENT_CALL     = 8;
+    private static final int PAGE_GOTCHI_KING     = 9;
+    private static final int PAGE_TRAVEL_MEMORY   = 10;
+    private static final int PAGE_EXCHANGE_PLAZA  = 11;
 
     private static final int SOFT_LABEL_START = 0;
     private static final int SOFT_LABEL_MENU  = 1;
@@ -169,7 +169,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public boolean executingTimerExpired;
 
     static {
-        new Object();
         running = true;
         resumedDraw = false;
         drawOnNextPaint = false;
@@ -1514,7 +1513,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void shoppingCenterSendViaIrFlow() {
-        if (!bc()) {
+        if (!hasStartedSendingViaIr()) {
             nextShoppingCenterState(3);
         } else {
             sendViaIrFlow();
@@ -1953,7 +1952,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void parentCallSendViaIrFlow() {
-        if (!bc()) {
+        if (!hasStartedSendingViaIr()) {
             nextParentCallState(4); // Go back
         } else {
             sendViaIrFlow();
@@ -2370,7 +2369,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void gotchiKingSendViaIrFlow() {
-        if (!bc()) {
+        if (!hasStartedSendingViaIr()) {
             nextGotchiKingState(7); // Go back
         } else {
             sendViaIrFlow();
@@ -3138,7 +3137,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void exchangePlazaSendViaIrFlow() {
-        if (!bc()) {
+        if (!hasStartedSendingViaIr()) {
             nextExchangePlazaState(7); // Go back
         } else {
             sendViaIrFlow();
@@ -3352,8 +3351,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawMirroredTamagotchiPair(g, 30, x + getValueFrom6Table(exchangeTicketLayout, getSelectedButtonIndex(), 0), y + getValueFrom6Table(exchangeTicketLayout, getSelectedButtonIndex(), 1) + getValueFrom6Table(exchangeTicketLayout, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(exchangeTicketLayout, getSelectedButtonIndex(), 2), exchangePlazaState[2]);
     }
 
-    public static void exchangePlazaSendViaIR(Graphics var0, int var1, int var2) {
-        sendViaIR(var0, var1, var2);
+    public static void exchangePlazaSendViaIR(Graphics g, int x, int y) {
+        sendViaIR(g, x, y);
     }
 
     public static void openExplanation(int index, int numberOfPages) {
@@ -4626,26 +4625,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         return (data & 1) << 7 | (data & 2) << 5 | (data & 4) << 3 | (data & 8) << 1 | (data & 16) >> 1 | (data & 32) >> 3 | (data & 64) >> 5 | (data & 128) >> 7;
     }
 
-    public static boolean bc() {
+    public static boolean hasStartedSendingViaIr() {
         return irState[0] != 0;
     }
 
     public static void sendViaIrFlow() {
-        if (bc()) {
+        if (hasStartedSendingViaIr()) {
             irState[1]++;
             switch (irState[0]) {
                 case 1:
                     sendIrFrames();
                     break;
                 case 2:
-                    ed();
+                    sendViaIrSendingFlow();
                     break;
                 case 3:
-                    ee();
+                    sendViaIrSendingCompleteFlow();
                     break;
                 case 4:
                 case 5:
-                    ef();
+                    sendViaIrErrorFlow();
             }
 
         }
@@ -4673,7 +4672,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void ed() {
+    public static void sendViaIrSendingFlow() {
         if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
             nextIrState(4);
         } else {
@@ -4686,7 +4685,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void ee() {
+    public static void sendViaIrSendingCompleteFlow() {
         if (isKeyPressed(KEY_SOFT1)) {
             openMenu();
             setCurrentExplanation(irState[3], irState[4]);
@@ -4711,7 +4710,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void ef() {
+    public static void sendViaIrErrorFlow() {
         if (getPressedButtonIndex(isKeyPressed(KEY_SELECT), false, false) != -1) {
             nextIrState(0);
         }
@@ -4719,29 +4718,29 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void sendViaIR(Graphics g, int x, int y) {
-        if (bc()) {
+        if (hasStartedSendingViaIr()) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
             // Bottom decoration
             drawSprite(g, 0, x, y + 240 - getSpriteHeight(0), 0);
             switch (irState[0]) {
                 case 2:
-                    sendViaIR_Sending(g, x, y);
+                    sendViaIrSending(g, x, y);
                     break;
                 case 3:
-                    sendViaIR_SendingComplete(g, x, y);
+                    sendViaIrComplete(g, x, y);
                     break;
                 case 4:
-                    sendViaIR_Interrupted(g, x, y);
+                    sendViaIrInterrupted(g, x, y);
                     break;
                 case 5:
-                    sendViaIR_TransmissionFailed(g, x, y);
+                    sendViaIrFailed(g, x, y);
             }
 
         }
     }
 
-    public static void sendViaIR_Sending(Graphics g, int x, int y) {
+    public static void sendViaIrSending(Graphics g, int x, int y) {
         // 98: Sending...
         drawTextWithBackground(g, getText(98), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(98)) + 8, 2);
         drawSprite(g, 67, canvasWidth / 2 + (irState[1] * 8 - 60), y + 50, 2);
@@ -4751,7 +4750,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawMirroredTamagotchiPair(g, irState[5], canvasWidth / 2, y + 50 + getSpriteHeight(67) + 10 + (currentFontHeight + 4) / 2, currentFont.stringWidth(getText(18)) + 20, irState[1]);
     }
 
-    public static void sendViaIR_SendingComplete(Graphics g, int x, int y) {
+    public static void sendViaIrComplete(Graphics g, int x, int y) {
         // 99: Sending complete!
         drawTextWithBackground(g, getText(99), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(99)) + 8, 2);
         drawSprite(g, 68, canvasWidth / 2, y + 50, 2);
@@ -4770,13 +4769,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawMirroredTamagotchiPair(g, irState[5], x + getValueFrom6Table(layout, getSelectedButtonIndex(), 0), y + getValueFrom6Table(layout, getSelectedButtonIndex(), 1) + getValueFrom6Table(layout, getSelectedButtonIndex(), 3) / 2, getValueFrom6Table(layout, getSelectedButtonIndex(), 2) - 10, irState[1]);
     }
 
-    public static void sendViaIR_Interrupted(Graphics g, int x, int y) {
+    public static void sendViaIrInterrupted(Graphics g, int x, int y) {
         // 96: Interrupted...
         drawTextWithBackground(g, getText(96), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(96)) + 8, 2);
         transmissionErrorPage(g, x, y);
     }
 
-    public static void sendViaIR_TransmissionFailed(Graphics g, int x, int y) {
+    public static void sendViaIrFailed(Graphics g, int x, int y) {
         // 97: Transmission failed
         drawTextWithBackground(g, getText(97), canvasWidth / 2, y + 5, currentFont.stringWidth(getText(97)) + 8, 2);
         transmissionErrorPage(g, x, y);
