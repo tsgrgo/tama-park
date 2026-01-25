@@ -80,7 +80,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     // @formatter:on
 
-    public static boolean aL;
     public static int drawState; // 0: Idle, 2: Request pending, 3: Currently drawing
     public static boolean running;
     public static boolean resumedDraw;
@@ -97,7 +96,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static int rootX;
     public static int rootY;
     public static Font currentFont;
-    public static int aM;
     public static int currentFontHeight;
     public static int d;
     public static int E;
@@ -224,7 +222,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         aV = new int[]{0, 17, 34, 52, 69, 87, 105, 122, 140, 158, 176, 194, 212, 230, 249, 267, 286, 305, 324, 344, 363, 383, 404, 424, 445, 466, 487, 509, 531, 554, 577, 600, 624, 649, 674, 700, 726, 753, 781, 809, 839, 869, 900, 932, 965, 999, 1035, 1072, 1110, 1150, 1191, 1234, 1279, 1327, 1376, 1428, 1482, 1539, 1600, 1664, 1732, 1804, 1880, 1962, 2050, 2144, 2246, 2355, 2475, 2605, 2747, 2904, 3077, 3270, 3487, 3732, 4010, 4331, 4704, 5144, 5671, 6313, 7115, 8144, 9514, 11430, 14300, 19081, 28636, 57289};
         aW = new boolean[]{false, false};
         aX = new int[2];
-        String[] var10000 = new String[2];
 
         previousSoftLabelIdx = 6;
         currentSoftLabelIdx = 6;
@@ -336,7 +333,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         try {
             PhoneSystem.setAttribute(0, 1);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         setCurrentFont(2);
@@ -361,12 +358,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             } catch (Exception e) {
                 try {
                     timer.stop();
-                } catch (Exception e2) {
+                } catch (Exception ignored) {
                 }
 
                 try {
                     Thread.sleep(1000L);
-                } catch (Exception e2) {
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -453,7 +450,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         try {
             Thread.sleep(100L);
             audioPresenters[presenterIdx].stop();
-        } catch (Exception var2) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -521,26 +518,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 byte[] data = new byte[var3[i + 93]];
                 stream.read(data);
 
-                for (int var6 = 0; var6 < data.length; ++var6) {
+                for (int j = 0; j < data.length; ++j) {
                 }
 
                 mediaSounds[i] = MediaManager.getSound(data);
                 mediaSounds[i].use();
                 log("loadsound:" + i);
-                Object var19 = null;
+                data = null;
                 System.gc();
             }
 
             initAudioPresenters();
             success = true;
-        } catch (Exception var16) {
+        } catch (Exception e) {
             log("loadsounderr i:" + var2);
             success = false;
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -563,7 +560,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 inputState[0] = (long) (canvas.getKeypadState() & Integer.MAX_VALUE);
                 inputState[4]++;
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -571,8 +568,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static void updateInputState() {
         long var0 = 0L;
         long var2 = 0L;
-        long var4 = 0L;
-        var2 = 0L;
+
         if (inputState[4] == 0L) {
             inputState[0] = 0L;
         }
@@ -580,15 +576,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         inputState[3] = inputState[6];
         inputState[6] = inputState[0] | var0 | var2 << 32;
         inputState[5] = inputState[6] & (inputState[6] ^ inputState[3]);
-        long[] var10000;
         if (k) {
             if (inputState[4] != 0L) {
-                var10000 = inputState;
-                var10000[5] |= var2 << 32 & 844424930131968L;
+                inputState[5] |= var2 << 32 & 844424930131968L;
             }
         } else if (inputState[4] != 0L) {
-            var10000 = inputState;
-            var10000[5] |= var0 & 655360L;
+            inputState[5] |= var0 & 655360L;
         }
 
         if ((inputState[3] ^ inputState[6]) == 0L && inputState[6] != 0L) {
@@ -613,7 +606,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             systemAttributeState[0] = 0;
             systemAttributeState[1] = 0;
             PhoneSystem.setAttribute(1, 0);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -624,7 +617,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 try {
                     systemAttributeState[1] = 1;
                     PhoneSystem.setAttribute(1, 1);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -646,7 +639,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             inputStream.close();
             inputStream = null;
             System.gc();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -662,7 +655,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             outputStream.close();
             outputStream = null;
             System.gc();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
@@ -764,7 +757,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void drawMultilineString(Graphics g, String str, int x, int y, int lineHeight, TextAlign align) {
-        boolean var6 = false;
         int fromIndex = 0;
         boolean hasNewLine = true;
 
@@ -811,8 +803,6 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             g.setColor(colors[i]);
             g.fillRect(x + i, y + i, width - i * 2, height - i * 2);
         }
-
-        Object var10 = null;
     }
 
     public static void setCurrentFont(int fontIndex) {
@@ -926,7 +916,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 currentSoftLabelIdx = previousSoftLabelIdx;
                 setSoftLabel(0, softLabels[index]);
                 previousSoftLabelIdx = index;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
         }
@@ -1054,7 +1044,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         if (3 < loadingProgress) {
             try {
                 Thread.sleep(300L);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             loadingAnimation(g, x, y, loadingProgress * 8 / 93, loadingProgress);
@@ -1102,7 +1092,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void titleScreenFlow() {
-        int var10002 = titleScreenState[2]++;
+        titleScreenState[2]++;
         switch (titleScreenState[1]) {
             case 0:
                 nextTitleScreenState(1);
@@ -1117,8 +1107,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void titleScreenAnimatedFlow() {
-        int var0 = -48 + titleScreenState[2] * 8;
-        if (isKeyPressed(KEY_SELECT) || 0 <= var0) {
+        int ready = -48 + titleScreenState[2] * 8;
+        if (isKeyPressed(KEY_SELECT) || 0 <= ready) {
             nextTitleScreenState(2);
         }
 
@@ -1129,17 +1119,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             openMenu();
             setCurrentExplanation(100, 5);
         } else {
-            int[] var10000;
             if (titleScreenState[3] <= 32) {
-                var10000 = titleScreenState;
-                var10000[4] += 2;
+                titleScreenState[4] += 2;
             } else {
-                var10000 = titleScreenState;
-                var10000[4] -= 2;
+                titleScreenState[4] -= 2;
             }
-
-            var10000 = titleScreenState;
-            var10000[3] += titleScreenState[4];
+            titleScreenState[3] += titleScreenState[4];
             switch (getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_UP), isKeyPressed(KEY_DOWN))) {
                 case 0:
                     goToPage(PAGE_MAILBOX_MODE);
@@ -1259,7 +1244,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void mailboxModeFlow() {
-        int var10002 = mailboxModeState[2]++;
+        mailboxModeState[2]++;
         switch (mailboxModeState[1]) {
             case 0:
                 nextMailboxModeState(1);
@@ -1350,7 +1335,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void travelModeFlow() {
-        int var10002 = travelModeState[2]++;
+        travelModeState[2]++;
         switch (travelModeState[1]) {
             case 0:
                 nextTravelModeState(1);
@@ -1457,7 +1442,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void shoppingCenterFlow() {
-        int var10002 = shoppingCenterState[2]++;
+        shoppingCenterState[2]++;
         switch (shoppingCenterState[1]) {
             case 0:
                 nextShoppingCenterState(1);
@@ -1478,7 +1463,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void shoppingCenterItemTypeSelectFlow() {
-        int var10002 = shoppingCenterState[3]++;
+        shoppingCenterState[3]++;
         if (isKeyPressed(KEY_SOFT1)) {
             openMenu();
             setCurrentExplanation(110, 5);
@@ -1524,7 +1509,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -1548,7 +1533,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void shoppingCenterItemTicketFlow() {
-        int var10002 = shoppingCenterState[3]++;
+        shoppingCenterState[3]++;
         if (isKeyPressed(KEY_SOFT1)) {
             openMenu();
             setCurrentExplanation(115, 6);
@@ -1861,7 +1846,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void parentCallFlow() {
-        int var10002 = parentCallState[6]++;
+        parentCallState[6]++;
         switch (parentCallState[1]) {
             case 0:
                 nextParentCallState(1);
@@ -1950,7 +1935,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -1971,10 +1956,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void parentCallExplanationFlow() {
-        int var10002 = parentCallState[3]++;
+        parentCallState[3]++;
         if (6 < parentCallState[6]) {
             if (-1 != getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT))) {
-                var10002 = parentCallState[4]++;
+                parentCallState[4]++;
                 parentCallState[3] = 0;
                 if (parentCallState[5] <= parentCallState[4]) {
                     generateDerivedCodeInBankB();
@@ -2255,7 +2240,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         for (int i = 0; i < imagesToTemporarilyDispose.length; ++i) {
             try {
                 loadImage(imagesToTemporarilyDispose[i]);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 
@@ -2263,7 +2248,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void gotchiKingFlow() {
-        int var10002 = gotchiKingState[3]++;
+        gotchiKingState[3]++;
         switch (gotchiKingState[1]) {
             case 0:
                 nextGotchiKingState(1);
@@ -2358,7 +2343,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -2394,14 +2379,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void gotchiKingInviteFlow() {
-        int var10002;
         if (6 <= gotchiKingState[5]) {
             gotchiKingState[5] = 0;
-            var10002 = gotchiKingState[4]++;
-            int[] var10000 = gotchiKingState;
-            var10000[4] %= 2;
+            gotchiKingState[4]++;
+            gotchiKingState[4] %= 2;
         } else {
-            var10002 = gotchiKingState[5]++;
+            gotchiKingState[5]++;
         }
 
         if (6 < gotchiKingState[3] && getPressedButtonIndex(isKeyPressed(KEY_SELECT), isKeyPressed(KEY_LEFT), isKeyPressed(KEY_RIGHT)) != -1) {
@@ -2684,7 +2667,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void travelMemoryFlow() {
-        int var10002 = travelMemoryState[2]++;
+        travelMemoryState[2]++;
         switch (travelMemoryState[1]) {
             case 0:
                 nextTravelMemoryState(1);
@@ -2765,7 +2748,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -2836,8 +2819,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 36: Let's look at travel memories from your trips!
         int textHeight = calculateTextHeight(getText(36));
         int codeInputY = y + 2 + textHeight + 2 + currentFontHeight + 3;
-        boolean var5 = true;
-        boolean var6 = true;
+
         if (fullDraw) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -3003,7 +2985,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void exchangePlazaFlow() {
-        int var10002 = exchangePlazaState[2]++;
+        exchangePlazaState[2]++;
         switch (exchangePlazaState[1]) {
             case 0:
                 nextExchangePlazaState(1);
@@ -3146,7 +3128,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -3253,8 +3235,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         // 41: Trade the regional specialty items you've collected!
         int textHeight = calculateTextHeight(getText(41));
         int codeInputY = y + 2 + textHeight + 2 + currentFontHeight + 3;
-        boolean var5 = true;
-        boolean var6 = true;
+
         if (fullDraw) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -3575,7 +3556,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void menuFlow() {
         if (isMenuOpen()) {
-            int var10002 = menuState[5]++;
+            menuState[5]++;
             switch (menuState[1]) {
                 case 0:
                     nextMenuState(1);
@@ -3866,7 +3847,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 byte[] data = new byte[lengths[var3 + i]];
                 stream.read(data);
                 texts[i] = new String(data);
-                Object var18 = null;
+                data = null;
                 System.gc();
             }
         } catch (Exception e) {
@@ -3877,7 +3858,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     stream.close();
                     stream = null;
                     System.gc();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -3924,11 +3905,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             fullDrawOnNextPaint = true;
         } else {
             boolean buttonIndexChanged = false;
-            int var10002;
 
             if (decrementButtonIndex) {
                 buttonIndexChanged = true;
-                var10002 = buttonState[0]--;
+                buttonState[0]--;
                 if (buttonState[0] < 0) {
                     if (buttonState[2] != 0) {
                         // selectedButtonIdx = numberOfButtons - 1
@@ -3942,7 +3922,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
             if (incrementButtonIndex) {
                 buttonIndexChanged = true;
-                var10002 = buttonState[0]++;
+                buttonState[0]++;
                 if (buttonState[1] <= buttonState[0]) {
                     if (buttonState[2] != 0) {
                         buttonState[0] = 0;
@@ -4448,21 +4428,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 if (output != null) {
                     output.close();
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             try {
                 if (input != null) {
                     input.close();
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             try {
                 if (http != null) {
                     http.close();
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
         }
@@ -4706,7 +4686,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     public static void sendViaIrFlow() {
         if (bc()) {
-            int var10002 = irState[1]++;
+            irState[1]++;
             switch (irState[0]) {
                 case 1:
                     sendIrFrames();
@@ -5091,12 +5071,12 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         try {
             timer.stop();
             startTimerWithRetry();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         try {
             Thread.sleep(50L);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
 
         restartMusicOnNext();
@@ -5134,7 +5114,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             startTimerWithRetry();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
     }
