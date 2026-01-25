@@ -14,7 +14,7 @@ public class GameScreen extends Canvas {
     public void paint(Graphics g) {
         if (GameApp.drawState == 2) {
             GameApp.drawState = 3;
-            if (GameApp.Exceptions) {
+            if (GameApp.drawOnNextPaint) {
                 g.lock();
                 GameApp.fullDraw = GameApp.fullDrawOnNextPaint;
                 GameApp.fullDrawOnNextPaint = false;
@@ -26,7 +26,7 @@ public class GameScreen extends Canvas {
                 GameApp.draw(g);
                 g.unlock(true);
             } else {
-                GameApp.Exceptions = true;
+                GameApp.drawOnNextPaint = true;
             }
 
             GameApp.drawState = 0;
