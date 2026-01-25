@@ -98,17 +98,22 @@ public class DesktopHttpConnection implements HttpConnection {
     }
 
     @Override
-    public int getLength() {
+    public long getLength() {
         connect();
-        int len = conn.getContentLength();
-        return len; // -1 if unknown
+        return conn.getContentLength(); // -1 if unknown
     }
 
     @Override
     public void close() {
         // Close streams first
-        try { if (inputStream != null) inputStream.close(); } catch (Exception ignored) {}
-        try { if (outputStream != null) outputStream.close(); } catch (Exception ignored) {}
+        try {
+            if (inputStream != null) inputStream.close();
+        } catch (Exception ignored) {
+        }
+        try {
+            if (outputStream != null) outputStream.close();
+        } catch (Exception ignored) {
+        }
 
         inputStream = null;
         outputStream = null;

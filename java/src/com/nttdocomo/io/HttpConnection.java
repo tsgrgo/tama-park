@@ -7,7 +7,9 @@ import java.io.OutputStream;
 
 public interface HttpConnection {
     InputStream openInputStream();
+
     OutputStream openOutputStream();
+
     void close();
 
     DataInputStream openDataInputStream();
@@ -16,5 +18,5 @@ public interface HttpConnection {
 
     void connect();
 
-    int getLength();
+    long getLength();
 }
