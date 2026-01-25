@@ -22,12 +22,6 @@ import java.io.DataOutputStream;
 import java.util.Date;
 import javax.microedition.io.Connector;
 
-enum TextAlign {
-    LEFT,
-    RIGHT,
-    CENTER
-}
-
 public class GameApp extends IApplication implements TimerListener, MediaListener {
     // @formatter:off
     private static final int PAGE_AUTH_ERROR   = -3;
@@ -53,6 +47,10 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     private static final int SOFT_LABEL_TITLE = 4;
     private static final int SOFT_LABEL_HELP  = 5;
     private static final int SOFT_LABEL_EMPTY = 6;
+
+    private static final int ALIGN_LEFT   = 0;
+    private static final int ALIGN_RIGHT  = 1;
+    private static final int ALIGN_CENTER = 2;
 
     private static final long KEY_0 = 1L;
     private static final long KEY_1 = 2L;
@@ -713,11 +711,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.setColor(Graphics.getColorOfRGB(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255));
     }
 
-    public static void drawString(Graphics g, String str, int x, int y, TextAlign align) {
+    public static void drawString(Graphics g, String str, int x, int y, int align) {
         drawMultilineString(g, str, x, y, currentFont.getHeight() + 1, align);
     }
 
-    public static void drawMultilineString(Graphics g, String str, int x, int y, int lineHeight, TextAlign align) {
+    public static void drawMultilineString(Graphics g, String str, int x, int y, int lineHeight, int align) {
         int fromIndex = 0;
         boolean hasNewLine = true;
 
@@ -729,9 +727,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             }
 
             int newX = x;
-            if (align == TextAlign.CENTER) {
+            if (align == ALIGN_CENTER) {
                 newX = x - currentFont.stringWidth(str.substring(fromIndex, toIndex)) / 2;
-            } else if (align == TextAlign.RIGHT) {
+            } else if (align == ALIGN_RIGHT) {
                 newX = x - currentFont.stringWidth(str.substring(fromIndex, toIndex));
             }
 
@@ -996,7 +994,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16763955);
         g.drawRect(barX, barY, 200, 40);
-        drawString(g, "Downloading", GameApp.canvasWidth / 2, barY - currentFontHeight - 4, TextAlign.CENTER);
+        drawString(g, "Downloading", GameApp.canvasWidth / 2, barY - currentFontHeight - 4, ALIGN_CENTER);
         int progressBarWidth = 200 * loadingProgress / 8;
         g.fillRect(barX, barY, progressBarWidth, 40);
     }
@@ -1024,9 +1022,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         setColorOfRGBInt(g, 0);
         g.fillRect(x, y, 240, 240);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, str, GameApp.canvasWidth / 2, y + 30, TextAlign.CENTER);
-        drawString(g, "An error has occured", GameApp.canvasWidth / 2, y + 31 + currentFontHeight, TextAlign.CENTER);
-        drawString(g, "Confirm:Exit", GameApp.canvasWidth / 2, y + 240 - 10 - currentFontHeight, TextAlign.CENTER);
+        drawString(g, str, GameApp.canvasWidth / 2, y + 30, ALIGN_CENTER);
+        drawString(g, "An error has occured", GameApp.canvasWidth / 2, y + 31 + currentFontHeight, ALIGN_CENTER);
+        drawString(g, "Confirm:Exit", GameApp.canvasWidth / 2, y + 240 - 10 - currentFontHeight, ALIGN_CENTER);
     }
 
     public static void resetTitleScreenState() {
@@ -1253,7 +1251,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawBeveledRect(g, x + 3, y + 3, chatBubbleWidth, chatBubbleHeight + 4, 0, 16056665);
             setColorOfRGBInt(g, 16777215);
             // 29: Connect to Tama Planet by phone!
-            drawString(g, getText(29), x + 3 + 2, y + 3 + 2, TextAlign.LEFT);
+            drawString(g, getText(29), x + 3 + 2, y + 3 + 2, ALIGN_LEFT);
 
             for (int i = 0; i < 3; ++i) {
                 drawLayoutSpriteButton(g, i, mailboxModeLayout, 0);
@@ -1342,7 +1340,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             drawBeveledRect(g, x + 3, y + 3, chatBubbleWidth, chatBubbleHeight + 8, 0, 16056665);
             setColorOfRGBInt(g, 16777215);
             // 40: Send your Tama on a trip with your phone!
-            drawString(g, getText(40), x + 3 + 6, y + 3 + 4, TextAlign.LEFT);
+            drawString(g, getText(40), x + 3 + 6, y + 3 + 4, ALIGN_LEFT);
 
             for (int i = 0; i < 2; ++i) {
                 drawLayoutSpriteButton(g, i, travelModeLayout, 0);
@@ -1641,7 +1639,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(x, y, width, currentFontHeight);
         setColorOfRGBInt(g, textColor);
         int stringWidth = currentFont.stringWidth(text);
-        drawString(g, text, x + width - time * speed % (width + stringWidth), y, TextAlign.LEFT);
+        drawString(g, text, x + width - time * speed % (width + stringWidth), y, ALIGN_LEFT);
     }
 
     public static void drawDownloadUploadAnimations(Graphics g, int x, int y, int distance, int time, boolean dir) {
@@ -1671,7 +1669,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawBeveledRect(g, x, y, width, height, borderColor, color);
         setColorOfRGBInt(g, textColor);
-        drawString(g, text, x + width / 2, y + 2, TextAlign.CENTER);
+        drawString(g, text, x + width / 2, y + 2, ALIGN_CENTER);
     }
 
     public static int calculateTextHeight(String text) {
@@ -3307,7 +3305,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawBeveledRect(g, (canvasWidth - 232) / 2, messageBoxY, 232, messageBoxHeight + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
         // 90: No trading partners were found in that region.
-        drawString(g, getText(90), canvasWidth / 2, messageBoxY + 2, TextAlign.CENTER);
+        drawString(g, getText(90), canvasWidth / 2, messageBoxY + 2, ALIGN_CENTER);
         drawMirroredTamagotchiPair(g, 30, canvasWidth / 2, messageBoxY - 44 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
     }
 
@@ -3326,9 +3324,9 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawTextButton(g, 0, getText(18), canvasWidth / 2, messageBoxY - 38, 100, 28, 2, 0);
         drawBeveledRect(g, (canvasWidth - 232) / 2, messageBoxY, 232, messageBoxHeight + 4, 16056665, 16056665);
         setColorOfRGBInt(g, 16777215);
-        drawString(g, exchangePlazaTexts[0], canvasWidth / 2, messageBoxY + 2, TextAlign.CENTER);
-        drawString(g, exchangePlazaTexts[1], canvasWidth / 2, messageBoxY + 2 + currentFontHeight + 1, TextAlign.CENTER);
-        drawString(g, exchangePlazaTexts[2], canvasWidth / 2, messageBoxY + 2 + (currentFontHeight + 1) * 2, TextAlign.CENTER);
+        drawString(g, exchangePlazaTexts[0], canvasWidth / 2, messageBoxY + 2, ALIGN_CENTER);
+        drawString(g, exchangePlazaTexts[1], canvasWidth / 2, messageBoxY + 2 + currentFontHeight + 1, ALIGN_CENTER);
+        drawString(g, exchangePlazaTexts[2], canvasWidth / 2, messageBoxY + 2 + (currentFontHeight + 1) * 2, ALIGN_CENTER);
         drawMirroredTamagotchiPair(g, 30, canvasWidth / 2, messageBoxY - 38 + getSpriteHeight(30) / 2, 100, exchangePlazaState[2]);
     }
 
@@ -3417,13 +3415,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int colorIndex = line.indexOf("$");
 
             if (colorIndex == -1) {
-                drawString(g, line, lineX, lineY, TextAlign.LEFT);
+                drawString(g, line, lineX, lineY, ALIGN_LEFT);
             } else {
                 int currentLineX = lineX;
 
                 do {
                     String linePart = line.substring(0, colorIndex);
-                    drawString(g, linePart, currentLineX, lineY, TextAlign.LEFT);
+                    drawString(g, linePart, currentLineX, lineY, ALIGN_LEFT);
 
                     currentLineX += currentFont.stringWidth(linePart);
                     if (line.length() - 1 <= colorIndex) {
@@ -3442,7 +3440,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
                 } while (colorIndex != -1);
 
-                drawString(g, line, currentLineX, lineY, TextAlign.LEFT);
+                drawString(g, line, currentLineX, lineY, ALIGN_LEFT);
             }
 
             lineY += currentFontHeight + 1;
@@ -3673,7 +3671,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
         drawBeveledRect(g, (canvasWidth - 220) / 2, y, 220, currentFontHeight + 4, backgroundColor, backgroundColor);
         setColorOfRGBInt(g, textColor);
-        drawString(g, text, canvasWidth / 2, y + 2, TextAlign.CENTER);
+        drawString(g, text, canvasWidth / 2, y + 2, ALIGN_CENTER);
     }
 
     public static void drawMenuEggs(Graphics g, int x, int y, int gap, int time) {
@@ -3764,7 +3762,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             int newY = y + (240 - (textHeight + 4 + 8)) / 2;
             drawBeveledRect(g, (canvasWidth - 232) / 2, newY, 232, textHeight, 16056665, 16056665);
             setColorOfRGBInt(g, 16777215);
-            drawString(g, errorPageText, canvasWidth / 2, newY + 2, TextAlign.CENTER);
+            drawString(g, errorPageText, canvasWidth / 2, newY + 2, ALIGN_CENTER);
             // 88: Retry
             drawTextButton(g, 0, getText(88), canvasWidth / 2 - 8, newY + textHeight + 4, 100, 28, 1, 0);
             // 9: Back
@@ -4007,7 +4005,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int textHeight = splitCount(text, "\n");
         textHeight = currentFontHeight + (textHeight - 1) * (currentFontHeight + 1);
         setColorOfRGBInt(g, textColor);
-        drawString(g, text, x + width / 2, y + (height - textHeight) / 2, TextAlign.CENTER);
+        drawString(g, text, x + width / 2, y + (height - textHeight) / 2, ALIGN_CENTER);
     }
 
     public static void drawRoundedSpriteButton(Graphics g, int spriteIndex, int x, int y, int width, int height, int outlineColor, int color, int shadowColor, boolean isPressed) {
@@ -4050,7 +4048,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         int textHeight = splitCount(text, "\n");
         textHeight = currentFontHeight + (textHeight - 1) * (currentFontHeight + 1);
         setColorOfRGBInt(g, textColor);
-        drawString(g, text, x + width / 2, y + (height - textHeight) / 2, TextAlign.CENTER);
+        drawString(g, text, x + width / 2, y + (height - textHeight) / 2, ALIGN_CENTER);
     }
 
     public static void drawRectangularSpriteButton(Graphics g, int spriteIndex, int x, int y, int width, int height, int borderColor, int color, int shadowColor, boolean isPressed) {
@@ -4238,7 +4236,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             x -= 75;
         }
 
-        drawString(g, "" + getDigitBankA(index), x, y, TextAlign.LEFT);
+        drawString(g, "" + getDigitBankA(index), x, y, ALIGN_LEFT);
     }
 
     public static void drawRainbowCircles(Graphics g, int x, int y, int stepX, int stepY, int radius, int startColorOffset, int circleCount) {
