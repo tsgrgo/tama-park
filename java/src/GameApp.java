@@ -3224,8 +3224,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     }
 
     public static void exchangePlazaRegionSelect(Graphics g, int x, int y) {
-        int var3 = x + 168;
-        int var4 = y + 76;
+        int selectorX = x + 168;
+        int selectorY = y + 76;
         if (fullDraw) {
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, y, 240, 240);
@@ -3236,7 +3236,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 74: Choose a region to trade with and press OK!
             drawFullWidthScrollingText(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
 
-            drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
+            drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, selectorY, 110, 0);
 
             for (int column = 0; column < 7; ++column) {
                 int spriteIndex = getRegionSelectLayout(column, 7);
@@ -3244,26 +3244,26 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                     ++spriteIndex;
                 }
 
-                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(column, 0), var4 + getRegionSelectLayout(column, 1), 0);
+                drawSprite(g, spriteIndex, selectorX + getRegionSelectLayout(column, 0), selectorY + getRegionSelectLayout(column, 1), 0);
             }
         } else {
             drawFullWidthScrollingText(g, x, getText(74), y + 3 + calculateTextHeight(getText(6)) + 3, exchangePlazaState[2], 12, 16056665, 16777215);
             if (exchangePlazaState[4] != exchangePlazaState[3]) {
-                drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, var4, 110, 0);
-                drawSprite(g, getRegionSelectLayout(exchangePlazaState[4], 7), var3 + getRegionSelectLayout(exchangePlazaState[4], 0), var4 + getRegionSelectLayout(exchangePlazaState[4], 1), 0);
+                drawTextWithBackground(g, getText(getRegionSelectLayout(exchangePlazaState[3], 6)), x + 3, selectorY, 110, 0);
+                drawSprite(g, getRegionSelectLayout(exchangePlazaState[4], 7), selectorX + getRegionSelectLayout(exchangePlazaState[4], 0), selectorY + getRegionSelectLayout(exchangePlazaState[4], 1), 0);
                 int spriteIndex = getRegionSelectLayout(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
                     ++spriteIndex;
                 }
 
-                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
+                drawSprite(g, spriteIndex, selectorX + getRegionSelectLayout(exchangePlazaState[3], 0), selectorY + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
             } else if ((exchangePlazaState[2] & 3) == 0) {
                 int spriteIndex = getRegionSelectLayout(exchangePlazaState[3], 7);
                 if ((exchangePlazaState[2] & 4) != 0) {
                     ++spriteIndex;
                 }
 
-                drawSprite(g, spriteIndex, var3 + getRegionSelectLayout(exchangePlazaState[3], 0), var4 + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
+                drawSprite(g, spriteIndex, selectorX + getRegionSelectLayout(exchangePlazaState[3], 0), selectorY + getRegionSelectLayout(exchangePlazaState[3], 1), 0);
             }
         }
 
@@ -3822,21 +3822,21 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         buttonState[0] = index;
     }
 
-    public static void setButtonTheme(int selectedOutlineColor, int selectedColor, int var2, int selectedTextColor, int selectedShadowColor, int outlineColor, int color, int var7, int textColor, int shadowColor) {
+    public static void setButtonTheme(int selectedOutlineColor, int selectedColor, int unused1, int selectedTextColor, int selectedShadowColor, int outlineColor, int color, int unused2, int textColor, int shadowColor) {
         buttonState[3] = selectedOutlineColor;
         buttonState[4] = selectedColor;
-        buttonState[5] = var2;
+        buttonState[5] = unused1;
         buttonState[6] = selectedTextColor;
         buttonState[7] = selectedShadowColor;
         buttonState[8] = outlineColor;
         buttonState[9] = color;
-        buttonState[10] = var7;
+        buttonState[10] = unused2;
         buttonState[11] = textColor;
         buttonState[12] = shadowColor;
     }
 
-    public static void setButtonTheme2(int selectedOutlineColor, int selectedColor, int var2, int selectedTextColor, int outlineColor, int color, int var6, int textColor) {
-        setButtonTheme(selectedOutlineColor, selectedColor, var2, selectedTextColor, 0, outlineColor, color, var6, textColor, 0);
+    public static void setButtonTheme2(int selectedOutlineColor, int selectedColor, int unused1, int selectedTextColor, int outlineColor, int color, int unused2, int textColor) {
+        setButtonTheme(selectedOutlineColor, selectedColor, unused1, selectedTextColor, 0, outlineColor, color, unused2, textColor, 0);
     }
 
     public static int getPressedButtonIndex(boolean pressButton, boolean decrementButtonIndex, boolean incrementButtonIndex) {
@@ -3929,30 +3929,30 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         boolean isPressed = false;
         int outlineColor;
         int color;
-        int var12;
+        int unused;
         int textColor;
         int shadowColor;
         if (buttonIndex == getSelectedButtonIndex()) {
             outlineColor = buttonState[3];
             color = buttonState[4];
-            var12 = buttonState[5];
+            unused = buttonState[5];
             textColor = buttonState[6];
             shadowColor = buttonState[7];
             isPressed = buttonState[13] != 0;
         } else {
             outlineColor = buttonState[8];
             color = buttonState[9];
-            var12 = buttonState[10];
+            unused = buttonState[10];
             textColor = buttonState[11];
             shadowColor = buttonState[12];
         }
 
         switch (rounding) {
             case 0:
-                drawRoundedTextButton(g, text, newX, y, width, height, outlineColor, color, var12, textColor, shadowColor, isPressed);
+                drawRoundedTextButton(g, text, newX, y, width, height, outlineColor, color, unused, textColor, shadowColor, isPressed);
                 break;
             case 1:
-                drawRectangularTextButton(g, text, newX, y, width, height, outlineColor, color, var12, textColor, shadowColor, isPressed);
+                drawRectangularTextButton(g, text, newX, y, width, height, outlineColor, color, unused, textColor, shadowColor, isPressed);
         }
 
     }
@@ -3995,7 +3995,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
 
     }
 
-    public static void drawRoundedTextButton(Graphics g, String text, int x, int y, int width, int height, int outlineColor, int color, int var8, int textColor, int shadowColor, boolean isPressed) {
+    public static void drawRoundedTextButton(Graphics g, String text, int x, int y, int width, int height, int outlineColor, int color, int unused, int textColor, int shadowColor, boolean isPressed) {
         drawRoundedButtonBackground(g, x, y, width, height, outlineColor, color, shadowColor, isPressed);
         if (isPressed) {
             y += 2;
@@ -4038,7 +4038,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         g.fillRect(x + height / 2, y, width - height, height);
     }
 
-    public static void drawRectangularTextButton(Graphics g, String text, int x, int y, int width, int height, int borderColor, int color, int var8, int textColor, int shadowColor, boolean isPressed) {
+    public static void drawRectangularTextButton(Graphics g, String text, int x, int y, int width, int height, int borderColor, int color, int unused, int textColor, int shadowColor, boolean isPressed) {
         drawRectangularButtonBackground(g, x, y, width, height, borderColor, color, shadowColor, isPressed);
         if (isPressed) {
             y += 2;
