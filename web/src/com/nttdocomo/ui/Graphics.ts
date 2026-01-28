@@ -1,12 +1,5 @@
-// Temp classes for now
-export interface Font {
-	/** "16px sans-serif" */
-	unwrap(): string | null;
-}
-export interface Image {
-	/** something drawImage can accept HTMLImageElement/HTMLCanvasElement/ImageBitmap */
-	unwrap(): CanvasImageSource | null;
-}
+import type { Font } from './Font';
+import type { Image } from './Image';
 
 export class Graphics {
 	private readonly g:
