@@ -1,0 +1,44 @@
+import type { MediaListener } from './MediaListener';
+import type { MediaPresenter } from './MediaPresenter';
+import type { MediaSound } from './MediaSound';
+
+export class AudioPresenter implements MediaPresenter {
+	private static INSTANCES = new Map<number, AudioPresenter>();
+	private sound?: MediaSound;
+	private listener?: MediaListener;
+
+	public static getAudioPresenter(port: number): AudioPresenter {
+		if (this.INSTANCES.has(port)) return this.INSTANCES.get(port)!;
+		const presenter = new AudioPresenter(port);
+		this.INSTANCES.set(port, presenter);
+		return presenter;
+	}
+
+	private constructor(_port: number) {}
+
+	public setSound(mediaSound: MediaSound) {
+		this.sound = mediaSound;
+	}
+
+	public play(): void {
+		console.log('Method not implemented: AudioPresenter.play()');
+	}
+
+	public stop(): void {
+		console.log('Method not implemented: AudioPresenter.stop()');
+	}
+
+	public setAttribute(_attrib: number, _value: number): void {}
+
+	public setMediaListener(listener: MediaListener): void {
+		this.listener = listener;
+	}
+
+	private fireEvent(type: number, param: number): void {
+		try {
+			this.listener?.mediaAction(this, type, param);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+}
