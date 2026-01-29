@@ -76,16 +76,12 @@ export abstract class Canvas {
 		const g = this.domCanvas.getContext('2d');
 		if (!g) return;
 
-		g.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+		// g.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 		// Maybe ImageBitmap instead?
-		g.drawImage(
-			this.bufferCanvas as any,
-			0,
-			0,
-			CANVAS_WIDTH,
-			CANVAS_HEIGHT
-		);
+		g.drawImage(this.bufferCanvas as any, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+		// this.paint(new Graphics(g));
 	}
 
 	public setBackground(color: string): void {
