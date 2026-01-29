@@ -1,0 +1,7 @@
+{
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"typescript.preferences.importModuleSpecifierEnding": "minimal",
+	"javascript.preferences.importModuleSpecifierEnding": "minimal",
+	"cSpell.language": "en,en-US",
+	"cSpell.words": ["nttdocomo"]
+}
