@@ -134,7 +134,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
     public static String parentCallText;
     public static String parentCallQuote;
     public static int[] gotchiKingState;
-    public static int[] gotchingInviteTicketLayout;
+    public static int[] gotchiKingInviteTicketLayout;
     public static Image[] gotchiKingImages;
     public static int[] imagesToTemporarilyDispose;
     public static int[] travelMemoryState; // [?, flowStep, ...]
@@ -230,7 +230,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         };
         parentCallImages = new Image[2];
         gotchiKingState = new int[6];
-        gotchingInviteTicketLayout = new int[]{
+        gotchiKingInviteTicketLayout = new int[]{
                 120, 165, 170, 28, 93, 2,
                 120, 198, 170, 28, 15, 2
         };
@@ -2529,8 +2529,8 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
             // 69: Invite Ticket
             drawTextWithBackground(g, getText(69), canvasWidth / 2, y + 3, currentFont.stringWidth(getText(69)) + 8, 2);
         } else {
-            newY = y + getValueFrom6Table(gotchingInviteTicketLayout, 0, 1);
-            newY += getValueFrom6Table(gotchingInviteTicketLayout, 0, 3) / 2;
+            newY = y + getValueFrom6Table(gotchiKingInviteTicketLayout, 0, 1);
+            newY += getValueFrom6Table(gotchiKingInviteTicketLayout, 0, 3) / 2;
             newY -= getSpriteHeight(39) / 2;
             setColorOfRGBInt(g, 16763955);
             g.fillRect(x, newY, 240, 240 - (newY + getSpriteHeight(39) / 2));
@@ -2542,7 +2542,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         drawFullWidthScrollingText(g, x, getText(70), y + 3 + textHeight + 3, gotchiKingState[3], 12, 16056665, 16777215);
 
         for (int i = 0; i < 2; ++i) {
-            drawLayoutTextButton(g, i, gotchingInviteTicketLayout, 0);
+            drawLayoutTextButton(g, i, gotchiKingInviteTicketLayout, 0);
         }
 
         int codeInputY = y + 3 + textHeight + 3 + currentFontHeight + 12;
@@ -2554,7 +2554,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
 
         drawCodeInput(g, canvasWidth / 2, codeInputY + 4, 62, false, fullDraw);
-        drawMirroredTamagotchiPair(g, 39, x + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 0), y + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 1) + getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(gotchingInviteTicketLayout, getSelectedButtonIndex(), 2), gotchiKingState[3]);
+        drawMirroredTamagotchiPair(g, 39, x + getValueFrom6Table(gotchiKingInviteTicketLayout, getSelectedButtonIndex(), 0), y + getValueFrom6Table(gotchiKingInviteTicketLayout, getSelectedButtonIndex(), 1) + getValueFrom6Table(gotchiKingInviteTicketLayout, getSelectedButtonIndex(), 3) / 2 + 1, getValueFrom6Table(gotchiKingInviteTicketLayout, getSelectedButtonIndex(), 2), gotchiKingState[3]);
     }
 
     public static void gotchiKingSendViaIR(Graphics g, int x, int y) {
