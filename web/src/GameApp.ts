@@ -69,7 +69,7 @@ const KEY_DOWN_RIGHT = 786432n;
 const KEY_DOWN_RIGHT_SELECT = 1835008n;
 
 export class GameApp extends IApplication implements TimerListener, MediaListener {
-	public static drawState: number; // 0: Idle, 2: Request pending, 3: Currently drawing
+	public static drawState = 0; // 0: Idle, 2: Request pending, 3: Currently drawing
 	public static running: boolean;
 	public static resumedDraw: boolean;
 	public static fps: number;
@@ -109,7 +109,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static currentSoftLabelIdx: number;
 	public static softLabels: string[];
 	public static loadingProgress: number;
-	public static images: Array<Image?>;
+	public static images: Array<Image | null>;
 	public static imageSizes: number[];
 	public static titleScreenState: number[];
 	public static titleScreenLayout: number[];
@@ -123,21 +123,21 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static itemTicketLayout: number[];
 	public static parentCallState: number[];
 	public static allowanceTicketLayout: number[];
-	public static parentCallImages: Array<Image | undefined>;
+	public static parentCallImages: Array<Image | null>;
 	public static parentCallText: string | null;
 	public static parentCallQuote: string | null;
 	public static gotchiKingState: number[];
 	public static gotchiKingInviteTicketLayout: number[];
-	public static gotchiKingImages: Array<Image | undefined>;
+	public static gotchiKingImages: Array<Image | null>;
 	public static imagesToTemporarilyDispose: number[];
 	public static travelMemoryState: number[]; // [?, flowStep, ...]
 	public static memoryPhotoLayout: number[];
-	public static travelMemoryTexts: Array<string | undefined>;
+	public static travelMemoryTexts: Array<string | null>;
 	public static travelMemoryPhoto: Image | null;
 	public static exchangePlazaState: number[]; // [?, ?, colorIdx?, ...]
 	public static exchangeTicketLayout: number[];
-	public static exchangePlazaImages: Image[];
-	public static exchangePlazaTexts: string[];
+	public static exchangePlazaImages: Array<Image | null>;
+	public static exchangePlazaTexts: Array<string | null>;
 	public static regionSelectLayout: number[];
 	public static explanationState: number[]; // [index, numberOfPages, current, isOpen]
 	public static menuState: number[]; // [isMenuOpen, menuPage, explanationIndex, numberOfExplanationPages...]
@@ -159,7 +159,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static irSendTimestamp: number;
 	public static generalIrSendLayout: number[];
 	public static shoppingCenterIrSendLayout: number[];
-	public executingTimerExpired: boolean;
+	public executingTimerExpired = false;
 
 	static {
 		this.running = true;
@@ -357,6 +357,54 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static loadSounds(): boolean {
+		// DataInputStream stream = null;
+		// int currentIndex = 0;
+
+		// boolean success;
+		// try {
+		//     mediaSounds = new MediaSound[7];
+		//     int[] sizes = loadShortArray(128);
+		//     int pos = 0;
+
+		//     for (int i = 0; i < 93; ++i) {
+		//         pos += sizes[i];
+		//     }
+
+		//     stream = Connector.openDataInputStream("scratchpad:///0;pos=" + (pos + 128 + 568));
+
+		//     for (int i = 0; i < 7; ++i) {
+		//         currentIndex = i;
+		//         byte[] data = new byte[sizes[i + 93]];
+		//         stream.read(data);
+
+		//         for (int j = 0; j < data.length; ++j) {
+		//         }
+
+		//         mediaSounds[i] = MediaManager.getSound("data");
+		//         mediaSounds[i].use();
+		//         log("loadsound:" + i);
+		//         data = null;
+		//         System.gc();
+		//     }
+
+		//     initAudioPresenters();
+		//     success = true;
+		// } catch (Exception e) {
+		//     log("loadsounderr i:" + currentIndex);
+		//     success = false;
+		// } finally {
+		//     if (stream != null) {
+		//         try {
+		//             stream.close();
+		//         } catch (Exception ignored) {
+		//         }
+		//     }
+
+		// }
+
+		// return success;
+
+		this.initAudioPresenters();
 		return true; // TODO
 	}
 
@@ -437,9 +485,14 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static loadGameSave() {}
+	public static loadGameSave() {
+		// TODO
+		console.log('loadGameSave');
+	}
 
-	public static saveGame() {}
+	public static saveGame() {
+		// TODO
+	}
 
 	public static downloadGameData(path: string, size: number, pos: number) {}
 
@@ -455,7 +508,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		if (this.images[idx]) this.drawImage(g, this.images[idx], x, y, anchor);
 	}
 
-	public static drawImage(g: Graphics, img?: Image | null, x: number, y: number, anchor: number): void {
+	public static drawImage(g: Graphics, img: Image | null, x: number, y: number, anchor: number): void {
 		if (!img) return;
 
 		if (anchor == 2) {
@@ -675,6 +728,8 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static checkGameData(): void {
+		console.log('checkGameData');
+
 		if (this.downloadGameDataIfNeeded()) {
 			this.goToPage(PAGE_LOADING);
 		} else {
@@ -683,6 +738,8 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static loadResources(): void {
+		console.log('loadResources');
+
 		const result = this.loadImages(128, 0, 93);
 		if (result == -1) {
 			this.goToPage(PAGE_PREP_ERROR);
@@ -971,7 +1028,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			}
 		} else {
 			for (let i = 0; i < 3; ++i) {
-				drawLayoutSpriteButton(g, i, this.mailboxModeLayout, 0);
+				this.drawLayoutSpriteButton(g, i, this.mailboxModeLayout, 0);
 			}
 		}
 
@@ -1587,7 +1644,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 						this.nextParentCallState(4);
 					}
 				} else {
-					this.parentCallQuote = this.findNthQuote(this.parentCallText, this.parentCallState[4]);
+					this.parentCallQuote = this.findNthQuote(this.parentCallText!, this.parentCallState[4]);
 				}
 			}
 		} else {
@@ -1647,7 +1704,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public static parentCallCodeInput(g: Graphics, x: number, y: number): void {
 		// 17: Connect with your parent on Tamagotchi Planet!
-		const textHeight = this.calculateTextHeight(getText(17));
+		const textHeight = this.calculateTextHeight(this.getText(17));
 		const buttonY = y + 240 - 42;
 		if (this.fullDraw) {
 			this.setColorOfRGBInt(g, 16763955);
@@ -1819,7 +1876,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.setButtonTheme2(16777215, 7786961, 16777215, 16777215, 16777215, 6594720, 13158600, 13158600);
 				break;
 			case 4:
-				selectSoftLabel(SOFT_LABEL_EMPTY);
+				this.selectSoftLabel(SOFT_LABEL_EMPTY);
 				break;
 			case 5:
 				this.selectSoftLabel(SOFT_LABEL_EMPTY);
@@ -2175,7 +2232,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			this.drawCodeInputBackground(g, this.canvasWidth / 2, codeInputY, 2, 0, 16756418, 13722050, 16756418);
 			this.drawDownloadUploadAnimations(g, this.canvasWidth / 2, codeInputY + 10, 56, this.gotchiKingState[3] >> 1, false);
 		} else {
-			drawDownloadUploadAnimationsWithBackground(g, this.canvasWidth / 2, codeInputY + 10, 56, this.gotchiKingState[3] >> 1, false, 16756418);
+			this.drawDownloadUploadAnimationsWithBackground(g, this.canvasWidth / 2, codeInputY + 10, 56, this.gotchiKingState[3] >> 1, false, 16756418);
 		}
 
 		this.drawCodeInput(g, this.canvasWidth / 2, codeInputY + 4, 62, false, this.fullDraw);
@@ -2425,14 +2482,14 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.drawSprite(g, 0, x, y + 240 - this.getSpriteHeight(0), 0);
 
 		let stringWidth = this.currentFont.stringWidth(this.travelMemoryTexts[0]) + 8;
-		if (stringWidth < this.travelMemoryPhoto.getWidth()) {
-			stringWidth = this.travelMemoryPhoto.getWidth();
+		if (stringWidth < this.travelMemoryPhoto!.getWidth()) {
+			stringWidth = this.travelMemoryPhoto!.getWidth();
 		}
 
-		this.drawTextWithBackground(g, this.travelMemoryTexts[0], this.canvasWidth / 2, y + 2, stringWidth, 2);
+		this.drawTextWithBackground(g, this.travelMemoryTexts[0]!, this.canvasWidth / 2, y + 2, stringWidth, 2);
 		stringWidth = this.currentFontHeight;
 		this.drawImage(g, this.travelMemoryPhoto, this.canvasWidth / 2, y + 2 + fontHeight + 4 + 4, 2);
-		this.drawFullWidthScrollingText(g, x, this.travelMemoryTexts[1], y + 2 + fontHeight + 4 + 4 + this.travelMemoryPhoto.getHeight() + 7, this.travelMemoryState[2], 12, 16056665, 16777215);
+		this.drawFullWidthScrollingText(g, x, this.travelMemoryTexts[1]!, y + 2 + fontHeight + 4 + 4 + this.travelMemoryPhoto!.getHeight() + 7, this.travelMemoryState[2], 12, 16056665, 16777215);
 
 		for (let i = 0; i < 2; ++i) {
 			this.drawLayoutTextButton(g, i, this.memoryPhotoLayout, 0);
@@ -2519,7 +2576,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static clearDownloadedExchangePlazaData(): void {
 		for (let i = 0; i < 2; ++i) {
 			if (this.exchangePlazaImages[i] != null) {
-				this.exchangePlazaImages[i].dispose();
+				this.exchangePlazaImages[i]?.dispose();
 				this.exchangePlazaImages[i] = null;
 			}
 		}
@@ -2874,9 +2931,9 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.drawTextButton(g, 0, this.getText(18), this.canvasWidth / 2, messageBoxY - 38, 100, 28, 2, 0);
 		this.drawBeveledRect(g, (this.canvasWidth - 232) / 2, messageBoxY, 232, messageBoxHeight + 4, 16056665, 16056665);
 		this.setColorOfRGBInt(g, 16777215);
-		this.drawString(g, this.exchangePlazaTexts[0], this.canvasWidth / 2, messageBoxY + 2, ALIGN_CENTER);
-		this.drawString(g, this.exchangePlazaTexts[1], this.canvasWidth / 2, messageBoxY + 2 + this.currentFontHeight + 1, ALIGN_CENTER);
-		this.drawString(g, this.exchangePlazaTexts[2], this.canvasWidth / 2, messageBoxY + 2 + (this.currentFontHeight + 1) * 2, ALIGN_CENTER);
+		this.drawString(g, this.exchangePlazaTexts[0]!, this.canvasWidth / 2, messageBoxY + 2, ALIGN_CENTER);
+		this.drawString(g, this.exchangePlazaTexts[1]!, this.canvasWidth / 2, messageBoxY + 2 + this.currentFontHeight + 1, ALIGN_CENTER);
+		this.drawString(g, this.exchangePlazaTexts[2]!, this.canvasWidth / 2, messageBoxY + 2 + (this.currentFontHeight + 1) * 2, ALIGN_CENTER);
 		this.drawMirroredTamagotchiPair(g, 30, this.canvasWidth / 2, messageBoxY - 38 + this.getSpriteHeight(30) / 2, 100, this.exchangePlazaState[2]);
 	}
 
@@ -3304,12 +3361,12 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			g.fillRect(x, y, 240, 240);
 			// Bottom decoration
 			this.drawSprite(g, 0, x, y + 240 - this.getSpriteHeight(0), 0);
-			const lineCount = this.splitCount(this.errorPageText, '\n');
+			const lineCount = this.splitCount(this.errorPageText!, '\n');
 			const textHeight = (lineCount - 1) * (this.currentFontHeight + 1) + this.currentFontHeight + 4;
 			const newY = y + (240 - (textHeight + 4 + 8)) / 2;
 			this.drawBeveledRect(g, (this.canvasWidth - 232) / 2, newY, 232, textHeight, 16056665, 16056665);
 			this.setColorOfRGBInt(g, 16777215);
-			this.drawString(g, this.errorPageText, this.canvasWidth / 2, newY + 2, ALIGN_CENTER);
+			this.drawString(g, this.errorPageText!, this.canvasWidth / 2, newY + 2, ALIGN_CENTER);
 			// 88: Retry
 			this.drawTextButton(g, 0, this.getText(88), this.canvasWidth / 2 - 8, newY + textHeight + 4, 100, 28, 1, 0);
 			// 9: Back
@@ -4033,7 +4090,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 		let result;
 		while (true) {
-			searchIndex = text.indexOf(39, searchIndex);
+			searchIndex = text.indexOf("'", searchIndex);
 			if (searchIndex == -1) {
 				result = '';
 				break;
@@ -4616,3 +4673,5 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public start(): void {}
 }
+
+console.log(GameApp);
