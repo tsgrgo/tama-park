@@ -1485,13 +1485,13 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		if (redraw) {
 			g.fillRect(rightX - 2, y, 75, height);
 		} else {
-			g.fillRect(rightX + (previousCursorIndex % 5) * 15, topY + (previousCursorIndex / 5) * 26, 11, 24);
-			g.fillRect(rightX + (cursorIndex % 5) * 15, topY + (cursorIndex / 5) * 26, 11, 24);
+			g.fillRect(rightX + (previousCursorIndex % 5) * 15, topY + Math.floor(previousCursorIndex / 5) * 26, 11, 24);
+			g.fillRect(rightX + (cursorIndex % 5) * 15, topY + Math.floor(cursorIndex / 5) * 26, 11, 24);
 		}
 
 		if (showCursor) {
 			this.setColorOfRGBInt(g, 13619071);
-			g.fillRect(rightX + (cursorIndex % 5) * 15, topY + (cursorIndex / 5) * 26, 11, 24);
+			g.fillRect(rightX + (cursorIndex % 5) * 15, topY + Math.floor(cursorIndex / 5) * 26, 11, 24);
 		}
 
 		this.setColorOfRGBInt(g, 0);
@@ -3762,20 +3762,22 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public static setDigitBankA(digitIndex: number, digit: number): void {
 		digit %= 10;
-		let packedInt = this.codeInputState[0 + digitIndex / 8];
+		const intIndex = 0 + Math.floor(digitIndex / 8);
+		let packedInt = this.codeInputState[intIndex];
 		const shift = 4 * (7 - (digitIndex % 8));
 		packedInt &= ~(15 << shift);
 		packedInt |= digit << shift;
-		this.codeInputState[0 + digitIndex / 8] = packedInt;
+		this.codeInputState[intIndex] = packedInt;
 	}
 
 	public static setDigitBankB(digitIndex: number, digit: number): void {
 		digit %= 10;
-		let packedInt = this.codeInputState[2 + digitIndex / 8];
+		const intIndex = 2 + Math.floor(digitIndex / 8);
+		let packedInt = this.codeInputState[intIndex];
 		const shift = 4 * (7 - (digitIndex % 8));
 		packedInt &= ~(15 << shift);
 		packedInt |= digit << shift;
-		this.codeInputState[2 + digitIndex / 8] = packedInt;
+		this.codeInputState[intIndex] = packedInt;
 	}
 
 	public static generateDerivedCodeInBankB(): void {
@@ -3787,12 +3789,14 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static getDigitBankA(digitIndex: number): number {
-		const digit = (this.codeInputState[0 + digitIndex / 8] >> (4 * (7 - (digitIndex % 8)))) & 15;
+		const intIndex = 0 + Math.floor(digitIndex / 8);
+		const digit = (this.codeInputState[intIndex] >> (4 * (7 - (digitIndex % 8)))) & 15;
 		return digit;
 	}
 
 	public static getDigitBankB(digitIndex: number): number {
-		const digit = (this.codeInputState[2 + digitIndex / 8] >> (4 * (7 - (digitIndex % 8)))) & 15;
+		const intIndex = 2 + Math.floor(digitIndex / 8);
+		const digit = (this.codeInputState[intIndex] >> (4 * (7 - (digitIndex % 8)))) & 15;
 		return digit;
 	}
 
@@ -4188,7 +4192,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 		for (let i = 0; i < 10; i += 2) {
 			const value = (this.reverse4Bits(this.getDigitBankB(i)) << 4) | this.reverse4Bits(this.getDigitBankB(i + 1));
-			this.setByteSentViaIr(4 + i / 2, value);
+			this.setByteSentViaIr(4 + Math.floor(i / 2), value);
 		}
 
 		this.setByteSentViaIr(9, 0);
@@ -4555,6 +4559,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					break;
 				case PAGE_PREP_ERROR:
 					this.showError(g, 'Preparing', this.rootX, this.rootY);
+					break;
 				case PAGE_NONE_0:
 				case PAGE_NONE_1:
 				default:
