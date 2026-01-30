@@ -951,12 +951,12 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public static drawBackgroundCity(g: Graphics, spriteIndex: number, offset: number, x: number, y: number, screenWidth: number): void {
 		while (0 < offset) {
-			offset -= this.getSpriteWidth(spriteIndex);
+			offset -= this.getSpriteWidth(spriteIndex) || 50;
 		}
 
 		while (offset < screenWidth) {
 			this.drawSprite(g, spriteIndex, x + offset, y, 0);
-			offset += this.getSpriteWidth(spriteIndex);
+			offset += this.getSpriteWidth(spriteIndex) || 50;
 		}
 	}
 
@@ -3379,6 +3379,9 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static loadTexts(): boolean {
+		for (let i = 0; i < 193; i++) {
+			this.texts[i] = `text ${i}`;
+		}
 		// TODO
 		return true;
 	}
@@ -4673,5 +4676,3 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public start(): void {}
 }
-
-console.log(GameApp);
