@@ -801,11 +801,11 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         boolean hasMoreDelimiters = true;
 
         int count;
-        int delimeterIndex;
-        for (count = 0; hasMoreDelimiters; startIndex = delimeterIndex + delimiter.length()) {
-            delimeterIndex = text.indexOf(delimiter, startIndex);
-            if (delimeterIndex == -1) {
-                delimeterIndex = text.length();
+        int delimiterIndex;
+        for (count = 0; hasMoreDelimiters; startIndex = delimiterIndex + delimiter.length()) {
+            delimiterIndex = text.indexOf(delimiter, startIndex);
+            if (delimiterIndex == -1) {
+                delimiterIndex = text.length();
                 hasMoreDelimiters = false;
             }
 
