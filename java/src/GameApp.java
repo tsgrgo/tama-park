@@ -2623,13 +2623,13 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
                 travelMemoryCodeInputFlow();
                 break;
             case 2:
-                downloadTraverMemoryData();
+                downloadTravelMemoryData();
                 break;
             case 3:
                 displayMemoryPhotoFlow();
                 break;
             case 4:
-                travelMemoryNoop();
+                travelMemoryNoopFlow();
         }
 
     }
@@ -2659,7 +2659,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void downloadTraverMemoryData() {
+    public static void downloadTravelMemoryData() {
         clearDownloadedTravelMemoryData();
         prepareTravelMemorySentData();
         DataInputStream inputStream = null;
@@ -2739,7 +2739,7 @@ public class GameApp extends IApplication implements TimerListener, MediaListene
         }
     }
 
-    public static void travelMemoryNoop() {
+    public static void travelMemoryNoopFlow() {
     }
 
     public static void travelMemoryPage(Graphics g, int x, int y) {
