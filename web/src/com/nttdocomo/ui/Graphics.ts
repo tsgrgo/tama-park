@@ -2,13 +2,9 @@ import type { Font } from './Font';
 import type { Image } from './Image';
 
 export class Graphics {
-	private readonly g:
-		| CanvasRenderingContext2D
-		| OffscreenCanvasRenderingContext2D;
+	private readonly g: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
-	constructor(
-		g: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-	) {
+	constructor(g: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
 		this.g = g;
 	}
 
@@ -80,24 +76,20 @@ export class Graphics {
 		this.g.strokeRect(x, y, w, h);
 	}
 
-	public fillArc(
-		x: number,
-		y: number,
-		w: number,
-		h: number,
-		start: number,
-		arc: number
-	): void {
+	public fillArc(x: number, y: number, w: number, h: number, start: number, arc: number): void {
 		const cx = x + w / 2;
 		const cy = y + h / 2;
 		const rx = w / 2;
 		const ry = h / 2;
 
-		const startRad = (start * Math.PI) / 180;
-		const endRad = ((start + arc) * Math.PI) / 180;
+		const startRad = (-start * Math.PI) / 180;
+		const absArc = Math.abs(arc);
+		const endRad = absArc >= 360 ? startRad + 2 * Math.PI : (-(start + arc) * Math.PI) / 180;
+
+		const anticlockwise = arc > 0;
 
 		this.g.beginPath();
-		this.g.ellipse(cx, cy, rx, ry, 0, startRad, endRad, arc < 0);
+		this.g.ellipse(cx, cy, rx, ry, 0, startRad, endRad, anticlockwise);
 		this.g.lineTo(cx, cy);
 		this.g.closePath();
 		this.g.fill();

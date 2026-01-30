@@ -29,8 +29,7 @@ export class Font {
 	public static readonly SIZE_LARGE = 0x70000300;
 	public static readonly SIZE_TINY = 0x70000400;
 
-	public static readonly DEFAULT_FONT =
-		Font.FACE_SYSTEM | Font.SIZE_TINY | Font.STYLE_PLAIN;
+	public static readonly DEFAULT_FONT = Font.FACE_SYSTEM | Font.SIZE_TINY | Font.STYLE_PLAIN;
 
 	private static readonly FACE_MASK = 0xff000000;
 	private static readonly STYLE_MASK = 0xf0ff0000;
@@ -43,8 +42,7 @@ export class Font {
 		c.width = 1;
 		c.height = 1;
 		const ctx = c.getContext('2d');
-		if (!ctx)
-			throw new Error('Failed to create 2D context for Font metrics.');
+		if (!ctx) throw new Error('Failed to create 2D context for Font metrics.');
 		ctx.textBaseline = 'alphabetic';
 		ctx.textAlign = 'left';
 		return ctx;
@@ -117,9 +115,7 @@ export class Font {
 		const { weight, fontStyle } = Font.mapStyle(style);
 		const px = Font.mapSize(size);
 
-		const css = `${fontStyle} ${weight} ${px}px ${family}`
-			.trim()
-			.replace(/\s+/g, ' ');
+		const css = `${fontStyle} ${weight} ${px}px ${family}`.trim().replace(/\s+/g, ' ');
 
 		return new Font(css);
 	}
@@ -137,7 +133,7 @@ export class Font {
 	private static mapFace(face: number): string {
 		switch (face) {
 			case Font.FACE_SYSTEM:
-				return `system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
+				return `MS Gothic, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
 			case Font.FACE_MONOSPACE:
 				return `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`;
 			case Font.FACE_PROPORTIONAL:

@@ -37,6 +37,7 @@ export abstract class Canvas {
 		this.domCanvas.tabIndex = 0; // make focusable
 		this.domCanvas.style.background = 'black';
 		this.domCanvas.style.outline = 'none';
+		this.domCanvas.style.imageRendering = 'pixelated';
 
 		// Offscreen buffer
 		this.bufferCanvas = new OffscreenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -78,8 +79,7 @@ export abstract class Canvas {
 
 		// g.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-		// Maybe ImageBitmap instead?
-		g.drawImage(this.bufferCanvas as any, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+		g.drawImage(this.bufferCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 		// this.paint(new Graphics(g));
 	}
