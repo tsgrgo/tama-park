@@ -16,9 +16,7 @@ export abstract class IApplication {
 
 	public static getCurrentApp(): IApplication | null {
 		if (!this.currentApp) {
-			throw new Error(
-				'getCurrentApp(): Application has not yet been created'
-			);
+			throw new Error('getCurrentApp(): Application has not yet been created');
 		}
 		return this.currentApp;
 	}
@@ -27,7 +25,7 @@ export abstract class IApplication {
 	public abstract resume(): void;
 
 	protected getSourceURL(): string {
-		return '';
+		return '/data/';
 	}
 
 	protected getArgs(): string[] {
