@@ -829,8 +829,44 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static loadImages(pos: number, startIndex: number, count: number): number {
-		return 1; // TODO
+	public static async loadImages(pos: number, startIndex: number, count: number): Promise<number> {
+		try {
+			await Thread.sleep(200);
+		} catch (e) {}
+
+		try {
+			const sizes = await this.loadShortArray(128);
+			this.imageSizes = sizes;
+			pos += (sizes.length + 1) * 2;
+
+			for (let i = 0; i < startIndex; ++i) {
+				pos += sizes[i];
+			}
+
+			const stream = new DataInputStream(await Connector.openInputStream('scratchpad:///0;pos=' + pos));
+
+			for (let i = startIndex; i < count; ++i) {
+				const imageData = new Uint8Array(sizes[i]);
+				await stream.read(imageData);
+				const mediaImage = MediaManager.getImage(imageData);
+				mediaImage.use();
+				this.images[i] = mediaImage.getImage();
+				++this.loadingProgress;
+				pos += sizes[i];
+				this.repaint();
+
+				try {
+					await Thread.sleep(10); // 50
+				} catch (e) {}
+			}
+
+			await stream.close();
+			// System.gc();
+			return pos;
+		} catch (e) {
+			console.log(e);
+			return -1;
+		}
 	}
 
 	public static loadImage(index: number): void {
