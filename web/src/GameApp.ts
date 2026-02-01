@@ -16,6 +16,10 @@ import { IrRemoteControl } from './com/nttdocomo/device/IrRemoteControl';
 import { PhoneSystem } from './com/nttdocomo/ui/PhoneSystem';
 import { MediaImage } from './com/nttdocomo/ui/MediaImage';
 import { MediaManager } from './com/nttdocomo/ui/MediaManager';
+import { DataInputStream } from './java/io/DataInputStream';
+import { DataOutputStream } from './java/io/DataOutputStream';
+import { Connector } from './javax/microedition/io/Connector';
+import type { HttpConnection } from './com/nttdocomo/io/HttpConnection';
 
 const PAGE_AUTH_ERROR = -3;
 const PAGE_COM_ERROR = -2;
@@ -143,7 +147,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static menuState: number[]; // [isMenuOpen, menuPage, explanationIndex, numberOfExplanationPages...]
 	public static errorState: number[]; // [pageToGoBack, flowStepToGoBack, flowStepToGoBack, showErrorPage] ? = some action id?
 	public static errorPageText: string | null;
-	public static imageReadInfo: bigint;
+	public static imageReadInfo: number;
 	public static errorPageUnusedToggle: boolean;
 	public static errorPageUnusedCounter: number;
 	public static texts: string[];
@@ -485,23 +489,101 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static loadGameSave() {
-		// TODO
+	public static async loadGameSave(): Promise<void> {
 		console.log('loadGameSave');
+
+		try {
+			const inputStream = await Connector.openDataInputStream('scratchpad:///0;pos=0');
+
+			for (let i = 0; i < this.gameSave.length; ++i) {
+				this.gameSave[i] = await inputStream.readInt();
+			}
+
+			console.log('loaded game save: ', this.gameSave);
+
+			await inputStream.close();
+			// inputStream = null;
+			// System.gc();
+		} catch (ignored) {}
 	}
 
-	public static saveGame() {
-		// TODO
+	public static async saveGame(): Promise<void> {
+		try {
+			const outputStream = await Connector.openDataOutputStream('scratchpad:///0;pos=0');
+
+			for (let i = 0; i < this.gameSave.length; ++i) {
+				await outputStream.writeInt(this.gameSave[i]);
+			}
+
+			await outputStream.close();
+			// outputStream = null;
+			// System.gc();
+		} catch (ignored) {
+			console.log(ignored);
+		}
 	}
 
-	public static downloadGameData(path: string, size: number, pos: number) {}
+	public static async downloadGameData(path: string, size: number, pos: number): Promise<void> {
+		const buffer = new Uint8Array(10240);
+		this.repaint();
+		pos += this.gameSave[1] * 10240;
 
-	public static loadShortArray(pos: number): number[] {
-		return this.loadArray(pos, 2);
+		for (let i = this.gameSave[1]; i < Math.ceil(size / 10240); ++i) {
+			const httpConnection = Connector.open(this.mediaListener.getSourceURL() + path + i + '.bin', 1, true);
+			httpConnection.setRequestMethod('GET');
+			await httpConnection.connect();
+			// System.gc();
+			const inputStream = new DataInputStream(await httpConnection.openInputStream());
+			const length = await httpConnection.getLength();
+			console.log(length);
+
+			const bytesRead = await inputStream.read(buffer, 0, length);
+			console.log(bytesRead);
+			console.log(buffer.slice());
+
+			await inputStream.close();
+			await httpConnection.close();
+
+			if (bytesRead != length) {
+				throw new Error('http load error!');
+			}
+
+			const outputStream = await Connector.openDataOutputStream('scratchpad:///0;pos=' + pos);
+			await outputStream.write(buffer, 0, length);
+			await outputStream.close();
+
+			pos += length;
+			this.gameSave[1]++;
+			await this.saveGame();
+			++this.loadingProgress;
+			this.repaint();
+		}
+
+		// buffer = null;
+		// System.gc();
 	}
 
-	public static loadArray(pos: number, elementSizeInBytes: number): number[] {
-		return []; // TODO
+	public static async loadShortArray(pos: number): Promise<number[]> {
+		return await this.loadArray(pos, 2);
+	}
+
+	public static async loadArray(pos: number, elementSizeInBytes: number): Promise<number[]> {
+		const stream = new DataInputStream(await Connector.openInputStream('scratchpad:///0;pos=' + pos));
+		const arraySize = await stream.readShort();
+		const res = new Array<number>(arraySize);
+
+		if (elementSizeInBytes == 2) {
+			for (let i = 0; i < arraySize; ++i) {
+				res[i] = await stream.readShort();
+			}
+		} else if (elementSizeInBytes == 4) {
+			for (let i = 0; i < arraySize; ++i) {
+				res[i] = await stream.readInt();
+			}
+		}
+
+		await stream.close();
+		return res;
 	}
 
 	public static drawSprite(g: Graphics, idx: number, x: number, y: number, anchor: number): void {
@@ -706,19 +788,19 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadGameDataIfNeeded(): boolean {
+	public static async downloadGameDataIfNeeded(): Promise<boolean> {
 		try {
 			if (this.gameDataVersion != this.gameSave[2]) {
 				this.gameSave[1] = 0;
 				this.gameSave[2] = this.gameDataVersion;
-				this.saveGame();
+				await this.saveGame();
 			}
 
 			if (this.gameSave[1] != 255) {
 				this.loadingProgress = this.gameSave[1];
-				this.downloadGameData('', 72483, 128);
+				await this.downloadGameData('', 967197, 128); // 72483
 				this.gameSave[1] = 255;
-				this.saveGame();
+				await this.saveGame();
 			}
 
 			return true;
@@ -727,23 +809,23 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static checkGameData(): void {
+	public static async checkGameData(): Promise<void> {
 		console.log('checkGameData');
 
-		if (this.downloadGameDataIfNeeded()) {
+		if (await this.downloadGameDataIfNeeded()) {
 			this.goToPage(PAGE_LOADING);
 		} else {
 			this.goToPage(PAGE_COM_ERROR);
 		}
 	}
 
-	public static loadResources(): void {
+	public static async loadResources(): Promise<void> {
 		console.log('loadResources');
 
 		const result = this.loadImages(128, 0, 93);
 		if (result == -1) {
 			this.goToPage(PAGE_PREP_ERROR);
-		} else if (this.loadSounds() && this.loadTexts()) {
+		} else if (this.loadSounds() && (await this.loadTexts())) {
 			this.goToPage(PAGE_TITLE);
 		} else {
 			this.goToPage(PAGE_PREP_ERROR);
@@ -773,7 +855,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.setColorOfRGBInt(g, 16763955);
 		g.drawRect(barX, barY, 200, 40);
 		this.drawString(g, 'Downloading', this.canvasWidth / 2, barY - this.currentFontHeight - 4, ALIGN_CENTER);
-		const progressBarWidth = (200 * this.loadingProgress) / 8;
+		const progressBarWidth = (200 * this.loadingProgress) / 95;
 		g.fillRect(barX, barY, progressBarWidth, 40);
 	}
 
@@ -1616,8 +1698,54 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadParentCallData(): void {
-		// TODO
+	public static async downloadParentCallData(): Promise<void> {
+		this.clearDownloadedParentCallData();
+		this.prepareParentCallSentData();
+		let inputStream: DataInputStream | null = null;
+
+		try {
+			inputStream = await this.sendPreparedDataToServer(13);
+			this.unknownOperationOnServerResponse(inputStream);
+
+			// Java: int errorMessageLength = inputStream.read();
+			// In TS DataInputStream, readUnsignedByte() is used for the same 0..255 behavior.
+			let errorMessageLength = await inputStream.readUnsignedByte();
+
+			if (errorMessageLength > 0) {
+				const errorMessage = await this.readString(inputStream, errorMessageLength);
+				this.showErrorPage(this.currentPage, 2, 1, errorMessage);
+			} else {
+				const passwordData = new Uint8Array(10);
+				await inputStream.read(passwordData);
+
+				for (let i = 0; i < 2; ++i) {
+					const imageSize = await inputStream.readUnsignedShort();
+					this.parentCallImages[i] = await this.readImage(inputStream, imageSize);
+				}
+
+				const textSize = await inputStream.readUnsignedShort();
+				this.parentCallText = await this.readString(inputStream, textSize);
+
+				this.parentCallState[2] = 0;
+				this.parentCallState[4] = 0;
+				this.parentCallState[5] = this.countQuotedSegments(this.parentCallText);
+				this.parentCallQuote = this.findNthQuote(this.parentCallText, this.parentCallState[4]);
+				this.parseAndStoreDownloadedPassword(passwordData);
+				this.nextParentCallState(3);
+			}
+		} catch (e) {
+			this.log('e:' + e);
+			// 92: Communication has failed. Would you like to try again?
+			this.showErrorPage(this.currentPage, 2, 1, this.getText(92));
+		} finally {
+			if (inputStream != null) {
+				try {
+					await inputStream.close();
+				} catch (ignored) {}
+			}
+
+			this.playSound(6, false);
+		}
 	}
 
 	public static prepareParentCallSentData(): void {
@@ -3112,7 +3240,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		return this.menuState[0] != 0;
 	}
 
-	public static menuFlow(): void {
+	public static async menuFlow(): Promise<void> {
 		if (this.isMenuOpen()) {
 			this.menuState[5]++;
 			switch (this.menuState[1]) {
@@ -3120,7 +3248,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					this.nextMenuState(1);
 					break;
 				case 1:
-					this.mainMenuFlow();
+					await this.mainMenuFlow();
 					break;
 				case 2:
 					if (this.isExplanationOpen()) {
@@ -3138,7 +3266,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static mainMenuFlow(): void {
+	public static async mainMenuFlow(): Promise<void> {
 		if (this.isKeyPressed(KEY_SOFT1)) {
 			this.setButtonConfig(this.menuState[7], this.menuState[8] != 0);
 			this.setSelectedButtonIndex(this.menuState[6]);
@@ -3160,7 +3288,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					break;
 				case 3:
 					this.toggleSound();
-					this.saveGame();
+					await this.saveGame();
 			}
 		}
 	}
@@ -3378,12 +3506,42 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		return this.texts[idx];
 	}
 
-	public static loadTexts(): boolean {
-		for (let i = 0; i < 193; i++) {
-			this.texts[i] = `text ${i}`;
+	public static async loadTexts(): Promise<boolean> {
+		let stream: DataInputStream | null = null;
+		let success = true;
+		let indexOffset = 100;
+
+		try {
+			const lengths = await this.loadShortArray(128);
+			let pos = 128 + (lengths.length + 1) * 2;
+
+			for (let i = 0; i < indexOffset; ++i) {
+				pos += lengths[i];
+			}
+
+			stream = await Connector.openDataInputStream('scratchpad:///0;pos=' + pos);
+
+			for (let i = 0; i < 183; ++i) {
+				const data = new Uint8Array(lengths[indexOffset + i]);
+				await stream.read(data);
+				// new String(data)
+				this.texts[i] = new TextDecoder('Shift_JIS').decode(data);
+				// data = null;
+				// System.gc();
+			}
+		} catch (e) {
+			success = false;
+		} finally {
+			if (stream != null) {
+				try {
+					await stream.close();
+					stream = null;
+					// System.gc();
+				} catch (ignored) {}
+			}
 		}
-		// TODO
-		return true;
+
+		return success;
 	}
 
 	public static setButtonConfig(numberOfButtons: number, canLoopAround: boolean): void {
@@ -4001,13 +4159,63 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.setByteSentToServer(0, 16);
 	}
 
-	public static sendPreparedDataToServer(length: number) {
-		// TODO: DataInputStream return type
-		return this.sendDataToServer(this.bytesSentToServer, length);
+	public static async sendPreparedDataToServer(length: number): Promise<DataInputStream> {
+		return await this.sendDataToServer(this.bytesSentToServer, length);
 	}
 
-	public static sendDataToServer(data: Uint8Array, length: number) {
-		// TODO
+	public static async sendDataToServer(data: Uint8Array, length: number): Promise<DataInputStream> {
+		const encodedData = this.urlEncodeData(data, length);
+		const url = 'http://tamapark.gs.keitaiarchive.org/cgi-bin/iaserver.cgi?uid=NULLGWDOCOMO&data=' + encodedData;
+		this.log('senddata:' + url);
+
+		let input: DataInputStream | null = null;
+		let http: HttpConnection | null = null;
+		let output: DataOutputStream | null = null;
+
+		try {
+			http = Connector.open(url, 1, true);
+			http.setRequestMethod('GET');
+			await http.connect();
+			input = await http.openDataInputStream();
+			const buffer = new Uint8Array(1024);
+			output = await Connector.openDataOutputStream('scratchpad:///0;pos=85258');
+
+			let bytesToWrite = 0;
+
+			for (let remainingBytes = await http.getLength(); 0 < remainingBytes; remainingBytes -= bytesToWrite) {
+				if (remainingBytes < buffer.length) {
+					bytesToWrite = remainingBytes;
+				} else {
+					bytesToWrite = buffer.length;
+				}
+
+				this.log('dlsize:' + remainingBytes + ' writeSize:' + bytesToWrite);
+				await input.read(buffer, 0, bytesToWrite);
+				await output.write(buffer, 0, bytesToWrite);
+			}
+		} catch (e) {
+			throw e;
+		} finally {
+			try {
+				if (output != null) {
+					await output.close();
+				}
+			} catch (ignored) {}
+
+			try {
+				if (input != null) {
+					await input.close();
+				}
+			} catch (ignored) {}
+
+			try {
+				if (http != null) {
+					await http.close();
+				}
+			} catch (ignored) {}
+		}
+
+		return await Connector.openDataInputStream('scratchpad:///0;pos=85258');
 	}
 
 	public static urlEncodeData(data: Uint8Array, length: number): string {
@@ -4048,16 +4256,38 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		return String.fromCharCode(...output);
 	}
 
-	public static readString(inputStream: any, length: number): string {
-		// TODO
-		return 'string';
+	public static async readString(inputStream: DataInputStream, length: number): Promise<string> {
+		const buffer = new Uint8Array(length);
+
+		await inputStream.read(buffer);
+		// new String(Buffer);
+		const result = new TextDecoder('Shift_JIS').decode(buffer);
+		// inputStream = null;
+		// System.gc();
+		return result;
 	}
 
-	public static readImage(inputStream: any, expectedLength: number): Image {
-		// TODO
-		const mediaImage = MediaManager.getImage('imageData');
+	public static async readImage(inputStream: DataInputStream, expectedLength: number): Promise<Image> {
+		this.imageReadInfo = 0;
+		this.imageReadInfo |= expectedLength;
+		const imageData = new Uint8Array(expectedLength);
+
+		let bytesRead;
+		for (bytesRead = 0; bytesRead < expectedLength; ++bytesRead) {
+			const readValue = await inputStream.readUnsignedByte();
+			if (readValue == -1) {
+				break;
+			}
+
+			imageData[bytesRead] = readValue;
+		}
+
+		this.imageReadInfo |= bytesRead << 32;
+		const mediaImage = MediaManager.getImage(imageData);
 		mediaImage.use();
 		const image = mediaImage.getImage();
+		// imageData = null;
+		// System.gc();
 		return image;
 	}
 
@@ -4472,15 +4702,15 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.fullDrawOnNextPaint = true;
 	}
 
-	public static controlFlow(): void {
+	public static async controlFlow(): Promise<void> {
 		this.checkMusic();
 		if (this.isKeyPressed(KEY_ASTERISK)) {
 			this.toggleSound();
-			this.saveGame();
+			await this.saveGame();
 		}
 
 		if (this.isMenuOpen()) {
-			this.menuFlow();
+			await this.menuFlow();
 		} else if (this.shouldShowErrorPage()) {
 			this.errorPageFlow();
 		} else {
@@ -4493,7 +4723,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				case PAGE_NONE_0:
 					if (--this.loadGameSaveDelay <= 0) {
 						this.gameSave[4] = 3;
-						this.loadGameSave();
+						await this.loadGameSave();
 						this.goToPage(PAGE_NONE_1);
 					}
 					break;
@@ -4501,10 +4731,10 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					this.goToPage(PAGE_DOWNLOADING);
 					break;
 				case PAGE_DOWNLOADING:
-					this.checkGameData();
+					await this.checkGameData();
 					break;
 				case PAGE_LOADING:
-					this.loadResources();
+					await this.loadResources();
 					break;
 				case PAGE_TITLE:
 					this.titleScreenFlow();
@@ -4635,7 +4865,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		GameApp.fullDrawOnNextPaint = true;
 	}
 
-	timerExpired(timer: Timer): void {
+	async timerExpired(timer: Timer): Promise<void> {
 		try {
 			GameApp.timer.stop();
 			if (!this.executingTimerExpired) {
@@ -4643,7 +4873,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				if (GameApp.drawState == 0) {
 					GameApp.updateInputState();
 					GameApp.setSomeSystemAttribute();
-					GameApp.controlFlow();
+					await GameApp.controlFlow();
 					if ((GameApp.garbageCollectTimer & 10) == 0) {
 						// System.gc();
 					}
