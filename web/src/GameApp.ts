@@ -20,6 +20,7 @@ import { DataInputStream } from './java/io/DataInputStream';
 import { DataOutputStream } from './java/io/DataOutputStream';
 import { Connector } from './javax/microedition/io/Connector';
 import type { HttpConnection } from './com/nttdocomo/io/HttpConnection';
+import { Thread } from './java/lang/Thread';
 
 const PAGE_AUTH_ERROR = -3;
 const PAGE_COM_ERROR = -2;
@@ -264,7 +265,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.canvas.repaint();
 	}
 
-	public static startTimerWithRetry(): void {
+	public static async startTimerWithRetry(): Promise<void> {
 		for (let i = 0; i < 10; ++i) {
 			try {
 				this.timer.start();
@@ -275,7 +276,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				} catch (ignored) {}
 
 				try {
-					// Thread.sleep(1000L);
+					await Thread.sleep(1000);
 				} catch (ignored) {}
 			}
 		}
@@ -819,7 +820,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static async loadResources(): Promise<void> {
 		console.log('loadResources');
 
-		const result = this.loadImages(128, 0, 93);
+		const result = await this.loadImages(128, 0, 93);
 		if (result == -1) {
 			this.goToPage(PAGE_PREP_ERROR);
 		} else if (this.loadSounds() && (await this.loadTexts())) {
@@ -892,10 +893,10 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		g.fillRect(barX, barY, progressBarWidth, 40);
 	}
 
-	public static loadingPage(g: Graphics, x: number, y: number): void {
+	public static async loadingPage(g: Graphics, x: number, y: number): Promise<void> {
 		if (3 < this.loadingProgress) {
 			try {
-				// Thread.sleep(300L);
+				await Thread.sleep(300);
 			} catch (ignored) {}
 
 			this.loadingAnimation(g, x, y, (this.loadingProgress * 8) / 93, this.loadingProgress);
@@ -4801,7 +4802,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static draw(g: Graphics): void {
+	public static async draw(g: Graphics): Promise<void> {
 		try {
 			if (this.isMenuOpen()) {
 				this.drawMenuPages(g, this.rootX, this.rootY);
@@ -4831,7 +4832,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					this.downloadingPage(g, this.rootX, this.rootY);
 					break;
 				case PAGE_LOADING:
-					this.loadingPage(g, this.rootX, this.rootY);
+					await this.loadingPage(g, this.rootX, this.rootY);
 					break;
 				case PAGE_TITLE:
 					this.titleScreen(g, this.rootX, this.rootY);

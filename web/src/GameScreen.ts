@@ -11,7 +11,7 @@ export class GameScreen extends Canvas {
 		GameApp.processEvent(type, param);
 	}
 
-	protected override paint(g: Graphics): void {
+	protected override async paint(g: Graphics): Promise<void> {
 		if (GameApp.drawState === 2) {
 			GameApp.drawState = 3;
 
@@ -26,7 +26,7 @@ export class GameScreen extends Canvas {
 				}
 
 				g.setFont(GameApp.currentFont);
-				GameApp.draw(g);
+				await GameApp.draw(g);
 				g.unlock(true);
 			} else {
 				GameApp.drawOnNextPaint = true;

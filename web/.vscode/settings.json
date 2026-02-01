@@ -3,5 +3,5 @@
 	"typescript.preferences.importModuleSpecifierEnding": "minimal",
 	"javascript.preferences.importModuleSpecifierEnding": "minimal",
 	"cSpell.language": "en,en-US",
-	"cSpell.words": ["Bandai", "BOLDITALIC", "doja", "GOTCHI", "Keitama", "nttdocomo", "Tama", "Tamagotchi"]
+	"cSpell.words": ["Bandai", "BOLDITALIC", "doja", "GOTCHI", "Keitama", "millis", "nttdocomo", "Tama", "Tamagotchi"]
 }

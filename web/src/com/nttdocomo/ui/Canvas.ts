@@ -60,7 +60,7 @@ export abstract class Canvas {
 		});
 	}
 
-	protected abstract paint(g: Graphics): void;
+	protected abstract paint(g: Graphics): Promise<void>;
 
 	protected abstract processEvent(type: number, param: number): void;
 
@@ -72,8 +72,14 @@ export abstract class Canvas {
 		return CANVAS_HEIGHT;
 	}
 
+	private isPainting = false;
+
 	public repaint(): void {
-		this.paint(this.bufferG);
+		if (this.isPainting) return;
+
+		this.isPainting = true;
+		this.paint(this.bufferG).then(() => (this.isPainting = false));
+
 		const g = this.domCanvas.getContext('2d');
 		if (!g) return;
 
