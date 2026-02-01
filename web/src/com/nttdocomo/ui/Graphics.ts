@@ -69,11 +69,12 @@ export class Graphics {
 	}
 
 	public fillRect(x: number, y: number, w: number, h: number): void {
-		this.g.fillRect(x, y, w, h);
+		this.g.fillRect(Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h));
 	}
 
 	public drawRect(x: number, y: number, w: number, h: number): void {
-		this.g.strokeRect(x, y, w, h);
+		this.g.lineWidth = 1;
+		this.g.strokeRect(Math.floor(x) + 0.5, Math.floor(y) + 0.5, Math.floor(w), Math.floor(h));
 	}
 
 	public fillArc(x: number, y: number, w: number, h: number, start: number, arc: number): void {
@@ -96,13 +97,13 @@ export class Graphics {
 	}
 
 	public drawString(str: string, x: number, y: number): void {
-		this.g.fillText(str, x, y);
+		this.g.fillText(str, Math.floor(x), Math.floor(y));
 	}
 
 	public setClip(x: number, y: number, w: number, h: number): void {
 		this.g.resetTransform();
 		this.g.beginPath();
-		this.g.rect(x, y, w, h);
+		this.g.rect(Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h));
 		this.g.clip();
 	}
 
@@ -110,6 +111,6 @@ export class Graphics {
 		if (!img) return;
 		const src = img.unwrap();
 		if (!src) return;
-		this.g.drawImage(src, x, y);
+		this.g.drawImage(src, Math.floor(x), Math.floor(y));
 	}
 }
