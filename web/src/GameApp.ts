@@ -535,11 +535,8 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			// System.gc();
 			const inputStream = new DataInputStream(await httpConnection.openInputStream());
 			const length = await httpConnection.getLength();
-			console.log(length);
 
 			const bytesRead = await inputStream.read(buffer, 0, length);
-			console.log(bytesRead);
-			console.log(buffer.slice());
 
 			await inputStream.close();
 			await httpConnection.close();
@@ -798,7 +795,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 			if (this.gameSave[1] != 255) {
 				this.loadingProgress = this.gameSave[1];
-				await this.downloadGameData('', 967197, 128); // 72483
+				await this.downloadGameData('', 85149, 128); // 72483
 				this.gameSave[1] = 255;
 				await this.saveGame();
 			}
@@ -855,7 +852,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.setColorOfRGBInt(g, 16763955);
 		g.drawRect(barX, barY, 200, 40);
 		this.drawString(g, 'Downloading', this.canvasWidth / 2, barY - this.currentFontHeight - 4, ALIGN_CENTER);
-		const progressBarWidth = (200 * this.loadingProgress) / 95;
+		const progressBarWidth = (200 * this.loadingProgress) / 9; // 8
 		g.fillRect(barX, barY, progressBarWidth, 40);
 	}
 
