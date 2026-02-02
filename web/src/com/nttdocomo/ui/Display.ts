@@ -64,17 +64,9 @@ export class Display {
 		frame.style.alignItems = 'center';
 		frame.style.justifyContent = 'center';
 
-		const title = document.createElement('div');
-		title.textContent = 'DoJa Emulator';
-		title.style.position = 'absolute';
-		title.style.top = '-1.5em';
-		title.style.left = '0';
-		title.style.color = 'black';
-		title.style.fontFamily = 'sans-serif';
-		title.style.fontSize = '14px';
-
-		document.body.appendChild(title);
-		document.body.appendChild(frame);
+		const parent = document.querySelector('#game');
+		if (!parent) throw new Error('#game root element not found');
+		parent.appendChild(frame);
 
 		this.hostElement = frame;
 
@@ -91,6 +83,34 @@ export class Display {
 			this.processEvent(this.KEY_RELEASED_EVENT, dojaKeyCode);
 			e.preventDefault();
 		});
+
+		document.addEventListener('pointerdown', e => {
+			const id = this.getKeyIdFromEventTarget(e.target);
+			if (!id) return;
+
+			const dojaKey = this.mapButtonIdToDojaKey(id);
+			if (dojaKey < 0) return;
+
+			this.updateKeypadState(dojaKey, true);
+			this.processEvent(this.KEY_PRESSED_EVENT, dojaKey);
+		});
+
+		document.addEventListener('pointerup', e => {
+			const id = this.getKeyIdFromEventTarget(e.target);
+			if (!id) return;
+
+			const dojaKey = this.mapButtonIdToDojaKey(id);
+			if (dojaKey < 0) return;
+
+			this.updateKeypadState(dojaKey, false);
+			this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
+		});
+	}
+
+	private static getKeyIdFromEventTarget(target: EventTarget | null): string | null {
+		if (!(target instanceof Element)) return null;
+		const el = target.closest('[id^="key-"]');
+		return el?.id ?? null;
 	}
 
 	private static processEvent(type: number, param: number) {
@@ -138,6 +158,40 @@ export class Display {
 		if (key === '#') return this.KEY_POUND;
 
 		// Not mapped
+		return -1;
+	}
+
+	private static mapButtonIdToDojaKey(id: string): number {
+		switch (id) {
+			case 'key-left':
+				return this.KEY_LEFT;
+			case 'key-right':
+				return this.KEY_RIGHT;
+			case 'key-up':
+				return this.KEY_UP;
+			case 'key-down':
+				return this.KEY_DOWN;
+			case 'key-select':
+				return this.KEY_SELECT;
+
+			case 'key-soft-1':
+				return this.KEY_SOFT1;
+			case 'key-soft-2':
+				return this.KEY_SOFT2;
+
+			case 'key-asterisk':
+				return this.KEY_ASTERISK;
+			case 'key-pound':
+				return this.KEY_POUND;
+		}
+
+		if (id.startsWith('key-')) {
+			const n = Number(id.slice(4));
+			if (Number.isInteger(n) && n >= 0 && n <= 9) {
+				return this.KEY_0 + n;
+			}
+		}
+
 		return -1;
 	}
 

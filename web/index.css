@@ -1,0 +1,54 @@
+:root {
+	--app-bg: Canvas;
+	--app-fg: CanvasText;
+	--key-text-fill: CanvasText;
+	--key-shape-fill: Field;
+	--key-default-brightness: 1;
+	--key-hover-brightness: 1.6;
+	--key-active-brightness: 1.8;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--key-text-fill: CanvasText;
+		--key-shape-fill: ButtonFace;
+		--key-default-brightness: 0.85;
+		--key-hover-brightness: 0.9;
+		--key-active-brightness: 0.95;
+	}
+}
+
+body {
+	background-color: var(--app-bg);
+	color: var(--app-fg);
+	color-scheme: light dark;
+}
+
+#keypad {
+	width: 200px;
+	margin: 0 auto;
+	margin-top: 20px;
+	display: block;
+}
+
+.key-text {
+	fill: var(--key-text-fill);
+}
+
+.key-shape {
+	fill: var(--key-shape-fill);
+}
+
+.key-group {
+	cursor: pointer;
+	filter: brightness(var(--key-default-brightness));
+}
+
+.key-group:hover {
+	filter: brightness(var(--key-hover-brightness));
+}
+
+.key-group:active {
+	filter: brightness(var(--key-active-brightness));
+	transform: translateY(2px);
+}
