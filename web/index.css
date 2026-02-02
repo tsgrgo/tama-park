@@ -44,8 +44,10 @@ body {
 	filter: brightness(var(--key-default-brightness));
 }
 
-.key-group:hover {
-	filter: brightness(var(--key-hover-brightness));
+@media (hover: hover) {
+	.key-group:hover {
+		filter: brightness(var(--key-hover-brightness));
+	}
 }
 
 .key-group:active {
