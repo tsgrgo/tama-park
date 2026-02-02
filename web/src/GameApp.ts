@@ -21,6 +21,7 @@ import { DataOutputStream } from './java/io/DataOutputStream';
 import { Connector } from './javax/microedition/io/Connector';
 import type { HttpConnection } from './com/nttdocomo/io/HttpConnection';
 import { Thread } from './java/lang/Thread';
+import { stringConstructor } from './java/lang/String';
 
 const PAGE_AUTH_ERROR = -3;
 const PAGE_COM_ERROR = -2;
@@ -3558,8 +3559,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			for (let i = 0; i < 183; ++i) {
 				const data = new Uint8Array(lengths[indexOffset + i]);
 				await stream.read(data);
-				// new String(data)
-				this.texts[i] = new TextDecoder('Shift_JIS').decode(data);
+				this.texts[i] = stringConstructor(data);
 				// data = null;
 				// System.gc();
 			}
@@ -4287,15 +4287,14 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			}
 		}
 
-		return String.fromCharCode(...output);
+		return stringConstructor(output);
 	}
 
 	public static async readString(inputStream: DataInputStream, length: number): Promise<string> {
 		const buffer = new Uint8Array(length);
 
 		await inputStream.read(buffer);
-		// new String(Buffer);
-		const result = new TextDecoder('Shift_JIS').decode(buffer);
+		const result = stringConstructor(buffer);
 		// inputStream = null;
 		// System.gc();
 		return result;

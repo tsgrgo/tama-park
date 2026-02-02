@@ -80,7 +80,7 @@ export class Font {
 		if (!str) return 0;
 		const ctx = Font.METRICS_CTX;
 		ctx.font = this.cssFont;
-		return Math.round(ctx.measureText(str).width);
+		return Math.ceil(ctx.measureText(str).width);
 	}
 
 	private getMetrics(): FontMetrics {

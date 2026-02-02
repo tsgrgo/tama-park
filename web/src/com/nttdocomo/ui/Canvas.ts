@@ -1,24 +1,5 @@
 import { Graphics } from './Graphics';
 
-export const KEY_PRESSED_EVENT = 0;
-export const KEY_RELEASED_EVENT = 1;
-
-// Key constants
-export const KEY_0 = 0x00;
-export const KEY_ASTERISK = 0x0a; // '*'
-export const KEY_POUND = 0x0b; // '#'
-
-// Directions / select
-export const KEY_LEFT = 0x10;
-export const KEY_UP = 0x11;
-export const KEY_RIGHT = 0x12;
-export const KEY_DOWN = 0x13;
-export const KEY_SELECT = 0x14;
-
-// Soft keys
-export const KEY_SOFT1 = 0x15;
-export const KEY_SOFT2 = 0x16;
-
 const CANVAS_WIDTH = 240;
 const CANVAS_HEIGHT = 240;
 
@@ -32,7 +13,7 @@ export abstract class Canvas {
 	private readonly bufferCanvas: OffscreenCanvas | HTMLCanvasElement;
 	private readonly bufferG: Graphics;
 
-	private tftFilter = true;
+	private static tftFilterEnabled = false;
 	private tftOverlayCanvas?: OffscreenCanvas | HTMLCanvasElement;
 	private noiseFrames: (OffscreenCanvas | HTMLCanvasElement)[] = [];
 	private noiseIndex = 0;
@@ -46,20 +27,6 @@ export abstract class Canvas {
 		this.domCanvas.style.outline = 'none';
 		this.domCanvas.style.imageRendering = 'pixelated';
 		this.domCtx = this.getContext(this.domCanvas) as CanvasRenderingContext2D;
-
-		document.addEventListener('keydown', e => {
-			const dojaKeyCode = Canvas.mapDomToDojaKey(e);
-			this.updateKeypadState(dojaKeyCode, true);
-			this.processEvent(KEY_PRESSED_EVENT, dojaKeyCode);
-			e.preventDefault();
-		});
-
-		document.addEventListener('keyup', e => {
-			const dojaKeyCode = Canvas.mapDomToDojaKey(e);
-			this.updateKeypadState(dojaKeyCode, false);
-			this.processEvent(KEY_RELEASED_EVENT, dojaKeyCode);
-			e.preventDefault();
-		});
 
 		// Offscreen buffer
 		this.bufferCanvas = new OffscreenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -95,7 +62,7 @@ export abstract class Canvas {
 
 		this.domCtx.drawImage(this.bufferCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-		if (this.tftFilter) {
+		if (Canvas.tftFilterEnabled) {
 			this.applyTftOverlay(this.domCtx);
 		}
 	}
@@ -122,57 +89,16 @@ export abstract class Canvas {
 		return this.domCanvas;
 	}
 
-	private static mapDomToDojaKey(e: KeyboardEvent): number {
-		const code = e.code;
-		const key = e.key;
-
-		// Directions / select
-		switch (code) {
-			case 'ArrowLeft':
-				return KEY_LEFT;
-			case 'ArrowRight':
-				return KEY_RIGHT;
-			case 'ArrowUp':
-				return KEY_UP;
-			case 'ArrowDown':
-				return KEY_DOWN;
-			case 'Enter':
-			case 'NumpadEnter':
-				return KEY_SELECT;
-
-			// Soft keys
-			case 'F1':
-				return KEY_SOFT1;
-			case 'F2':
-				return KEY_SOFT2;
-		}
-
-		// Digits
-		if (code.startsWith('Digit')) {
-			const d = Number(code.slice('Digit'.length));
-			if (Number.isInteger(d) && d >= 0 && d <= 9) return KEY_0 + d;
-		}
-		if (code.startsWith('Numpad')) {
-			const maybe = code.slice('Numpad'.length);
-			const d = Number(maybe);
-			if (Number.isInteger(d) && d >= 0 && d <= 9) return KEY_0 + d;
-		}
-
-		// Symbols
-		if (key === '*') return KEY_ASTERISK;
-		if (key === '#') return KEY_POUND;
-
-		// Not mapped
-		return -1;
+	public dispatchEvent(type: number, param: number) {
+		this.processEvent(type, param);
 	}
 
-	private updateKeypadState(dojaKeyCode: number, pressed: boolean): void {
-		if (dojaKeyCode < 0 || dojaKeyCode >= 32) return;
+	public setKeypadSate(keypadState: number) {
+		this.keypadStateBits = keypadState;
+	}
 
-		const bit = 1 << dojaKeyCode;
-
-		if (pressed) this.keypadStateBits |= bit;
-		else this.keypadStateBits &= ~bit;
+	public static setTftFilterEnabled(enabled: boolean) {
+		Canvas.tftFilterEnabled = enabled;
 	}
 
 	private getContext(canvas: OffscreenCanvas | HTMLCanvasElement): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {

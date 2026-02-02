@@ -1,17 +1,20 @@
-// IApplication.ts
-
-import { Canvas } from './Canvas';
-
+/**
+ * This class provides a template for an application. Applications must be created by inheriting this class.
+ * This class defines the normal application life cycle. It is also possible to obtain the download source URL
+ * and ADF parameters from the JAM.
+ */
 export abstract class IApplication {
 	private static currentApp?: IApplication;
+	private static sourceUrl?: string;
 
 	private args: string[] = [];
-	private canvas?: Canvas | null;
-	private hostElement?: HTMLDivElement;
 
 	protected constructor() {
 		IApplication.currentApp = this;
-		this.createHostElement();
+
+		window.addEventListener('beforeunload', () => {
+			this.terminate();
+		});
 	}
 
 	public static getCurrentApp(): IApplication | null {
@@ -25,7 +28,11 @@ export abstract class IApplication {
 	public abstract resume(): void;
 
 	protected getSourceURL(): string {
-		return '/data/';
+		return IApplication.sourceUrl || '';
+	}
+
+	public static setSourceURL(sourceUrl: string) {
+		this.sourceUrl = sourceUrl;
 	}
 
 	protected getArgs(): string[] {
@@ -39,60 +46,5 @@ export abstract class IApplication {
 
 	public terminate(): void {
 		console.log('terminated');
-	}
-
-	public setCanvas(canvas: Canvas | null): void {
-		if (this.canvas === canvas) return;
-
-		if (!this.hostElement) return;
-
-		if (this.canvas) {
-			const oldEl = this.canvas.unwrap();
-			if (oldEl.parentElement === this.hostElement) {
-				this.hostElement.removeChild(oldEl);
-			}
-		}
-
-		this.canvas = canvas;
-
-		if (canvas) {
-			const el = canvas.unwrap();
-			this.hostElement.appendChild(el);
-			canvas.focus();
-		}
-	}
-
-	private createHostElement(): void {
-		if (this.hostElement) return;
-
-		const frame = document.createElement('div');
-		frame.style.width = '240px';
-		frame.style.height = '240px';
-		frame.style.border = '1px solid black';
-		frame.style.background = 'black';
-		frame.style.position = 'relative';
-		frame.style.margin = '0 auto';
-		frame.style.overflow = 'hidden';
-		frame.style.display = 'flex';
-		frame.style.alignItems = 'center';
-		frame.style.justifyContent = 'center';
-
-		const title = document.createElement('div');
-		title.textContent = 'DoJa Emulator';
-		title.style.position = 'absolute';
-		title.style.top = '-1.5em';
-		title.style.left = '0';
-		title.style.color = 'black';
-		title.style.fontFamily = 'sans-serif';
-		title.style.fontSize = '14px';
-
-		document.body.appendChild(title);
-		document.body.appendChild(frame);
-
-		window.addEventListener('beforeunload', () => {
-			this.terminate();
-		});
-
-		this.hostElement = frame;
 	}
 }
