@@ -159,6 +159,21 @@ export abstract class Canvas {
 		for (let y = 0; y < h; y += 2) overlayCtx.fillRect(0, y, w, 1);
 		overlayCtx.restore();
 
+		// vignette
+		overlayCtx.save();
+		const cx = w * 0.5;
+		const cy = h * 0.5;
+		const rInner = Math.min(w, h) * 0.45;
+		const rOuter = Math.min(w, h) * 0.75;
+
+		const vg = overlayCtx.createRadialGradient(cx, cy, rInner, cx, cy, rOuter);
+		vg.addColorStop(0.0, 'rgba(0,0,0,0.0)');
+		vg.addColorStop(1.0, 'rgba(0,0,0,0.12)');
+		overlayCtx.globalCompositeOperation = 'multiply';
+		overlayCtx.fillStyle = vg;
+		overlayCtx.fillRect(0, 0, w, h);
+		overlayCtx.restore();
+
 		this.tftOverlayCanvas = overlay;
 
 		// Precompute noise frames
