@@ -60,6 +60,7 @@ export abstract class Canvas {
 			this.isPainting = false;
 		}
 
+		this.domCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 		this.domCtx.drawImage(this.bufferCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 		if (Canvas.tftFilterEnabled) {
