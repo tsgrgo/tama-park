@@ -98,11 +98,15 @@ body {
 
 .key-group:hover {
 	filter: brightness(var(--key-hover-brightness));
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 @media (pointer: coarse) {
-	.key-group:hover {
+	.key-group:hover,
+	.key-group:focus {
 		filter: none;
+		outline: none !important;
 	}
 }
 
