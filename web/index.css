@@ -96,9 +96,13 @@ body {
 	filter: brightness(var(--key-default-brightness));
 }
 
-@media (hover: hover) {
+.key-group:hover {
+	filter: brightness(var(--key-hover-brightness));
+}
+
+@media (pointer: coarse) {
 	.key-group:hover {
-		filter: brightness(var(--key-hover-brightness));
+		filter: none;
 	}
 }
 
