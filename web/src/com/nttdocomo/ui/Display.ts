@@ -131,6 +131,7 @@ export class Display {
 				return this.KEY_DOWN;
 			case 'Enter':
 			case 'NumpadEnter':
+			case 'Space':
 				return this.KEY_SELECT;
 
 			// Soft keys
