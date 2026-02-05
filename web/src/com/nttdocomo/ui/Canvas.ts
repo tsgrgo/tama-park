@@ -73,9 +73,13 @@ export abstract class Canvas {
 	}
 
 	public setSoftLabel(which: number, text: string | null): void {
-		const t = text ?? '';
-		if (which === 0) console.log('left soft label:' + t);
-		else if (which === 1) console.log('right soft label:' + t);
+		const label = text || '-';
+
+		if (which === 0) {
+			document.querySelector('#soft-label-1')!.textContent = label;
+		} else if (which === 1) {
+			document.querySelector('#soft-label-2')!.textContent = label;
+		}
 	}
 
 	public getKeypadState(): number {

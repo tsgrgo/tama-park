@@ -55,8 +55,6 @@ export class Display {
 		const frame = document.createElement('div');
 		frame.style.width = '240px';
 		frame.style.height = '240px';
-		frame.style.border = '1px solid black';
-		frame.style.background = 'black';
 		frame.style.position = 'relative';
 		frame.style.margin = '0 auto';
 		frame.style.overflow = 'hidden';

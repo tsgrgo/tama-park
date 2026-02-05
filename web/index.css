@@ -24,8 +24,9 @@
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;
-	
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&display=swap');
 
 body {
 	background-color: var(--app-bg);
@@ -33,10 +34,52 @@ body {
 	color-scheme: light dark;
 }
 
+#antenna {
+	width: 22px;
+	margin: auto;
+	margin-top: 15px;
+	margin-bottom: 20px;
+	padding-right: 140px;
+	display: block;
+}
+
+.antenna-shape {
+	fill: var(--key-shape-fill);
+	filter: brightness(var(--key-default-brightness));
+	scale: 0.9 1;
+}
+
+#game {
+	min-height: 240px;
+	min-width: 240px;
+	width: fit-content;
+	background-color: black;
+	margin: 0 auto;
+}
+
+#soft-labels {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	min-width: 240px;
+	width: fit-content;
+	height: 20px;
+	padding: 0 20px;
+	box-sizing: border-box;
+	margin: 5px auto;
+	font-family: 'Geo', sans-serif;
+	font-size: 14px;
+	user-select: none;
+	opacity: 0.9;
+}
+
+#soft-keys > p {
+	margin: 0;
+}
+
 #keypad {
 	width: 200px;
 	margin: 0 auto;
-	margin-top: 20px;
 	display: block;
 }
 
