@@ -26,6 +26,7 @@ export class Display {
 
 	private static canvas?: Canvas | null;
 	private static hostElement?: HTMLDivElement;
+	private static pointerIdToDojaKey = new Map<number, number>();
 	private static keypadStateBits: number;
 
 	public static setCurrent(canvas: Canvas | null) {
@@ -83,32 +84,46 @@ export class Display {
 		});
 
 		document.addEventListener('pointerdown', e => {
-			const id = this.getKeyIdFromEventTarget(e.target);
-			if (!id) return;
-
-			const dojaKey = this.mapButtonIdToDojaKey(id);
+			const buttonId = this.getButtonIdFromEventTarget(e.target);
+			const dojaKey = this.mapButtonIdToDojaKey(buttonId);
 			if (dojaKey < 0) return;
+
+			if (e.target instanceof Element) {
+				e.target.setPointerCapture(e.pointerId);
+			}
+
+			this.pointerIdToDojaKey.set(e.pointerId, dojaKey);
 
 			this.updateKeypadState(dojaKey, true);
 			this.processEvent(this.KEY_PRESSED_EVENT, dojaKey);
 		});
 
-		document.addEventListener('pointerup', e => {
-			const id = this.getKeyIdFromEventTarget(e.target);
-			if (!id) return;
+		const releasePointer = (pe: PointerEvent) => {
+			const dojaKey = this.pointerIdToDojaKey.get(pe.pointerId);
+			if (dojaKey === undefined) return;
 
-			const dojaKey = this.mapButtonIdToDojaKey(id);
-			if (dojaKey < 0) return;
+			this.pointerIdToDojaKey.delete(pe.pointerId);
 
 			this.updateKeypadState(dojaKey, false);
 			this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
+		};
+
+		document.addEventListener('pointerup', e => releasePointer(e as PointerEvent));
+		document.addEventListener('pointercancel', e => releasePointer(e as PointerEvent));
+
+		window.addEventListener('blur', () => {
+			for (const dojaKey of this.pointerIdToDojaKey.values()) {
+				this.updateKeypadState(dojaKey, false);
+				this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
+			}
+			this.pointerIdToDojaKey.clear();
 		});
 	}
 
-	private static getKeyIdFromEventTarget(target: EventTarget | null): string | null {
-		if (!(target instanceof Element)) return null;
+	private static getButtonIdFromEventTarget(target: EventTarget | null): string {
+		if (!(target instanceof Element)) return '';
 		const el = target.closest('[id^="key-"]');
-		return el?.id ?? null;
+		return el?.id || '';
 	}
 
 	private static processEvent(type: number, param: number) {
@@ -203,5 +218,6 @@ export class Display {
 		else this.keypadStateBits &= ~bit;
 
 		this.canvas?.setKeypadSate(this.keypadStateBits);
+		console.log(this.keypadStateBits);
 	}
 }
