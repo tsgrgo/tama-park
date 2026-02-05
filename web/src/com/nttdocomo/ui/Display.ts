@@ -31,7 +31,6 @@ export class Display {
 
 	public static setCurrent(canvas: Canvas | null) {
 		if (this.canvas === canvas) return;
-
 		if (!this.hostElement) this.createHostElement();
 
 		if (this.canvas) {
@@ -71,16 +70,12 @@ export class Display {
 
 		document.addEventListener('keydown', e => {
 			const dojaKeyCode = this.mapDomToDojaKey(e);
-			this.updateKeypadState(dojaKeyCode, true);
-			this.processEvent(this.KEY_PRESSED_EVENT, dojaKeyCode);
-			e.preventDefault();
+			this.pressKey(dojaKeyCode);
 		});
 
 		document.addEventListener('keyup', e => {
 			const dojaKeyCode = this.mapDomToDojaKey(e);
-			this.updateKeypadState(dojaKeyCode, false);
-			this.processEvent(this.KEY_RELEASED_EVENT, dojaKeyCode);
-			e.preventDefault();
+			this.releaseKey(dojaKeyCode);
 		});
 
 		document.addEventListener('pointerdown', e => {
@@ -93,9 +88,7 @@ export class Display {
 			}
 
 			this.pointerIdToDojaKey.set(e.pointerId, dojaKey);
-
-			this.updateKeypadState(dojaKey, true);
-			this.processEvent(this.KEY_PRESSED_EVENT, dojaKey);
+			this.pressKey(dojaKey);
 		});
 
 		const releasePointer = (pe: PointerEvent) => {
@@ -103,9 +96,7 @@ export class Display {
 			if (dojaKey === undefined) return;
 
 			this.pointerIdToDojaKey.delete(pe.pointerId);
-
-			this.updateKeypadState(dojaKey, false);
-			this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
+			this.releaseKey(dojaKey);
 		};
 
 		document.addEventListener('pointerup', e => releasePointer(e as PointerEvent));
@@ -113,11 +104,20 @@ export class Display {
 
 		window.addEventListener('blur', () => {
 			for (const dojaKey of this.pointerIdToDojaKey.values()) {
-				this.updateKeypadState(dojaKey, false);
-				this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
+				this.releaseKey(dojaKey);
 			}
 			this.pointerIdToDojaKey.clear();
 		});
+	}
+
+	private static pressKey(dojaKey: number) {
+		this.updateKeypadState(dojaKey, true);
+		this.processEvent(this.KEY_PRESSED_EVENT, dojaKey);
+	}
+
+	private static releaseKey(dojaKey: number) {
+		this.updateKeypadState(dojaKey, false);
+		this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
 	}
 
 	private static getButtonIdFromEventTarget(target: EventTarget | null): string {
@@ -136,12 +136,16 @@ export class Display {
 
 		// Directions / select
 		switch (code) {
+			case 'KeyA':
 			case 'ArrowLeft':
 				return this.KEY_LEFT;
+			case 'KeyD':
 			case 'ArrowRight':
 				return this.KEY_RIGHT;
+			case 'KeyW':
 			case 'ArrowUp':
 				return this.KEY_UP;
+			case 'KeyS':
 			case 'ArrowDown':
 				return this.KEY_DOWN;
 			case 'Enter':
@@ -151,8 +155,12 @@ export class Display {
 
 			// Soft keys
 			case 'F1':
+			case 'KeyQ':
+			case 'ShiftLeft':
 				return this.KEY_SOFT1;
 			case 'F2':
+			case 'KeyE':
+			case 'ControlLeft':
 				return this.KEY_SOFT2;
 		}
 

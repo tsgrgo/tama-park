@@ -38,7 +38,7 @@ body {
 	width: 22px;
 	margin: auto;
 	margin-top: 15px;
-	margin-bottom: 15px;
+	margin-bottom: 16px;
 	padding-right: 140px;
 	display: block;
 }
@@ -49,28 +49,34 @@ body {
 	scale: 0.9 1;
 }
 
-#game {
-	min-height: 240px;
+#screen {
 	min-width: 240px;
 	width: fit-content;
-	background-color: black;
 	margin: 0 auto;
+	margin-bottom: 20px;
+}
+
+#game {
+	min-height: 240px;
+	background-color: black;
 }
 
 #soft-labels {
+	background-color: var(--key-shape-fill);
+	filter: brightness(var(--key-default-brightness));
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	min-width: 240px;
-	width: fit-content;
 	height: 20px;
 	padding: 0 20px;
-	box-sizing: border-box;
-	margin: 5px auto;
+	margin: auto;
 	font-family: 'Geo', sans-serif;
 	font-size: 14px;
 	user-select: none;
-	opacity: 0.9;
+}
+
+#soft-labels * {
+	opacity: 0.85;
 }
 
 #soft-keys > p {
