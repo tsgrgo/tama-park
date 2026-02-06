@@ -872,7 +872,18 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static loadImage(index: number): void {
-		// TODO
+		if (this.images[index] == null) {
+			const baseOffset = 128;
+			let pos = baseOffset + (this.imageSizes.length + 1) * 2;
+
+			for (let i = 0; i < index; ++i) {
+				pos += this.imageSizes[i];
+			}
+
+			const mediaImage = MediaManager.getImage('scratchpad:///0;pos=' + pos);
+			mediaImage.use();
+			this.images[index] = mediaImage.getImage();
+		}
 	}
 
 	public static disposeImage(index: number): void {
@@ -1323,8 +1334,41 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadShoppingCenterPassword(): void {
-		// TODO
+	public static async downloadShoppingCenterPassword(): Promise<void> {
+		this.prepareShoppingCenterSentData();
+		let inputStream = null;
+
+		try {
+			inputStream = await this.sendPreparedDataToServer(4);
+			this.unknownOperationOnServerResponse(inputStream);
+
+			// TODO: Check if can be an overloaded .read() instead
+			// Java: int errorMessageLength = inputStream.read();
+			// In TS DataInputStream, readUnsignedByte() is used for the same 0..255 behavior.
+			const errorMessageLength = await inputStream.readUnsignedByte();
+
+			if (errorMessageLength > 0) {
+				const errorMessage = await this.readString(inputStream, errorMessageLength);
+				this.showErrorPage(this.currentPage, 2, 1, errorMessage);
+			} else {
+				const passwordData = new Uint8Array(10);
+				await inputStream.read(passwordData);
+				this.parseAndStoreDownloadedPassword(passwordData);
+				this.nextShoppingCenterState(3);
+			}
+		} catch (e) {
+			this.log('e:' + e);
+			// 92: Communication has failed. Would you like to try again?
+			this.showErrorPage(this.currentPage, 2, 1, this.getText(92));
+		} finally {
+			if (inputStream != null) {
+				try {
+					await inputStream.close();
+				} catch (ignored) {}
+			}
+
+			this.playSound(6, false);
+		}
 	}
 
 	public static prepareShoppingCenterSentData(): void {
@@ -2150,8 +2194,48 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadGotchiKingData(): void {
-		// TODO
+	public static async downloadGotchiKingData(): Promise<void> {
+		this.clearDownloadedGotchiKingData();
+		this.prepareGotchiKingSentData();
+		let inputStream = null;
+
+		try {
+			inputStream = await this.sendPreparedDataToServer(13);
+			this.unknownOperationOnServerResponse(inputStream);
+
+			const errorMessageLength = await inputStream.readUnsignedByte(); // inputStream.read();
+
+			if (errorMessageLength > 0) {
+				const errorMessage = await this.readString(inputStream, errorMessageLength);
+				this.showErrorPage(this.currentPage, 2, 1, errorMessage);
+			} else {
+				const passwordData = new Uint8Array(10);
+				await inputStream.read(passwordData);
+
+				for (let i = 0; i < 2; ++i) {
+					const imageSize = await inputStream.readUnsignedShort();
+					this.gotchiKingImages[i] = await this.readImage(inputStream, imageSize);
+				}
+
+				this.gotchiKingState[4] = 0;
+				this.gotchiKingState[5] = 0;
+				this.gotchiKingState[2] = 0;
+				this.parseAndStoreDownloadedPassword(passwordData);
+				this.nextGotchiKingState(3);
+			}
+		} catch (e) {
+			this.log('e:' + e);
+			// 92: Communication has failed. Would you like to try again?
+			this.showErrorPage(this.currentPage, 2, 1, this.getText(92));
+		} finally {
+			if (inputStream != null) {
+				try {
+					await inputStream.close();
+				} catch (ignored) {}
+			}
+
+			this.playSound(6, false);
+		}
 	}
 
 	public static prepareGotchiKingSentData(): void {
@@ -2522,8 +2606,47 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadTravelMemoryData(): void {
-		// TODO
+	public static async downloadTravelMemoryData(): Promise<void> {
+		this.clearDownloadedTravelMemoryData();
+		this.prepareTravelMemorySentData();
+		let inputStream = null;
+
+		try {
+			inputStream = await this.sendPreparedDataToServer(13);
+
+			const errorMessageLength = await inputStream.readUnsignedByte(); // inputStream.read();
+
+			if (errorMessageLength > 0) {
+				const errorMessage = await this.readString(inputStream, errorMessageLength);
+				this.showErrorPage(this.currentPage, 2, 1, errorMessage);
+			} else {
+				const text1Size = await inputStream.readUnsignedByte(); // inputStream.read();
+				this.travelMemoryTexts[0] = await this.readString(inputStream, text1Size);
+
+				// travelMemoryState[3] seems unused :(
+				this.travelMemoryState[3] = await inputStream.readUnsignedShort();
+
+				const imageSize = await inputStream.readUnsignedShort();
+				this.travelMemoryPhoto = await this.readImage(inputStream, imageSize);
+
+				const text2Size = await inputStream.readUnsignedShort();
+				this.travelMemoryTexts[1] = await this.readString(inputStream, text2Size);
+
+				this.nextTravelMemoryState(3);
+			}
+		} catch (e) {
+			this.log('e:' + e);
+			// 92: Communication has failed. Would you like to try again?
+			this.showErrorPage(this.currentPage, 2, 1, this.getText(92));
+		} finally {
+			if (inputStream != null) {
+				try {
+					await inputStream.close();
+				} catch (ignored) {}
+			}
+
+			this.playSound(6, false);
+		}
 	}
 
 	public static prepareTravelMemorySentData(): void {
@@ -2850,7 +2973,62 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static async downloadExchangePlazaData(): Promise<void> {
-		// TODO
+		this.clearDownloadedExchangePlazaData();
+		this.prepareExchangePlazaSentData();
+		let inputStream = null;
+
+		try {
+			inputStream = await this.sendPreparedDataToServer(14);
+			this.unknownOperationOnServerResponse(inputStream);
+
+			const textSize = await inputStream.readUnsignedByte(); // inputStream.read();
+
+			if (textSize > 0) {
+				const errorMessageOr1 = await this.readString(inputStream, textSize);
+
+				// errorMessageOr1.compareTo('1') == 0
+				if (errorMessageOr1 === '1') {
+					const imageSize = await inputStream.readUnsignedShort();
+					this.exchangePlazaImages[0] = await this.readImage(inputStream, imageSize);
+					this.nextExchangePlazaState(5);
+				} else {
+					this.showErrorPage(this.currentPage, 4, 1, errorMessageOr1);
+				}
+			} else {
+				const passwordData = new Uint8Array(10);
+				await inputStream.read(passwordData);
+
+				let size = await inputStream.readUnsignedByte(); // inputStream.read();
+				this.exchangePlazaTexts[2] = await this.readString(inputStream, size);
+
+				size = await inputStream.readUnsignedByte(); // inputStream.read();
+				this.exchangePlazaTexts[0] = await this.readString(inputStream, size);
+
+				size = await inputStream.readUnsignedByte(); // inputStream.read();
+				this.exchangePlazaTexts[1] = (await this.readString(inputStream, size)) + this.getText(49); // // 49: -san
+
+				size = await inputStream.readUnsignedShort();
+				this.exchangePlazaImages[0] = await this.readImage(inputStream, size);
+
+				size = await inputStream.readUnsignedShort();
+				this.exchangePlazaImages[1] = await this.readImage(inputStream, size);
+
+				this.parseAndStoreDownloadedPassword(passwordData);
+				this.nextExchangePlazaState(6);
+			}
+		} catch (e) {
+			this.log('e:' + e);
+			// 92: Communication has failed. Would you like to try again?
+			this.showErrorPage(this.currentPage, 4, 1, this.getText(92));
+		} finally {
+			if (inputStream != null) {
+				try {
+					await inputStream.close();
+				} catch (ignored) {}
+			}
+
+			this.playSound(6, false);
+		}
 	}
 
 	public static prepareExchangePlazaSentData(): void {
