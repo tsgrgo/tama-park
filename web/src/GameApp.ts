@@ -432,8 +432,8 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static updateInputState(): void {
-		let var0 = 0n;
-		let var2 = 0n;
+		const var0 = 0n;
+		const var2 = 0n;
 
 		if (this.inputState[4] == 0n) {
 			this.inputState[0] = 0n;
@@ -738,7 +738,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			currentIndex += delimiter.length;
 		}
 
-		let startIndex = currentIndex;
+		const startIndex = currentIndex;
 
 		for (let i = 0; i < endDelimiterCount; ++i) {
 			currentIndex = str.indexOf(delimiter, currentIndex);
@@ -1284,7 +1284,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.shoppingCenterState[1] = state;
 	}
 
-	public static shoppingCenterFlow(): void {
+	public static async shoppingCenterFlow(): Promise<void> {
 		this.shoppingCenterState[2]++;
 		switch (this.shoppingCenterState[1]) {
 			case 0:
@@ -1294,7 +1294,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.shoppingCenterItemTypeSelectFlow();
 				break;
 			case 2:
-				this.downloadShoppingCenterPassword();
+				await this.downloadShoppingCenterPassword();
 				break;
 			case 3:
 				this.shoppingCenterItemTicketFlow();
@@ -1466,7 +1466,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 		// 64: Enter the Ticket No. in your Keitama
 		this.drawFullWidthScrollingText(g, x, this.getText(64), y + 3 + this.currentFontHeight + 12, this.shoppingCenterState[2], 12, 16056665, 16777215);
-		let codeInputY = y + 3 + this.currentFontHeight + 12 + this.currentFontHeight + 4;
+		const codeInputY = y + 3 + this.currentFontHeight + 12 + this.currentFontHeight + 4;
 		if (this.fullDraw) {
 			this.drawCodeInputBackground(g, this.canvasWidth / 2, codeInputY, 2, 0, 16770972, 16750748, 16770972);
 			this.drawDownloadUploadAnimations(g, this.canvasWidth / 2, codeInputY + 10, 56, this.shoppingCenterState[2] >> 1, false);
@@ -1676,7 +1676,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// System.gc();
 	}
 
-	public static parentCallFlow(): void {
+	public static async parentCallFlow(): Promise<void> {
 		this.parentCallState[6]++;
 		switch (this.parentCallState[1]) {
 			case 0:
@@ -1686,7 +1686,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.parentCallCodeInputFlow();
 				break;
 			case 2:
-				this.downloadParentCallData();
+				await this.downloadParentCallData();
 				break;
 			case 3:
 				this.parentCallExplanationFlow();
@@ -1744,7 +1744,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 			// Java: int errorMessageLength = inputStream.read();
 			// In TS DataInputStream, readUnsignedByte() is used for the same 0..255 behavior.
-			let errorMessageLength = await inputStream.readUnsignedByte();
+			const errorMessageLength = await inputStream.readUnsignedByte();
 
 			if (errorMessageLength > 0) {
 				const errorMessage = await this.readString(inputStream, errorMessageLength);
@@ -2084,7 +2084,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// System.gc();
 	}
 
-	public static gotchiKingFlow(): void {
+	public static async gotchiKingFlow(): Promise<void> {
 		this.gotchiKingState[3]++;
 		switch (this.gotchiKingState[1]) {
 			case 0:
@@ -2094,7 +2094,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.gotchiKingCodeInputFlow();
 				break;
 			case 2:
-				this.downloadGotchiKingData();
+				await this.downloadGotchiKingData();
 				break;
 			case 3:
 				this.gotchiKingBroadcastFlow1();
@@ -2468,7 +2468,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// System.gc();
 	}
 
-	public static travelMemoryFlow(): void {
+	public static async travelMemoryFlow(): Promise<void> {
 		this.travelMemoryState[2]++;
 		switch (this.travelMemoryState[1]) {
 			case 0:
@@ -2478,7 +2478,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.travelMemoryCodeInputFlow();
 				break;
 			case 2:
-				this.downloadTravelMemoryData();
+				await this.downloadTravelMemoryData();
 				break;
 			case 3:
 				this.displayMemoryPhotoFlow();
@@ -2751,7 +2751,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// System.gc();
 	}
 
-	public static exchangePlazaFlow(): void {
+	public static async exchangePlazaFlow(): Promise<void> {
 		this.exchangePlazaState[2]++;
 		switch (this.exchangePlazaState[1]) {
 			case 0:
@@ -2767,7 +2767,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.exchangePlazaRegionSelectFlow();
 				break;
 			case 4:
-				this.downloadExchangePlazaData();
+				await this.downloadExchangePlazaData();
 				break;
 			case 5:
 				this.exchangePlazaExchangeFailedFlow();
@@ -2849,7 +2849,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static downloadExchangePlazaData(): void {
+	public static async downloadExchangePlazaData(): Promise<void> {
 		// TODO
 	}
 
@@ -3176,7 +3176,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// Bottom decoration
 		this.drawSprite(g, 0, x, y + 240 - this.getSpriteHeight(0), 0);
 
-		let lineX = x + 4;
+		const lineX = x + 4;
 		let lineY = y + (240 - (this.currentFontHeight + 1) * 7) / 2;
 
 		this.drawBeveledRect(g, x + 2, lineY - 1, 236, (this.currentFontHeight + 1) * 7 + 2, 16056665, 16056665);
@@ -3544,7 +3544,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public static async loadTexts(): Promise<boolean> {
 		let stream: DataInputStream | null = null;
 		let success = true;
-		let indexOffset = 100;
+		const indexOffset = 100;
 
 		try {
 			const lengths = await this.loadShortArray(128);
@@ -4385,7 +4385,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		return result;
 	}
 
-	public static unknownOperationOnServerResponse(inputStream: any): void {
+	public static unknownOperationOnServerResponse(inputStream: unknown): void {
 		// This is a no-op. Maybe just a decompilation artifact?
 		// (public static void aW(DataInputStream var0) throws Exception)
 	}
@@ -4779,19 +4779,19 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					this.travelModeFlow();
 					break;
 				case PAGE_SHOPPING_CENTER:
-					this.shoppingCenterFlow();
+					await this.shoppingCenterFlow();
 					break;
 				case PAGE_PARENT_CALL:
-					this.parentCallFlow();
+					await this.parentCallFlow();
 					break;
 				case PAGE_GOTCHI_KING:
-					this.gotchiKingFlow();
+					await this.gotchiKingFlow();
 					break;
 				case PAGE_TRAVEL_MEMORY:
-					this.travelMemoryFlow();
+					await this.travelMemoryFlow();
 					break;
 				case PAGE_EXCHANGE_PLAZA:
-					this.exchangePlazaFlow();
+					await this.exchangePlazaFlow();
 					break;
 				default:
 					if (this.isKeyPressed(KEY_SELECT)) {
@@ -4886,7 +4886,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	public resume(): void {
 		try {
 			GameApp.timer.stop();
-			GameApp.startTimerWithRetry();
+			void GameApp.startTimerWithRetry();
 		} catch (ignored) {}
 
 		try {
@@ -4927,7 +4927,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 				this.executingTimerExpired = false;
 			}
 
-			GameApp.startTimerWithRetry();
+			await GameApp.startTimerWithRetry();
 		} catch (ignored) {}
 	}
 
