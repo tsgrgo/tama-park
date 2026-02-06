@@ -362,56 +362,50 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
-	public static loadSounds(): boolean {
-		// DataInputStream stream = null;
-		// int currentIndex = 0;
+	public static async loadSounds(): Promise<boolean> {
+		let stream = null;
+		let currentIndex = 0;
 
-		// boolean success;
-		// try {
-		//     mediaSounds = new MediaSound[7];
-		//     int[] sizes = loadShortArray(128);
-		//     int pos = 0;
+		let success;
+		try {
+			this.mediaSounds = new Array<MediaSound>(7);
+			const sizes = await this.loadShortArray(128);
+			let pos = 0;
 
-		//     for (int i = 0; i < 93; ++i) {
-		//         pos += sizes[i];
-		//     }
+			for (let i = 0; i < 93; ++i) {
+				pos += sizes[i];
+			}
 
-		//     stream = Connector.openDataInputStream("scratchpad:///0;pos=" + (pos + 128 + 568));
+			stream = await Connector.openDataInputStream('scratchpad:///0;pos=' + (pos + 128 + 568));
 
-		//     for (int i = 0; i < 7; ++i) {
-		//         currentIndex = i;
-		//         byte[] data = new byte[sizes[i + 93]];
-		//         stream.read(data);
+			for (let i = 0; i < 7; ++i) {
+				currentIndex = i;
+				const data = new Uint8Array(sizes[i + 93]);
+				await stream.read(data);
 
-		//         for (int j = 0; j < data.length; ++j) {
-		//         }
+				for (let j = 0; j < data.length; ++j) {}
 
-		//         mediaSounds[i] = MediaManager.getSound("data");
-		//         mediaSounds[i].use();
-		//         log("loadsound:" + i);
-		//         data = null;
-		//         System.gc();
-		//     }
+				this.mediaSounds[i] = MediaManager.getSound(data);
+				this.mediaSounds[i].use();
+				this.log('loadsound:' + i);
+				// data = null;
+				// System.gc();
+			}
 
-		//     initAudioPresenters();
-		//     success = true;
-		// } catch (Exception e) {
-		//     log("loadsounderr i:" + currentIndex);
-		//     success = false;
-		// } finally {
-		//     if (stream != null) {
-		//         try {
-		//             stream.close();
-		//         } catch (Exception ignored) {
-		//         }
-		//     }
+			this.initAudioPresenters();
+			success = true;
+		} catch (e) {
+			this.log('loadsounderr i:' + currentIndex);
+			success = false;
+		} finally {
+			if (stream != null) {
+				try {
+					await stream.close();
+				} catch (ignored) {}
+			}
+		}
 
-		// }
-
-		// return success;
-
-		this.initAudioPresenters();
-		return true; // TODO
+		return success;
 	}
 
 	public static isKeyPressed(key: bigint): boolean {
@@ -819,12 +813,10 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 	}
 
 	public static async loadResources(): Promise<void> {
-		console.log('loadResources');
-
 		const result = await this.loadImages(128, 0, 93);
 		if (result == -1) {
 			this.goToPage(PAGE_PREP_ERROR);
-		} else if (this.loadSounds() && (await this.loadTexts())) {
+		} else if ((await this.loadSounds()) && (await this.loadTexts())) {
 			this.goToPage(PAGE_TITLE);
 		} else {
 			this.goToPage(PAGE_PREP_ERROR);
