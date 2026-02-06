@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&display=swap');
+
 :root {
 	--app-bg: Canvas;
 	--app-fg: CanvasText;
@@ -12,9 +14,9 @@
 	:root {
 		--key-text-fill: CanvasText;
 		--key-shape-fill: ButtonFace;
-		--key-default-brightness: 0.85;
-		--key-hover-brightness: 0.9;
-		--key-active-brightness: 0.95;
+		--key-default-brightness: 0.9;
+		--key-hover-brightness: 0.95;
+		--key-active-brightness: 1;
 	}
 }
 
@@ -25,8 +27,6 @@
 	font-style: normal;
 	font-display: block;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&display=swap');
 
 body {
 	background-color: var(--app-bg);
