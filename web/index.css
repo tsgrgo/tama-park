@@ -116,7 +116,7 @@ body {
 	}
 }
 
-.key-group:active {
+.key-group.pressed {
 	filter: brightness(var(--key-active-brightness));
 	transform: translateY(2px);
 }

@@ -79,28 +79,35 @@ export class Display {
 		});
 
 		document.addEventListener('pointerdown', e => {
-			const buttonId = this.getButtonIdFromEventTarget(e.target);
-			const dojaKey = this.mapButtonIdToDojaKey(buttonId);
+			const button = this.getButtonFromEventTarget(e.target);
+			if (!button) return;
+
+			const dojaKey = this.mapButtonIdToDojaKey(button.id);
 			if (dojaKey < 0) return;
 
 			if (e.target instanceof Element) {
 				e.target.setPointerCapture(e.pointerId);
 			}
 
+			button.classList.add('pressed');
+
 			this.pointerIdToDojaKey.set(e.pointerId, dojaKey);
 			this.pressKey(dojaKey);
 		});
 
-		const releasePointer = (pe: PointerEvent) => {
-			const dojaKey = this.pointerIdToDojaKey.get(pe.pointerId);
+		const releasePointer = (e: PointerEvent) => {
+			const button = this.getButtonFromEventTarget(e.target);
+
+			const dojaKey = this.pointerIdToDojaKey.get(e.pointerId);
 			if (dojaKey === undefined) return;
 
-			this.pointerIdToDojaKey.delete(pe.pointerId);
+			button?.classList?.remove('pressed');
+			this.pointerIdToDojaKey.delete(e.pointerId);
 			this.releaseKey(dojaKey);
 		};
 
-		document.addEventListener('pointerup', e => releasePointer(e as PointerEvent));
-		document.addEventListener('pointercancel', e => releasePointer(e as PointerEvent));
+		document.addEventListener('pointerup', e => releasePointer(e));
+		document.addEventListener('pointercancel', e => releasePointer(e));
 
 		window.addEventListener('blur', () => {
 			for (const dojaKey of this.pointerIdToDojaKey.values()) {
@@ -120,10 +127,9 @@ export class Display {
 		this.processEvent(this.KEY_RELEASED_EVENT, dojaKey);
 	}
 
-	private static getButtonIdFromEventTarget(target: EventTarget | null): string {
-		if (!(target instanceof Element)) return '';
-		const el = target.closest('[id^="key-"]');
-		return el?.id || '';
+	private static getButtonFromEventTarget(target: EventTarget | null) {
+		if (!(target instanceof Element)) return null;
+		return target.closest('[id^="key-"]');
 	}
 
 	private static processEvent(type: number, param: number) {
