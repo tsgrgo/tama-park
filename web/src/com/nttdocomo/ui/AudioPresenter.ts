@@ -1,3 +1,4 @@
+import { playMldInWorklet } from '../../../mld/playMldInWorklet';
 import type { MediaListener } from './MediaListener';
 import type { MediaPresenter } from './MediaPresenter';
 import type { MediaSound } from './MediaSound';
@@ -22,6 +23,9 @@ export class AudioPresenter implements MediaPresenter {
 
 	public play(): void {
 		console.log('Method not implemented: AudioPresenter.play()');
+		if (this.sound) {
+			void playMldInWorklet(this.sound.unwrap());
+		}
 	}
 
 	public stop(): void {
