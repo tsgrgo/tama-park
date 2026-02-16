@@ -11,7 +11,7 @@ export class MediaManager {
 		return new MediaImage(data);
 	}
 
-	public static getSound(data: Uint8Array | ArrayBuffer) {
+	public static getSound(data: Uint8Array) {
 		return new MediaSound(data);
 	}
 }
