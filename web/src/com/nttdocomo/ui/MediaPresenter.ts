@@ -1,7 +1,7 @@
 import type { MediaListener } from './MediaListener';
 
 export interface MediaPresenter {
-	play(): void;
+	play(): unknown;
 
 	stop(): void;
 
