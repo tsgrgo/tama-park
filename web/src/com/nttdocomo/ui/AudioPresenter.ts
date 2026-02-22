@@ -23,13 +23,18 @@ export class AudioPresenter implements MediaPresenter {
 		this.sound = mediaSound;
 	}
 
-	public async play() {
+	public play(): void {
 		if (!this.mldPlayer) {
-			this.mldPlayer = await createMldPlayer();
+			createMldPlayer()
+				.then(res => {
+					this.mldPlayer = res;
+					this.loadMldToPlayer();
+				})
+				.catch(e => console.log(e));
+
+			return;
 		}
-		if (this.sound) {
-			void this.mldPlayer.load(this.sound.unwrap().buffer as ArrayBuffer);
-		}
+		this.loadMldToPlayer();
 	}
 
 	public stop(): void {
@@ -48,5 +53,10 @@ export class AudioPresenter implements MediaPresenter {
 		} catch (error) {
 			console.error(error);
 		}
+	}
+
+	private loadMldToPlayer() {
+		if (!this.mldPlayer || !this.sound) return;
+		void this.mldPlayer.load(this.sound.unwrap().buffer as ArrayBuffer);
 	}
 }
