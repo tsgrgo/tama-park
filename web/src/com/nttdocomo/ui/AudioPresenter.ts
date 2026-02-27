@@ -1,10 +1,12 @@
-import { playMldInWorklet } from '../../../mld/playMldInWorklet';
+import { createMldPlayer } from '../../../mld/createMldPlayer';
 import type { MediaListener } from './MediaListener';
 import type { MediaPresenter } from './MediaPresenter';
 import type { MediaSound } from './MediaSound';
 
 export class AudioPresenter implements MediaPresenter {
 	private static INSTANCES = new Map<number, AudioPresenter>();
+
+	private mldPlayer?: Awaited<ReturnType<typeof createMldPlayer>>;
 	private sound?: MediaSound;
 	private listener?: MediaListener;
 
@@ -22,14 +24,21 @@ export class AudioPresenter implements MediaPresenter {
 	}
 
 	public play(): void {
-		console.log('Method not implemented: AudioPresenter.play()');
-		if (this.sound) {
-			void playMldInWorklet(this.sound.unwrap());
+		if (!this.mldPlayer) {
+			createMldPlayer()
+				.then(res => {
+					this.mldPlayer = res;
+					this.loadMldToPlayer();
+				})
+				.catch(e => console.log(e));
+
+			return;
 		}
+		this.loadMldToPlayer();
 	}
 
 	public stop(): void {
-		console.log('Method not implemented: AudioPresenter.stop()');
+		// void this.mldPlayer?.stop();
 	}
 
 	public setAttribute(_attrib: number, _value: number): void {}
@@ -44,5 +53,10 @@ export class AudioPresenter implements MediaPresenter {
 		} catch (error) {
 			console.error(error);
 		}
+	}
+
+	private loadMldToPlayer() {
+		if (!this.mldPlayer || !this.sound) return;
+		void this.mldPlayer.load(this.sound.unwrap().buffer as ArrayBuffer);
 	}
 }
