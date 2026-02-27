@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="decompilation:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/decompilation_jar</output-path>
+    <root id="archive" name="decompilation.jar">
+      <element id="module-output" name="decompilation" />
+    </root>
+  </artifact>
+</component>
