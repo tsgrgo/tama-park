@@ -114,47 +114,62 @@ public class Font {
     }
 
     private static Font createTypeFont(int type) {
-        return switch (type) {
-            case TYPE_HEADING -> new Font(new java.awt.Font(
+        if (type == TYPE_HEADING) {
+            return new Font(new java.awt.Font(
                     "Dialog",
                     java.awt.Font.BOLD,
                     18
             ));
-            default -> new Font(new java.awt.Font(
+        } else {
+            return new Font(new java.awt.Font(
                     "Dialog",
                     java.awt.Font.PLAIN,
                     10
             ));
-        };
+        }
     }
 
     private static java.awt.Font getBaseForFace(int face) {
-        return switch (face) {
-            case FACE_SYSTEM -> BASE_SYSTEM;
-            case FACE_MONOSPACE -> BASE_MONO;
-            case FACE_PROPORTIONAL -> BASE_PROP;
-            default -> BASE_SYSTEM;
-        };
+        switch (face) {
+            case FACE_SYSTEM:
+                return BASE_SYSTEM;
+            case FACE_MONOSPACE:
+                return BASE_MONO;
+            case FACE_PROPORTIONAL:
+                return BASE_PROP;
+            default:
+                return BASE_SYSTEM;
+        }
     }
 
     private static int mapStyle(int style) {
-        return switch (style) {
-            case STYLE_PLAIN -> java.awt.Font.PLAIN;
-            case STYLE_BOLD -> java.awt.Font.BOLD;
-            case STYLE_ITALIC -> java.awt.Font.ITALIC;
-            case STYLE_BOLDITALIC -> java.awt.Font.BOLD | java.awt.Font.ITALIC;
-            default -> java.awt.Font.PLAIN;
-        };
+        switch (style) {
+            case STYLE_PLAIN:
+                return java.awt.Font.PLAIN;
+            case STYLE_BOLD:
+                return java.awt.Font.BOLD;
+            case STYLE_ITALIC:
+                return java.awt.Font.ITALIC;
+            case STYLE_BOLDITALIC:
+                return java.awt.Font.BOLD | java.awt.Font.ITALIC;
+            default:
+                return java.awt.Font.PLAIN;
+        }
     }
 
     private static int mapSize(int size) {
-        return switch (size) {
-            case SIZE_TINY -> 12;
-            case SIZE_SMALL -> 18;
-            case SIZE_MEDIUM -> 24;
-            case SIZE_LARGE -> 26;
-            default -> 12;
-        };
+        switch (size) {
+            case SIZE_TINY:
+                return 12;
+            case SIZE_SMALL:
+                return 18;
+            case SIZE_MEDIUM:
+                return 24;
+            case SIZE_LARGE:
+                return 26;
+            default:
+                return 12;
+        }
     }
 
     private static java.awt.Font loadBundledFont(String resourcePath) {

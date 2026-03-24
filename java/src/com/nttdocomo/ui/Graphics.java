@@ -10,25 +10,42 @@ public class Graphics {
     }
 
     public static Object getColorOfName(int name) {
-        return switch (name) {
-            case 0 -> Color.BLACK;
-            case 1 -> Color.BLUE;
-            case 2 -> new Color(0, 255, 0);      // LIME
-            case 3 -> Color.CYAN;                         // AQUA
-            case 4 -> Color.RED;
-            case 5 -> Color.MAGENTA;                      // FUCHSIA
-            case 6 -> Color.YELLOW;
-            case 7 -> Color.WHITE;
-            case 8 -> Color.GRAY;
-            case 9 -> new Color(0, 0, 128);       // NAVY
-            case 10 -> new Color(0, 128, 0);      // GREEN (dark)
-            case 11 -> new Color(0, 128, 128);    // TEAL
-            case 12 -> new Color(128, 0, 0);      // MAROON
-            case 13 -> new Color(128, 0, 128);    // PURPLE
-            case 14 -> new Color(128, 128, 0);    // OLIVE
-            case 15 -> new Color(192, 192, 192);  // SILVER
-            default -> Color.BLACK;
-        };
+        switch (name) {
+            case 0:
+                return Color.BLACK;
+            case 1:
+                return Color.BLUE;
+            case 2:
+                return new Color(0, 255, 0);      // LIME
+            case 3:
+                return Color.CYAN;                         // AQUA
+            case 4:
+                return Color.RED;
+            case 5:
+                return Color.MAGENTA;                      // FUCHSIA
+            case 6:
+                return Color.YELLOW;
+            case 7:
+                return Color.WHITE;
+            case 8:
+                return Color.GRAY;
+            case 9:
+                return new Color(0, 0, 128);       // NAVY
+            case 10:
+                return new Color(0, 128, 0);      // GREEN (dark)
+            case 11:
+                return new Color(0, 128, 128);    // TEAL
+            case 12:
+                return new Color(128, 0, 0);      // MAROON
+            case 13:
+                return new Color(128, 0, 128);    // PURPLE
+            case 14:
+                return new Color(128, 128, 0);    // OLIVE
+            case 15:
+                return new Color(192, 192, 192);  // SILVER
+            default:
+                return Color.BLACK;
+        }
     }
 
     public static int getColorOfRGB(int r, int g, int b) {

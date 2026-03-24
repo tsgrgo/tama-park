@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
     private static final String SCRATCHPAD = "ENGLISH_PATCH__Tamagotchi_Park.sp";
@@ -16,7 +17,7 @@ public class Main {
     }
 
     private static File getScratchpadFile() throws IOException {
-        Path target = Path.of(System.getProperty("java.io.tmpdir"), Main.SCRATCHPAD);
+        Path target = Paths.get(System.getProperty("java.io.tmpdir"), Main.SCRATCHPAD);
         if (Files.exists(target)) return target.toFile();
 
         try (InputStream in = Main.class.getClassLoader().getResourceAsStream(Main.SCRATCHPAD)) {
