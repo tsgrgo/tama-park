@@ -13,3 +13,8 @@
   [headers.values]
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Embedder-Policy = "require-corp"
+
+[[redirects]]
+  from = "/tamapark-api/*"
+  to = "http://tamapark.gs.keitaiarchive.org/:splat"
+  status = 200

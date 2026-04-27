@@ -2668,7 +2668,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 						this.goToPage(PAGE_TITLE);
 						break;
 					case 1:
-						this.launchCurrentApp('http://tamapark.gs.keitaiarchive.org/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest');
+						this.launchCurrentApp('/tamapark-api/cgi-bin/album.cgi?uid=NULLGWDOCOMO&op=latest');
 				}
 			}
 		}
@@ -4369,7 +4369,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 
 	public static async sendDataToServer(data: Uint8Array, length: number): Promise<DataInputStream> {
 		const encodedData = this.urlEncodeData(data, length);
-		const url = 'http://tamapark.gs.keitaiarchive.org/cgi-bin/iaserver.cgi?uid=NULLGWDOCOMO&data=' + encodedData;
+		const url = '/tamapark-api/cgi-bin/iaserver.cgi?uid=NULLGWDOCOMO&data=' + encodedData;
 		this.log('senddata:' + url);
 
 		let input: DataInputStream | null = null;
