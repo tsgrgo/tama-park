@@ -28,10 +28,24 @@
 	font-display: block;
 }
 
+html,
 body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+
 	background-color: var(--app-bg);
 	color: var(--app-fg);
 	color-scheme: light dark;
+}
+
+main {
+	flex: 1;
 }
 
 #antenna {
@@ -54,6 +68,7 @@ body {
 	width: fit-content;
 	margin: 0 auto;
 	margin-bottom: 20px;
+	margin-top: 10px;
 }
 
 #game {
@@ -119,4 +134,31 @@ body {
 .key-group.pressed {
 	filter: brightness(var(--key-active-brightness));
 	transform: translateY(2px);
+}
+
+footer {
+	filter: brightness(var(--key-active-brightness));
+	align-self: flex-end;
+	width: 100%;
+	align-self: flex-end;
+	text-align: center;
+	font-size: small;
+	color: var(--key-shape-fill);
+	font-family:
+		system-ui,
+		-apple-system,
+		Segoe UI,
+		Roboto,
+		Arial,
+		sans-serif;
+}
+
+a {
+	color: var(--key-shape-fill);
+}
+
+@media (max-width: 768px) {
+	#screen {
+		margin-top: 0;
+	}
 }
