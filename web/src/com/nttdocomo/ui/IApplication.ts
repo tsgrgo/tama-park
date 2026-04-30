@@ -45,6 +45,9 @@ export abstract class IApplication {
 	}
 
 	public terminate(): void {
+		try {
+			window.close();
+		} catch (ignore) {}
 		console.log('terminated');
 	}
 }
