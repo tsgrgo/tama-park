@@ -1,0 +1,18 @@
+{
+	"name": "Tamagotchi Park",
+	"short_name": "Tama Park",
+	"start_url": "/",
+	"display": "standalone",
+	"icons": [
+		{
+			"src": "/icons/icon_192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/icons/icon_512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
