@@ -1,8 +1,10 @@
 {
 	"name": "Tamagotchi Park",
-	"short_name": "Tama Park",
+	"short_name": "Tamagotchi Park",
 	"start_url": "/",
 	"display": "standalone",
+	"orientation": "portrait",
+	"background_color": "#121212",
 	"icons": [
 		{
 			"src": "/icons/icon_192.png",
