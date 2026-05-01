@@ -153,6 +153,12 @@ footer {
 		sans-serif;
 }
 
+@media (prefers-color-scheme: light) {
+	footer {
+		filter: none;
+	}
+}
+
 a {
 	color: var(--key-shape-fill);
 }
