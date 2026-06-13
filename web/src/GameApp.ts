@@ -3396,7 +3396,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		this.menuState[6] = this.getSelectedButtonIndex();
 		this.menuState[7] = this.getCurrentNumberOfButtons();
 		this.menuState[8] = this.getCanButtonsLoopAround();
-		this.setButtonConfig(4, true);
+		this.setButtonConfig(5, true);
 		this.setSelectedButtonIndex(0);
 		this.setCurrentExplanation(0, -1);
 		this.menuState[4] = this.getSelectedButtonIndex();
@@ -3422,7 +3422,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			default:
 				break;
 			case 1:
-				this.setButtonConfig(4, true);
+				this.setButtonConfig(5, true);
 				this.setSelectedButtonIndex(this.menuState[4]);
 				break;
 			case 2:
@@ -3435,6 +3435,11 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			case 4:
 				this.setButtonConfig(2, true);
 				this.setSelectedButtonIndex(1);
+				break;
+			case 5:
+				this.setButtonConfig(7, true);
+				this.setSelectedButtonIndex(0);
+				this.setButtonTheme(15947864, 15947864, 16353930, 16777215, 12138328, 16777215, 6594720, 13158600, 13158600, 0);
 		}
 
 		this.menuState[5] = 0;
@@ -3467,6 +3472,10 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					break;
 				case 4:
 					this.closeAppPageFlow();
+					break;
+				case 5:
+					this.creditsPageFlow();
+					break;
 			}
 		}
 	}
@@ -3481,19 +3490,28 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 			this.menuState[4] = this.getSelectedButtonIndex();
 			switch (this.getPressedButtonIndex(this.isKeyPressed(KEY_SELECT), this.isKeyPressed(KEY_UP), this.isKeyPressed(KEY_DOWN))) {
 				case 0:
+					// Read explanation
 					if (0 < this.menuState[3]) {
 						this.nextMenuState(2);
 					}
 					break;
 				case 1:
+					// Return to title
 					this.goToPage(PAGE_TITLE);
 					break;
 				case 2:
+					// Close App
 					this.nextMenuState(4);
 					break;
 				case 3:
+					// Sound ON/OFF
 					this.toggleSound();
 					await this.saveGame();
+					break;
+				case 4:
+					// Credits
+					this.nextMenuState(5);
+					break;
 			}
 		}
 	}
@@ -3527,6 +3545,39 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		}
 	}
 
+	public static creditsPageFlow(): void {
+		if (this.isKeyPressed(KEY_SOFT1)) {
+			this.goToPage(this.currentPage);
+		} else {
+			switch (this.getPressedButtonIndex(this.isKeyPressed(KEY_SELECT), this.isKeyPressed(KEY_UP_LEFT), this.isKeyPressed(KEY_DOWN_RIGHT))) {
+				case 0:
+					this.goToPage(this.currentPage);
+					break;
+				case 1:
+					this.openInNewTab('https://github.com/tsgrgo');
+					break;
+				case 2:
+					this.openInNewTab('https://ko-fi.com/mikablu');
+					break;
+				case 3:
+					// this.openInNewTab('');
+					break;
+				case 4:
+					this.openInNewTab('https://github.com/Yuvi-App');
+					break;
+				case 5:
+					this.openInNewTab('https://curlour.neocities.org/en/');
+					break;
+				case 6:
+					break;
+			}
+		}
+	}
+
+	public static openInNewTab(url: string) {
+		window.open(url, '_blank')?.focus();
+	}
+
 	public static drawMenuPages(g: Graphics, x: number, y: number): void {
 		if (this.isMenuOpen()) {
 			switch (this.menuState[1]) {
@@ -3546,6 +3597,10 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					break;
 				case 4:
 					this.closeAppPage(g, x, y);
+					break;
+				case 5:
+					this.creditsPage(g, x, y);
+					break;
 			}
 		}
 	}
@@ -3566,6 +3621,8 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// 58: Sound  ON
 		// 59: Sound  OFF
 		this.drawButton(g, this.getText(58 + this.gameSave[3]), 3, newY + 2 + (this.currentFontHeight + 6) * 5);
+		// Custom credits button
+		this.drawButton(g, 'Credits', 4, newY + 2 + (this.currentFontHeight + 6) * 6);
 
 		this.drawMenuEggs(g, this.canvasWidth / 2, newY + 2 + this.currentFontHeight + 6 + 2, 86, this.menuState[5]);
 	}
@@ -3596,6 +3653,37 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 		// 63: No
 		this.drawButton(g, this.getText(63), 1, newY + 2 + (this.currentFontHeight + 6) * 3);
 		this.drawMenuEggs(g, this.canvasWidth / 2, newY + 2 + this.currentFontHeight + 6 + 2, 86, this.menuState[5]);
+	}
+
+	public static creditsPage(g: Graphics, x: number, y: number): void {
+		this.setColorOfRGBInt(g, 16763955);
+		const newX = x + 120;
+		const newY = y + 5;
+		g.fillRect(x, y, 240, 240);
+
+		this.drawTextWithBackground(g, 'Credits', newX, newY, this.currentFont.stringWidth(this.getText(61)) + 8, 2);
+
+		// this.drawMenuEggs(g, this.canvasWidth / 2, newY + 2 + this.currentFontHeight + 6 + 2, 86, this.menuState[5]);
+
+		GameApp.setCurrentFont(1);
+		g.setFont(this.currentFont);
+
+		this.drawButton(g, 'tsgrgo - reversing, port', 1, newY + 2 + (this.currentFontHeight + 6) * 2);
+		this.drawButton(g, 'Mikablu - EN translation', 2, newY + 2 + (this.currentFontHeight + 6) * 3);
+		this.drawButton(g, 'Unabandonware -server,EN', 3, newY + 2 + (this.currentFontHeight + 6) * 4);
+		this.drawButton(g, 'Yuvi - server', 4, newY + 2 + (this.currentFontHeight + 6) * 5);
+		this.drawButton(g, 'Curlour - passwords', 5, newY + 2 + (this.currentFontHeight + 6) * 6);
+		this.drawButton(g, 'GuyPerfect - MA3 Synth', 6, newY + 2 + (this.currentFontHeight + 6) * 7);
+
+		GameApp.setCurrentFont(2);
+		g.setFont(this.currentFont);
+
+		// 9: Back
+		this.drawTextButton(g, 0, this.getText(9), this.canvasWidth / 2, y + 240 - 42, 100, 28, 2, 0);
+
+		if (0 == this.getSelectedButtonIndex()) {
+			this.drawMirroredTamagotchiPair(g, 35, this.canvasWidth / 2, y + 240 - 42 + 14 + 1, 100, this.menuState[5]);
+		}
 	}
 
 	public static drawButton(g: Graphics, text: string, buttonIdx: number, y: number): void {
