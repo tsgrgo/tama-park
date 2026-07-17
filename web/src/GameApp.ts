@@ -3554,7 +3554,7 @@ export class GameApp extends IApplication implements TimerListener, MediaListene
 					this.goToPage(this.currentPage);
 					break;
 				case 1:
-					this.openInNewTab('https://github.com/tsgrgo');
+					this.openInNewTab('https://linktr.ee/tsgrgo');
 					break;
 				case 2:
 					this.openInNewTab('https://ko-fi.com/mikablu');
