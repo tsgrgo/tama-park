@@ -3,7 +3,7 @@ import { IApplication } from './com/nttdocomo/ui/IApplication';
 import { GameApp } from './GameApp';
 import { startIconAnimation } from './utils/startIconAnimation';
 
-IApplication.setSourceURL('/data/');
+IApplication.setSourceURL('/data/keitai/');
 // Canvas.setTftFilterEnabled(true);
 
 const game = new GameApp();

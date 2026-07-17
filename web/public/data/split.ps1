@@ -1,4 +1,4 @@
-$inputPath  = Join-Path -Path $PSScriptRoot -ChildPath "ENGLISH_PATCH__Tamagotchi_Park.sp"
+$inputPath  = Join-Path -Path $PSScriptRoot -ChildPath "tamapark505_red.sp"
 $bytes = [System.IO.File]::ReadAllBytes($inputPath)
 
 # Strip the 64 byte DoJa scratchpad header + 128 game data header
